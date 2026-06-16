@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6FB199">
+<title>Tend — the friend who grows with you</title>
+<meta name="description" content="Tend is a gentle, Tamagotchi-style emotional-support companion that grows with you while you practice real calm-and-coping skills. A 3Shamrocks Studio prototype. Private and on-device.">
+
+<!-- CSP: no eval, on-device only. Inline style/script are used because this is a single-file PWA;
+     a production build would move to nonce-based CSP. Nothing connects off-device except Google Fonts. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'">
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+:root{
+  --bg1:#E9F3EE; --bg2:#E1EDF3;
+  --card:#FBFCFA; --card-2:#F4F8F5;
+  --green:#6FB199; --green-deep:#4E8C74; --green-soft:#DCEFE6;
+  --blue:#7FA9C7; --blue-deep:#5A86A8; --blue-soft:#DEEBF3;
+  --amber:#E6B274; --amber-deep:#CF965A; --amber-soft:#F7E9D2;
+  --ink:#35433F; --ink-soft:#5F6F6A; --ink-faint:#94A39E;
+  --line:#E5ECE8;
+  --radius:22px; --radius-sm:15px;
+  --shadow:0 10px 30px rgba(60,90,80,.10);
+  --shadow-sm:0 4px 14px rgba(60,90,80,.08);
+  --darkgrey:#2C302F;
+}
+body{
+  font-family:'Quicksand',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(160deg,var(--bg1),var(--bg2));
+  background-attachment:fixed;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);border:0}
+
+/* ---- shell ---- */
+.app{max-width:460px;margin:0 auto;min-height:100vh;position:relative;
+  display:flex;flex-direction:column;padding:0 16px 96px;}
+@media(min-width:480px){
+  .app{margin:18px auto;min-height:calc(100vh - 36px);border-radius:30px;
+    background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.2));
+    box-shadow:0 24px 60px rgba(50,80,70,.14);overflow:hidden;padding:0 18px 96px;}
+}
+
+/* ---- top bar ---- */
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 2px 8px;position:sticky;top:0;z-index:20;
+  background:linear-gradient(180deg,var(--bg1),rgba(233,243,238,0));backdrop-filter:blur(2px)}
+.brand{display:flex;align-items:center;gap:9px}
+.brand .logo{width:30px;height:30px;flex:0 0 auto}
+.brand .name{font-weight:700;font-size:1.18rem;letter-spacing:.3px;color:var(--green-deep)}
+.brand .tline{font-size:.66rem;color:var(--ink-faint);font-weight:600;margin-top:-2px}
+.protochip{font-size:.6rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  color:var(--amber-deep);background:var(--amber-soft);padding:4px 9px;border-radius:99px;border:1px solid #EFD9B7}
+
+/* ---- cards ---- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:18px;box-shadow:var(--shadow-sm);margin:12px 0}
+.card.soft{background:var(--card-2)}
+h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)}
+.muted{color:var(--ink-soft)}
+.faint{color:var(--ink-faint);font-size:.82rem}
+
+/* ---- pet stage ---- */
+.petstage{display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:14px 14px 6px;position:relative}
+.petwrap{width:200px;height:200px;animation:breathe 5.5s ease-in-out infinite}
+.petwrap svg{width:100%;height:100%;overflow:visible}
+@keyframes breathe{0%,100%{transform:scale(.985) translateY(2px)}50%{transform:scale(1.025) translateY(-2px)}}
+@media (prefers-reduced-motion:reduce){.petwrap{animation:none}}
+.bubble{max-width:300px;background:#fff;border:1px solid var(--line);border-radius:18px;
+  padding:12px 15px;box-shadow:var(--shadow-sm);font-weight:500;color:var(--ink);
+  position:relative;margin-top:6px;animation:rise .5s ease both}
+.bubble:after{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%) rotate(45deg);
+  width:16px;height:16px;background:#fff;border-left:1px solid var(--line);border-top:1px solid var(--line)}
+.bubble .who{font-size:.72rem;color:var(--green-deep);font-weight:700;display:block;margin-bottom:2px}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---- feeling picker ---- */
+.feelrow{display:flex;gap:8px;justify-content:space-between;margin-top:10px;flex-wrap:wrap}
+.feel{flex:1 1 0;min-width:62px;background:var(--card-2);border:1.5px solid var(--line);
+  border-radius:16px;padding:11px 4px 9px;display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:transform .15s ease,border-color .15s ease,background .15s ease}
+.feel:hover{transform:translateY(-2px)}
+.feel:active{transform:scale(.96)}
+.feel.sel{border-color:var(--green);background:var(--green-soft)}
+.feel .face{font-size:1.7rem;line-height:1}
+.feel .lbl{font-size:.7rem;font-weight:600;color:var(--ink-soft)}
+.skiprow{margin-top:10px;text-align:center}
+.linkbtn{color:var(--green-deep);font-weight:600;font-size:.85rem;text-decoration:underline;text-underline-offset:3px;background:none}
+
+/* ---- actions grid ---- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.action{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;
+  text-align:left;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow-sm);
+  transition:transform .15s ease,box-shadow .15s ease}
+.action:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.action:active{transform:scale(.97)}
+.action .ico{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+.ic-green{background:var(--green-soft)}.ic-blue{background:var(--blue-soft)}.ic-amber{background:var(--amber-soft)}
+.action .t{font-weight:700;font-size:.95rem}
+.action .d{font-size:.76rem;color:var(--ink-soft);line-height:1.35}
+
+/* ---- quest ---- */
+.quest{background:linear-gradient(150deg,#FBF4E7,#FDF9F0);border:1px solid #F0E3CC}
+.quest .qkicker{font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--amber-deep)}
+.quest .qtext{font-weight:600;font-size:1.05rem;margin:6px 0 2px}
+.btnrow{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}
+.btn{border-radius:14px;padding:11px 16px;font-weight:700;font-size:.92rem;
+  transition:transform .12s ease,filter .15s ease;flex:1 1 auto;text-align:center}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--green);color:#fff;box-shadow:0 4px 0 var(--green-deep)}
+.btn.amber{background:var(--amber);color:#5a3d12;box-shadow:0 4px 0 var(--amber-deep)}
+.btn.blue{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-deep)}
+.btn.ghost{background:var(--card-2);color:var(--ink-soft);border:1.5px solid var(--line);box-shadow:none}
+.btn.block{width:100%;flex:none}
+
+/* ---- journey ---- */
+.arc{display:flex;justify-content:space-between;align-items:flex-end;gap:6px;margin:6px 0 2px}
+.arcnode{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;opacity:.4;
+  transition:opacity .4s ease,transform .4s ease}
+.arcnode.reached{opacity:1}
+.arcnode.current{transform:translateY(-4px)}
+.arcnode .mini{width:100%;max-width:54px}
+.arcnode .mlabel{font-size:.62rem;font-weight:700;color:var(--ink-soft);text-align:center}
+.arcnode.current .mlabel{color:var(--green-deep)}
+.vine{height:12px;border-radius:99px;background:var(--green-soft);overflow:hidden;margin-top:6px}
+.vine>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--amber));
+  transition:width 1s cubic-bezier(.2,.9,.3,1)}
+.reflectlist{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.reflect{display:flex;align-items:center;gap:11px;background:var(--card-2);border:1px solid var(--line);
+  border-radius:14px;padding:11px 13px}
+.reflect .n{font-weight:700;font-size:1.15rem;color:var(--green-deep);min-width:26px;text-align:center}
+.reflect .x{font-size:.85rem;color:var(--ink-soft)}
+.moodtrack{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.mdot{width:13px;height:13px;border-radius:50%;border:1px solid rgba(0,0,0,.04)}
+
+/* ---- learned chips ---- */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.chip{background:var(--green-soft);color:var(--green-deep);border-radius:99px;padding:6px 12px;
+  font-size:.8rem;font-weight:600}
+
+/* ---- about ---- */
+.note{border-radius:15px;padding:13px 14px;font-size:.86rem;line-height:1.5;margin:10px 0}
+.note .nt{font-weight:700;display:block;margin-bottom:3px}
+.note.calm{background:var(--blue-soft);border:1px solid #CFE0EC;color:#2C4655}
+.note.warm{background:var(--amber-soft);border:1px solid #EFDCBC;color:#6A4B22}
+.note.green{background:var(--green-soft);border:1px solid #CDE7DB;color:#2F5648}
+.helpcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px;margin-top:9px}
+.helpcard .hn{font-weight:700}
+.helpcard .hd{font-size:.83rem;color:var(--ink-soft)}
+.needsverify{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+  color:#8a5a00;background:#FBEAC6;border:1px solid #E8D199;border-radius:99px;padding:2px 8px;margin-left:6px}
+
+/* ---- studio footer ---- */
+.studio{margin:18px 0 6px;text-align:center}
+.logochip{display:inline-flex;align-items:center;justify-content:center;background:var(--darkgrey);
+  border-radius:14px;padding:11px 16px;box-shadow:var(--shadow-sm)}
+.logochip img{height:26px;display:block}
+.studio .tm{font-size:.78rem;font-weight:700;color:var(--ink-soft);margin-top:9px}
+.studio .cp{font-size:.7rem;color:var(--ink-faint);margin-top:3px}
+
+/* ---- tab bar ---- */
+.tabbar{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;justify-content:center;
+  pointer-events:none}
+.tabbar .inner{pointer-events:auto;display:flex;gap:4px;background:rgba(255,255,255,.86);
+  backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:22px;padding:6px;
+  margin-bottom:14px;box-shadow:var(--shadow);width:min(420px,calc(100% - 32px));justify-content:space-around}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;border-radius:16px;
+  color:var(--ink-faint);font-size:.68rem;font-weight:700;transition:color .15s,background .15s}
+.tab .ti{font-size:1.15rem;line-height:1}
+.tab.on{color:var(--green-deep);background:var(--green-soft)}
+
+/* ---- overlay (gentle modals) ---- */
+.overlay{position:fixed;inset:0;z-index:50;background:rgba(40,60,52,.42);backdrop-filter:blur(3px);
+  display:flex;align-items:flex-end;justify-content:center;animation:fade .25s ease both}
+@media(min-width:480px){.overlay{align-items:center}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.sheet{background:var(--card);width:min(460px,100%);max-height:92vh;overflow:auto;
+  border-radius:26px 26px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+  box-shadow:0 -10px 40px rgba(40,60,52,.2);animation:slideup .35s cubic-bezier(.2,.9,.3,1) both}
+@media(min-width:480px){.sheet{border-radius:26px}}
+@keyframes slideup{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
+.sheet h3{margin:2px 0 4px;font-size:1.18rem}
+.grab{width:42px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 12px}
+
+/* ---- breathing ---- */
+.breathscene{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 0 4px}
+.breathorb{width:170px;height:170px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 40%,#CFEAF6,#9FC8DE);box-shadow:0 0 0 14px rgba(159,200,222,.18),0 0 0 30px rgba(159,200,222,.10);
+  transform:scale(.48);transition:transform 4s ease-in-out;color:var(--blue-deep);font-weight:700}
+.breathlabel{font-size:1.25rem;font-weight:700;color:var(--blue-deep);min-height:1.5em}
+.breathcount{font-size:.82rem;color:var(--ink-faint);font-weight:600}
+
+/* onboarding */
+.ob{padding-top:8px;animation:rise .4s ease both}
+.ob h1{font-size:1.7rem;margin:6px 0 2px;color:var(--green-deep)}
+.ob .lead{font-size:1rem;color:var(--ink-soft)}
+.input{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;font-size:1rem;
+  font-family:inherit;color:var(--ink);background:#fff;margin-top:8px}
+.input:focus{outline:none;border-color:var(--green)}
+.suggrow{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.sugg{background:var(--card-2);border:1.5px solid var(--line);border-radius:99px;padding:7px 13px;font-weight:600;font-size:.85rem;color:var(--ink-soft)}
+.sugg:active{transform:scale(.96)}
+.dots{display:flex;gap:6px;justify-content:center;margin:14px 0 2px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--green);width:18px;border-radius:99px}
+
+/* celebrate */
+.celebrate{text-align:center}
+.celebrate .spark{font-size:2.2rem}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<nav class="tabbar" id="tabbar" hidden aria-label="Main navigation">
+  <div class="inner" id="tabs"></div>
+</nav>
+
+<div id="overlayRoot"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   A 3Shamrocks Studio companion — a concept prototype (v0).
+   © 2026 3Shamrocks Studio. All rights reserved.
+   Single-file, dependency-free PWA. On-device only (localStorage).
+   No accounts, no network data. No eval. Dynamic user text via
+   textContent / DOM builders.
+   NOT a medical or therapy product. Not for emergencies.
+   ============================================================ */
+
+/* ============================================================
+   BRAND — the product NAME lives HERE, in ONE place.
+   The name is still being finalized (Tend / Suno / Mello / Huglet…).
+   To rename the whole app: change BRAND.name below. That updates the
+   document title, header, footer, and every line of in-app copy.
+   (Only manifest.json — the installed-app name — needs a separate
+   one-line edit, since it is a static file the browser reads directly.)
+   ============================================================ */
+var BRAND = {
+  name: 'Tend',                              // ← change this to rename the app
+  tagline: 'the friend who grows with you'
+};
+document.title = BRAND.name + ' — ' + BRAND.tagline;
+
+/* ---------- Service worker: own it, evict strays (shared github.io origin) ---------- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    // Shared github.io origin: unregister any worker NOT scoped under our own base
+    // path (i.e. a sibling project's stray SW), then register ours.
+    var BASE = location.origin + location.pathname.replace(/index\.html$/, '');
+    navigator.serviceWorker.getRegistrations().then(function (regs) {
+      regs.forEach(function (r) { if (r.scope.indexOf(BASE) !== 0) r.unregister(); });
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }).catch(function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+  });
+}
+
+/* ---------- tiny DOM builder (safe: text via textContent) ---------- */
+function E(tag, props, kids){
+  var el = document.createElement(tag);
+  if (props) for (var k in props){
+    if (k === 'text') el.textContent = props[k];
+    else if (k === 'html') el.innerHTML = props[k];        // ONLY used for our own trusted static SVG, never user data
+    else if (k === 'class') el.className = props[k];
+    else if (k === 'on') for (var ev in props[k]) el.addEventListener(ev, props[k][ev]);
+    else if (k === 'style') el.setAttribute('style', props[k]);
+    else if (props[k] != null) el.setAttribute(k, props[k]);
+  }
+  if (kids != null){
+    if (!Array.isArray(kids)) kids = [kids];
+    kids.forEach(function(c){ if (c == null) return; el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+  }
+  return el;
+}
+function clear(node){ while (node.firstChild) node.removeChild(node.firstChild); }
+var $app = document.getElementById('app');
+var $tabbar = document.getElementById('tabbar');
+var $tabs = document.getElementById('tabs');
+var $overlayRoot = document.getElementById('overlayRoot');
+
+/* ============================================================
+   STATE  (on-device, single namespaced key)
+   ============================================================ */
+var KEY = 'tend.v1';
+var STAGE_NAMES = ['', 'Curled', 'Awake', 'Steady', 'Brave', 'Radiant'];
+var STAGE_BLURB = ['',
+  'just arrived — needs warmth and trust',
+  'beginning to bond, starting to talk back',
+  'calm together — you two co-regulate',
+  'brave — tries gentle challenges with you',
+  'radiant — grown and resilient, like you'];
+var THRESH = [0, 0, 3, 9, 18, 30]; // growth points needed to REACH stage index (1..5)
+
+function blankState(){
+  return {
+    v:1, onboarded:false,
+    petName:'', childName:'', ageBand:'', likeThing:'',
+    growth:0, stage:1,
+    counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0},
+    todayMood:'', checkinDate:'', questDate:'', moodLog:[],
+    questIndex:0, lastVisit:'', createdAt:''
+  };
+}
+var S = load();
+function load(){
+  try{ var raw = localStorage.getItem(KEY); if(raw){ var o = JSON.parse(raw); if(o && o.v===1){ var b=blankState(); for(var k in b) if(!(k in o)) o[k]=b[k]; for(var c in b.counts) if(!(c in o.counts)) o.counts[c]=b.counts[c]; return o; } } }catch(e){}
+  return blankState();
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function today(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+
+/* growth + evolution (no streaks, no decay, no pressure) */
+function stageForGrowth(g){ var s=1; for(var i=1;i<=5;i++){ if(g>=THRESH[i]) s=i; } return s; }
+function addGrowth(pts, msg){
+  var before = S.stage;
+  S.growth += pts;
+  var now = stageForGrowth(S.growth);
+  if(now > S.stage){ S.stage = now; save(); celebrateEvolution(now); }
+  else { save(); }
+  return S.stage > before;
+}
+function progressToNext(){
+  if(S.stage>=5) return 1;
+  var lo=THRESH[S.stage], hi=THRESH[S.stage+1];
+  return Math.max(0, Math.min(1, (S.growth-lo)/(hi-lo)));
+}
+
+/* ============================================================
+   THE PET  — soft, round, gender-neutral, dog-hearted blob.
+   Inline SVG, trusted static markup (no user data inside).
+   ============================================================ */
+function petCfg(stage){
+  var C = {
+    1:{body:'#AEB9B0',belly:'#CCD4CC',heart:'#C2CCC4',eyeRy:5,ear:34,cheek:.12,smile:2,mouthW:9,aura:0,feet:false,scarf:false,sparkle:false,bodyRy:50,bodyCy:144,sleepy:true},
+    2:{body:'#93B9A2',belly:'#C7E2D2',heart:'#E7BE92',eyeRy:16,ear:9,cheek:.30,smile:4,mouthW:14,aura:0,feet:true,scarf:false,sparkle:false,bodyRy:60,bodyCy:136},
+    3:{body:'#79B197',belly:'#BAE1CE',heart:'#E4AC72',eyeRy:15,ear:-2,cheek:.45,smile:6,mouthW:16,aura:0,feet:true,scarf:false,sparkle:false,bodyRy:61,bodyCy:135},
+    4:{body:'#5FA98C',belly:'#B1E1CA',heart:'#E29A56',eyeRy:16,ear:-11,cheek:.55,smile:7,mouthW:18,aura:.32,feet:true,scarf:true,sparkle:false,bodyRy:62,bodyCy:134},
+    5:{body:'url(#bodyGrad)',belly:'#CBF0DE',heart:'url(#heartGrad)',eyeRy:17,ear:-15,cheek:.62,smile:8,mouthW:20,aura:.55,feet:true,scarf:true,sparkle:true,bodyRy:63,bodyCy:133}
+  };
+  return C[stage] || C[1];
+}
+// moodKey can subtly soften the face so the pet "mirrors" the child
+function petSVG(stage, moodKey){
+  var c = petCfg(stage);
+  var cx = 110;
+  var eyeCy = c.bodyCy - 20;
+  var eyeDx = 23;
+  var mouthY = eyeCy + 24;
+  var smile = c.smile, droop = 0;
+  if(moodKey==='low'){ smile = Math.max(0, c.smile-5); droop = 1; }
+  else if(moodKey==='crisis'){ smile = -2; droop = 1.5; }
+  else if(moodKey==='great'){ smile = c.smile+3; }
+  var eyeRy = Math.max(3, c.eyeRy - (droop?2:0));
+  var irisCy = eyeCy + 2 + droop*1.2;
+
+  // ears (soft leaf droplets), rotated by c.ear (deg) outward when shy / up when brave
+  function ear(side){
+    var ex = cx + side*30, ey = c.bodyCy - c.bodyRy + 8;
+    var rot = side*(c.ear); // positive -> droops outward/down
+    return '<g transform="rotate('+rot+' '+ex+' '+ey+')">'
+      + '<ellipse cx="'+ex+'" cy="'+(ey-12)+'" rx="13" ry="22" fill="'+c.body+'"/>'
+      + '<ellipse cx="'+ex+'" cy="'+(ey-12)+'" rx="6.5" ry="13" fill="'+c.belly+'" opacity=".75"/>'
+      + '</g>';
+  }
+  // eye group
+  function eye(side){
+    var x = cx + side*eyeDx;
+    if(c.sleepy){
+      return '<path d="M'+(x-11)+' '+eyeCy+' q11 8 22 0" fill="none" stroke="#3A4A45" stroke-width="3.2" stroke-linecap="round"/>';
+    }
+    return '<ellipse cx="'+x+'" cy="'+eyeCy+'" rx="13.5" ry="'+eyeRy+'" fill="#fff"/>'
+      + '<circle cx="'+x+'" cy="'+irisCy+'" r="'+(eyeRy*0.78)+'" fill="#3A4A45"/>'
+      + '<circle cx="'+(x+3.4)+'" cy="'+(irisCy-eyeRy*0.4)+'" r="'+(eyeRy*0.26)+'" fill="#fff"/>'
+      + '<circle cx="'+(x-3)+'" cy="'+(irisCy+eyeRy*0.3)+'" r="'+(eyeRy*0.14)+'" fill="#fff" opacity=".7"/>';
+  }
+  var mouth = smile>=0
+    ? '<path d="M'+(cx-c.mouthW/2)+' '+mouthY+' q'+(c.mouthW/2)+' '+(2+smile)+' '+c.mouthW+' 0" fill="none" stroke="#3A4A45" stroke-width="2.6" stroke-linecap="round"/>'
+    : '<path d="M'+(cx-c.mouthW/2)+' '+(mouthY+2)+' q'+(c.mouthW/2)+' -3 '+c.mouthW+' 0" fill="none" stroke="#3A4A45" stroke-width="2.6" stroke-linecap="round"/>';
+
+  var cheeks = '<ellipse cx="'+(cx-30)+'" cy="'+(eyeCy+13)+'" rx="9" ry="6" fill="#E89B86" opacity="'+c.cheek+'"/>'
+             + '<ellipse cx="'+(cx+30)+'" cy="'+(eyeCy+13)+'" rx="9" ry="6" fill="#E89B86" opacity="'+c.cheek+'"/>';
+
+  var feet = c.feet
+    ? '<ellipse cx="'+(cx-22)+'" cy="'+(c.bodyCy+c.bodyRy-6)+'" rx="14" ry="9" fill="'+c.body+'"/>'
+    + '<ellipse cx="'+(cx+22)+'" cy="'+(c.bodyCy+c.bodyRy-6)+'" rx="14" ry="9" fill="'+c.body+'"/>' : '';
+
+  var heartY = c.bodyCy + 20;
+  var heart = '<path transform="translate('+(cx)+' '+heartY+') scale(.62)" d="M0 6 C-7 -6 -22 0 -14 12 C-9 19 0 24 0 24 C0 24 9 19 14 12 C22 0 7 -6 0 6 Z" fill="'+c.heart+'" opacity=".9"/>';
+
+  var scarf = c.scarf
+    ? '<path d="M'+(cx-40)+' '+(c.bodyCy+2)+' q40 22 80 0 l0 9 q-40 20 -80 0 Z" fill="#E0A45B"/>'
+    + '<path d="M'+(cx+28)+' '+(c.bodyCy+6)+' l14 22 l-12 -4 l-6 8 Z" fill="#CF965A"/>' : '';
+
+  var aura = c.aura>0
+    ? '<circle cx="'+cx+'" cy="'+(c.bodyCy-4)+'" r="92" fill="url(#aura)" opacity="'+c.aura+'"/>' : '';
+
+  var sparkle = c.sparkle
+    ? ['<g fill="#F4D58A">',
+        star(40,70,7), star(180,60,6), star(178,150,5), star(36,150,5), star(150,30,4),
+       '</g>'].join('') : '';
+  function star(x,y,r){
+    return '<path d="M'+x+' '+(y-r)+' L'+(x+r*0.3)+' '+(y-r*0.3)+' L'+(x+r)+' '+y+' L'+(x+r*0.3)+' '+(y+r*0.3)+' L'+x+' '+(y+r)+' L'+(x-r*0.3)+' '+(y+r*0.3)+' L'+(x-r)+' '+y+' L'+(x-r*0.3)+' '+(y-r*0.3)+' Z"/>';
+  }
+
+  var body = '<ellipse cx="'+cx+'" cy="'+c.bodyCy+'" rx="'+c.bodyRy*0.98+'" ry="'+c.bodyRy+'" fill="'+c.body+'"/>'
+           + '<ellipse cx="'+cx+'" cy="'+(c.bodyCy+8)+'" rx="'+(c.bodyRy*0.66)+'" ry="'+(c.bodyRy*0.7)+'" fill="'+c.belly+'" opacity=".85"/>';
+
+  return '<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Your companion, stage '+stage+', '+STAGE_NAMES[stage]+'">'
+    + '<defs>'
+      + '<radialGradient id="aura" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#F6E2B0"/><stop offset="55%" stop-color="#B9E6CF" stop-opacity=".6"/><stop offset="100%" stop-color="#B9E6CF" stop-opacity="0"/></radialGradient>'
+      + '<linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7FC8A6"/><stop offset="100%" stop-color="#4FA98C"/></linearGradient>'
+      + '<linearGradient id="heartGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F4D58A"/><stop offset="100%" stop-color="#E6A156"/></linearGradient>'
+    + '</defs>'
+    + aura + sparkle + feet + ear(-1) + ear(1) + body + scarf + cheeks + eye(-1) + eye(1) + mouth + heart
+    + '</svg>';
+}
+
+/* ============================================================
+   COPY (warm, short, trauma-informed). Pet/child names via textContent.
+   ============================================================ */
+function pet(){ return S.petName || 'your friend'; }
+function simple(){ return S.ageBand === '6-8'; }
+
+var GREET = [
+  'I’m really glad you’re here.',
+  'Take your time. There’s no rush at all.',
+  'Whatever today is, we’ll meet it together.',
+  'I’m right here with you.'
+];
+var MOODS = [
+  {k:'great',  face:'😊', lbl:'Great'},
+  {k:'good',   face:'🙂', lbl:'Good'},
+  {k:'okay',   face:'😐', lbl:'Okay'},
+  {k:'low',    face:'😔', lbl:'Not great'},
+  {k:'crisis', face:'😢', lbl:'Really not okay'}
+];
+var MOODCOLOR = {great:'#6FB199',good:'#9FC9A8',okay:'#E6CE8A',low:'#E6B274',crisis:'#D98C6A',skip:'#CBD3CB'};
+function moodReply(k){
+  switch(k){
+    case 'great': return 'That’s wonderful. I can feel it too — thank you for sharing it with me.';
+    case 'good': return 'I’m glad. Let’s keep that gentle feeling going.';
+    case 'okay': return 'Okay is okay. Some days are just for getting through, and that’s alright.';
+    case 'low': return 'Thank you for telling me. I’m right here. Want to breathe together for a moment?';
+    case 'crisis': return 'I’m so glad you told me. That sounds really heavy, and you don’t have to carry it alone.';
+    default: return 'That’s completely okay. I’m here whenever you’re ready.';
+  }
+}
+
+var QUESTS = [
+  {kick:'Tiny adventure', t:'Do one kind thing — for someone, or for yourself.', done:'A kind thing ripples further than you think. I felt it.'},
+  {kick:'Brave for 2 minutes', t:'Try the hard thing for just 2 minutes. Then you can stop.', done:'You tried. That’s the brave part — starting.'},
+  {kick:'One true thing', t:'Tell a grown-up you trust one true thing about your day.', done:'Letting someone in is strong, not small. I’m proud of you.'},
+  {kick:'Look around', t:'Notice 3 things you can see, 2 you can hear, 1 you can feel.', done:'You came back to right now. That’s a real skill.'},
+  {kick:'Slow sip', t:'Drink a glass of water, slowly, like it’s the calmest thing in the world.', done:'Small care counts. Your body says thank you.'},
+  {kick:'Look up', t:'Step outside for one minute and look up at the sky.', done:'The sky is always bigger than the worry. Nicely done.'},
+  {kick:'Kind words', t:'Say one kind thing to yourself, like you’d say to a friend.', done:'You deserve your own kindness too. Always.'}
+];
+function currentQuest(){ return QUESTS[S.questIndex % QUESTS.length]; }
+
+/* ============================================================
+   ROUTER / RENDER
+   ============================================================ */
+var route = 'today';
+function go(r){ route = r; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+function render(){
+  clear($app);
+  if(!S.onboarded){ $tabbar.hidden = true; renderOnboarding(); return; }
+  $tabbar.hidden = false;
+  renderTabs();
+  $app.appendChild(topbar());
+  if(route==='today') renderToday();
+  else if(route==='journey') renderJourney();
+  else if(route==='about') renderAbout();
+}
+
+function topbar(){
+  return E('div',{class:'topbar'},[
+    E('div',{class:'brand'},[
+      E('div',{class:'logo',html:petSVG(Math.max(2,S.stage),'')}),
+      E('div',{},[
+        E('div',{class:'name',text:BRAND.name}),
+        E('div',{class:'tline',text:BRAND.tagline})
+      ])
+    ]),
+    E('span',{class:'protochip',text:'Prototype v0'})
+  ]);
+}
+
+function renderTabs(){
+  clear($tabs);
+  [['today','🌱','Today'],['journey','🌈','Journey'],['about','🛡️','About']]
+  .forEach(function(t){
+    $tabs.appendChild(E('button',{class:'tab'+(route===t[0]?' on':''),on:{click:function(){go(t[0]);}}},[
+      E('span',{class:'ti',text:t[1]}), E('span',{text:t[2]})
+    ]));
+  });
+}
+
+/* ---------------- ONBOARDING ---------------- */
+var ob = {step:0, name:'', kid:'', age:'', like:''};
+function renderOnboarding(){
+  clear($app);
+  var steps = [obWelcome, obMeet, obName, obYou, obReady];
+  $app.appendChild(E('div',{class:'topbar'},[
+    E('div',{class:'brand'},[
+      E('div',{class:'logo',html:petSVG(2,'')}),
+      E('div',{},[E('div',{class:'name',text:BRAND.name}),E('div',{class:'tline',text:BRAND.tagline})])
+    ]),
+    E('span',{class:'protochip',text:'Prototype v0'})
+  ]));
+  $app.appendChild(steps[ob.step]());
+  var dots = E('div',{class:'dots'});
+  for(var i=0;i<steps.length;i++) dots.appendChild(E('i',{class:i===ob.step?'on':''}));
+  $app.appendChild(dots);
+  $app.appendChild(studioFooter());
+}
+function obWelcome(){
+  return E('div',{class:'ob'},[
+    E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(1,'')})]),
+    E('h1',{text:'Hi. I’m glad you found me.'}),
+    E('p',{class:'lead',text:'I’m a little creature who’s here just for you. We’ll take care of each other, and grow — together.'}),
+    E('div',{class:'note green'},[E('span',{class:'nt',text:'A few gentle promises'}),
+      E('span',{text:'Everything stays on this device. No sign-ups, no sharing, nobody watching. You can stop any time.'})]),
+    E('div',{class:'note warm'},[E('span',{class:'nt',text:'I’m a friend, not a doctor'}),
+      E('span',{text:'I’m here to keep you company and practice calm — not to replace a grown-up, a counselor, or emergency help.'})]),
+    E('button',{class:'btn primary block',on:{click:function(){ob.step=1;renderOnboarding();}}},'Okay, let’s meet →')
+  ]);
+}
+function obMeet(){
+  return E('div',{class:'ob'},[
+    E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(1,'')}),
+      E('div',{class:'bubble'},[E('span',{class:'who',text:'…'}), E('span',{text:'(it’s curled up, a little shy)'})])]),
+    E('h2',{class:'section',text:'This little one just arrived.'}),
+    E('p',{class:'muted',text:'It’s shy, and not sure yet if the world is safe. With a bit of warmth and time, it will start to open up — and so might you.'}),
+    E('button',{class:'btn primary block',on:{click:function(){ob.step=2;renderOnboarding();}}},'I’d like to be its friend')
+  ]);
+}
+function obName(){
+  var input = E('input',{class:'input',type:'text',maxlength:'18',placeholder:'Give your friend a name',value:ob.name});
+  input.addEventListener('input',function(){ob.name=input.value;});
+  var suggs = ['Pip','Luma','Sprout','Moss','Olive','Bean','Sky','Pebble'];
+  var sr = E('div',{class:'suggrow'});
+  suggs.forEach(function(s){ sr.appendChild(E('button',{class:'sugg',on:{click:function(){ob.name=s;input.value=s;}}},s)); });
+  return E('div',{class:'ob'},[
+    E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(2,'')})]),
+    E('h2',{class:'section',text:'What should we call your friend?'}),
+    E('p',{class:'muted',text:'Any name you like. You can change it later.'}),
+    input, sr,
+    E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:function(){
+      ob.name = (ob.name||'').trim() || 'Pip'; ob.step=3; renderOnboarding();
+    }}},'That’s the one')
+  ]);
+}
+function obYou(){
+  var input = E('input',{class:'input',type:'text',maxlength:'16',placeholder:'What can I call you? (optional)',value:ob.kid});
+  input.addEventListener('input',function(){ob.kid=input.value;});
+  var likeInput = E('input',{class:'input',type:'text',maxlength:'30',placeholder:'One thing that makes you feel calm (optional)',value:ob.like});
+  likeInput.addEventListener('input',function(){ob.like=likeInput.value;});
+  var ages = [['6-8','6–8'],['9-11','9–11'],['12-14','12–14']];
+  var ar = E('div',{class:'suggrow'});
+  ages.forEach(function(a){
+    var b = E('button',{class:'sugg'+(ob.age===a[0]?' sel':''),on:{click:function(){ob.age=a[0]; ar.querySelectorAll('.sugg').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); b.style.borderColor='var(--green)'; b.style.background='var(--green-soft)';}}},a[1]);
+    ar.appendChild(b);
+  });
+  return E('div',{class:'ob'},[
+    E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(2,'')}),
+      E('div',{class:'bubble'},[E('span',{class:'who',text:ob.name||'Your friend'}),E('span',{text:'I’d love to learn a little about you — only what you want to share.'})])]),
+    E('p',{class:'muted',style:'margin-top:4px',text:'You can skip any of these.'}),
+    input,
+    E('p',{class:'faint',style:'margin:12px 2px 0',text:'How old are you? (helps me talk to you just right)'}),
+    ar,
+    likeInput,
+    E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:function(){ob.step=4;renderOnboarding();}}},'Continue'),
+    E('button',{class:'linkbtn',style:'display:block;margin:12px auto 0',on:{click:function(){ob.step=4;renderOnboarding();}}},'Skip for now')
+  ]);
+}
+function obReady(){
+  return E('div',{class:'ob celebrate'},[
+    E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(2,'great')}),
+      E('div',{class:'bubble'},[E('span',{class:'who',text:ob.name}),E('span',{text:'Thank you. I feel a little braver already.'})])]),
+    E('div',{class:'spark',text:'🌱'}),
+    E('h2',{class:'section',text:'We’re ready.'}),
+    E('p',{class:'muted',text:'Come visit when you can. I’ll always be here, and I’ll never be upset if you need time away.'}),
+    E('button',{class:'btn primary block',on:{click:finishOnboarding}},'Begin')
+  ]);
+}
+function finishOnboarding(){
+  S.petName = ob.name || 'Pip';
+  S.childName = (ob.kid||'').trim();
+  S.ageBand = ob.age || '';
+  S.likeThing = (ob.like||'').trim();
+  S.onboarded = true;
+  S.createdAt = today();
+  S.lastVisit = today();
+  S.stage = 1; S.growth = 0;
+  save(); go('today');
+}
+
+/* ---------------- TODAY ---------------- */
+function renderToday(){
+  // returning welcome (never guilt) + count a visit day
+  var greetLine;
+  if(S.lastVisit && S.lastVisit !== today()){
+    greetLine = (S.childName? 'Hi '+S.childName+'. ' : 'Hi. ') + 'I’m so happy you came back.';
+    S.counts.visitDays++;
+  } else if(!S.lastVisit){
+    greetLine = GREET[0];
+  } else {
+    greetLine = GREET[S.counts.checkins % GREET.length];
+  }
+  S.lastVisit = today(); save();
+
+  var moodPicked = S.checkinDate === today();
+
+  // pet + bubble
+  $app.appendChild(E('div',{class:'card petstage'},[
+    E('div',{class:'petwrap',html:petSVG(S.stage, moodPicked? S.todayMood : '')}),
+    E('div',{class:'bubble'},[ E('span',{class:'who',text:pet()}), E('span',{text:greetLine}) ]),
+    E('div',{class:'faint',style:'margin-top:8px',text:STAGE_NAMES[S.stage]+' · '+STAGE_BLURB[S.stage]})
+  ]));
+
+  // check-in
+  $app.appendChild(checkinCard());
+
+  // care actions
+  $app.appendChild(E('h2',{class:'section',text:'Gentle ways to care'}));
+  var grid = E('div',{class:'grid2'});
+  grid.appendChild(actionCard('ic-blue','🫁','Breathe together','Slow breaths to calm us both.',openBreathing));
+  grid.appendChild(actionCard('ic-green','🏷️','Name the feeling','Put a word to what’s here.',openNameFeeling));
+  grid.appendChild(actionCard('ic-amber','🍎','Nourish','A small kindness for your body.',openNourish));
+  grid.appendChild(actionCard('ic-green','🌙','Rest','Slow down for a moment.',openRest));
+  $app.appendChild(grid);
+
+  // quest
+  $app.appendChild(questCard());
+
+  $app.appendChild(studioFooter());
+}
+
+function checkinCard(){
+  var picked = S.checkinDate === today();
+  var card = E('div',{class:'card'},[
+    E('h2',{class:'section',text:simple()? 'How do you feel?' : 'How are you today?'}),
+    E('div',{class:'faint',text: picked? 'Thanks for checking in today.' : 'No pressure — pick whatever fits, or skip.'})
+  ]);
+  var row = E('div',{class:'feelrow'});
+  MOODS.forEach(function(m){
+    var sel = picked && S.todayMood===m.k;
+    row.appendChild(E('button',{class:'feel'+(sel?' sel':''),on:{click:function(){pickMood(m.k);}}},[
+      E('span',{class:'face',text:m.face}), E('span',{class:'lbl',text:m.lbl})
+    ]));
+  });
+  card.appendChild(row);
+  card.appendChild(E('div',{class:'skiprow'},[
+    E('button',{class:'linkbtn',on:{click:function(){pickMood('skip');}}},'I’d rather not say')
+  ]));
+  return card;
+}
+function pickMood(k){
+  var firstToday = S.checkinDate !== today();
+  S.todayMood = k; S.checkinDate = today();
+  if(k!=='skip'){ S.moodLog.push({d:today(),m:k}); if(S.moodLog.length>40) S.moodLog.shift(); }
+  if(firstToday){ S.counts.checkins++; save(); addGrowth(1); } else save();
+
+  if(k==='crisis'){ render(); openCrisis(); return; }
+  // gentle response sheet
+  openSheet(function(close){
+    var moodForPet = (k==='skip')?'':k;
+    return [
+      E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage, moodForPet)}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:moodReply(k)})])]),
+      (k==='low'? E('button',{class:'btn blue block',style:'margin-top:14px',on:{click:function(){close();openBreathing();}}},'Breathe together') : null),
+      E('button',{class:(k==='low'?'btn ghost block':'btn primary block'),style:'margin-top:10px',on:{click:close}},'Okay')
+    ];
+  });
+  if(k!=='crisis') render();
+}
+
+function actionCard(ic,emoji,title,desc,fn){
+  return E('button',{class:'action',on:{click:fn}},[
+    E('div',{class:'ico '+ic,text:emoji}),
+    E('div',{class:'t',text:title}),
+    E('div',{class:'d',text:desc})
+  ]);
+}
+
+function questCard(){
+  var q = currentQuest();
+  var doneToday = S.questDate === today();
+  var card = E('div',{class:'card quest'},[
+    E('div',{class:'qkicker',text:q.kick}),
+    E('div',{class:'qtext',text:q.t}),
+    E('div',{class:'faint',text: doneToday? 'You did today’s adventure. 🌟' : 'A small real-life adventure. Only if you’re up for it.'})
+  ]);
+  if(!doneToday){
+    card.appendChild(E('div',{class:'btnrow'},[
+      E('button',{class:'btn amber',on:{click:questDone}},'I did it'),
+      E('button',{class:'btn ghost',on:{click:questLater}},'Maybe later')
+    ]));
+  } else {
+    card.appendChild(E('div',{class:'btnrow'},[
+      E('button',{class:'btn ghost',on:{click:function(){ S.questIndex++; save(); render(); }}},'Show another idea')
+    ]));
+  }
+  return card;
+}
+function questDone(){
+  var q = currentQuest();
+  var wasDone = S.questDate === today();
+  S.questDate = today();
+  if(!wasDone){ S.counts.quests++; save(); addGrowth(3); }
+  openSheet(function(close){
+    return [
+      E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage,'great')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:q.done})])]),
+      E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:function(){ S.questIndex++; save(); close(); render(); }}},'💚 Thanks, '+pet())
+    ];
+  });
+}
+function questLater(){
+  openSheet(function(close){
+    return [
+      E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage,'')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'That’s completely okay. It’ll be here when you’re ready — no rush, ever.'})])]),
+      E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:close}},'Okay')
+    ];
+  });
+}
+
+/* ---------------- CARE OVERLAYS ---------------- */
+var breathTimer = null;
+function openBreathing(){
+  var rounds = 3, current = 0;
+  openSheet(function(close){
+    var orb = E('div',{class:'breathorb',text:''});
+    var label = E('div',{class:'breathlabel',text:'Let’s begin'});
+    var count = E('div',{class:'breathcount',text:'Follow '+pet()+'. Breathe with the circle.'});
+    var scene = E('div',{class:'breathscene'},[
+      E('div',{style:'font-size:.95rem;color:var(--ink-soft);font-weight:600',text:simple()?'Breathe with your friend':'Co-regulation — we breathe together'}),
+      orb, label, count
+    ]);
+    var done = E('button',{class:'btn ghost block',style:'margin-top:14px',on:{click:function(){ stopBreath(); close(); }}},'I’m done');
+    function phase(name, dur, scale, then){
+      label.textContent = name;
+      orb.style.transitionDuration = (dur/1000)+'s';
+      orb.style.transform = 'scale('+scale+')';
+      breathTimer = setTimeout(then, dur);
+    }
+    function cycle(){
+      if(current>=rounds){ finish(); return; }
+      count.textContent = 'Round '+(current+1)+' of '+rounds;
+      phase(simple()?'Breathe in 🌸':'Breathe in…', 4000, 1, function(){
+        phase('Hold gently…', 2000, 1, function(){
+          phase(simple()?'Let it out 🍃':'Breathe out…', 6000, .48, function(){
+            current++; cycle();
+          });
+        });
+      });
+    }
+    function finish(){
+      label.textContent = 'Beautiful.';
+      orb.style.transform='scale(.7)';
+      count.textContent = '';
+      clear(scene); scene.appendChild(E('div',{class:'petstage'},[
+        E('div',{class:'petwrap',html:petSVG(S.stage,'good')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'We did that together. Feel how we’re a little calmer now? That calm is yours to keep.'})])
+      ]));
+      done.textContent = 'All done 💚';
+      S.counts.breaths++; save(); addGrowth(2);
+    }
+    setTimeout(cycle, 500);
+    return [ E('div',{class:'grab'}), scene, done ];
+  }, function(){ stopBreath(); });
+}
+function stopBreath(){ if(breathTimer){ clearTimeout(breathTimer); breathTimer=null; } }
+
+var FEELINGS = ['Happy','Calm','Excited','Proud','Sad','Worried','Angry','Tired','Lonely','Scared','Frustrated','Mixed-up'];
+function openNameFeeling(){
+  openSheet(function(close){
+    var chosen = E('div',{class:'bubble',style:'margin:0 auto'},[E('span',{class:'who',text:pet()}),
+      E('span',{text: simple()? 'What are you feeling? Tap one.' : 'There are no wrong feelings. Which one is here right now?'})]);
+    var wrap = E('div',{class:'suggrow',style:'justify-content:center;margin-top:14px'});
+    FEELINGS.forEach(function(f){
+      wrap.appendChild(E('button',{class:'sugg',on:{click:function(){ confirmFeeling(f, close); }}},f));
+    });
+    return [ E('div',{class:'grab'}), E('h3',{text:'Name the feeling'}), chosen, wrap,
+      E('button',{class:'linkbtn',style:'display:block;margin:16px auto 0',on:{click:close}},'Not right now') ];
+  });
+}
+function confirmFeeling(f, closePrev){
+  S.counts.feelings++; save(); addGrowth(2);
+  closePrev();
+  openSheet(function(close){
+    return [
+      E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage,'')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),
+          E('span',{text:'Thank you for naming it. Feeling “'+f.toLowerCase()+'” is allowed — it’s just a visitor, and it will move along. I’m here while it does.'})])]),
+      E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:close}},'Okay')
+    ];
+  });
+}
+
+function openNourish(){
+  var opts = [['💧','some water'],['🍎','a small snack'],['🌳','some fresh air'],['🫂','a gentle stretch']];
+  openSheet(function(close){
+    var wrap = E('div',{class:'grid2',style:'margin-top:12px'});
+    opts.forEach(function(o){
+      wrap.appendChild(E('button',{class:'action',on:{click:function(){ nourishDone(o[1], close); }}},[
+        E('div',{class:'ico ic-amber',text:o[0]}), E('div',{class:'t',text:o[1]})
+      ]));
+    });
+    return [ E('div',{class:'grab'}), E('h3',{text:'Nourish'}),
+      E('p',{class:'muted',text:'Taking care of your body is taking care of you. What can you give yourself right now?'}),
+      wrap, E('button',{class:'linkbtn',style:'display:block;margin:16px auto 0',on:{click:close}},'Maybe later') ];
+  });
+}
+function nourishDone(thing, closePrev){
+  S.counts.nourish++; save(); addGrowth(1);
+  closePrev();
+  openSheet(function(close){
+    return [
+      E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage,'good')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'Giving yourself '+thing+' — that’s real care. Small things add up to strong things.'})])]),
+      E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:close}},'Done')
+    ];
+  });
+}
+
+function openRest(){
+  S.counts.rests++; save();
+  openSheet(function(close){
+    setTimeout(function(){ addGrowth(1); }, 50);
+    return [
+      E('div',{class:'grab'}),
+      E('div',{class:'petstage'},[
+        E('div',{class:'petwrap',html:petSVG(1,'')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()+' 💤'}),
+          E('span',{text:'Let’s curl up and rest for a moment. You don’t have to do anything right now. Slowing down is allowed.'})])
+      ]),
+      E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:close}},'That felt nice')
+    ];
+  });
+}
+
+/* ---------------- CRISIS OFF-RAMP (warm, never alarming) ---------------- */
+function openCrisis(){
+  openSheet(function(close){
+    return [
+      E('div',{class:'grab'}),
+      E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage,'low')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),
+          E('span',{text:'I’m really glad you told me. Some feelings are too big to carry by yourself — and you shouldn’t have to.'})])]),
+      E('div',{class:'note warm',style:'margin-top:14px'},[
+        E('span',{class:'nt',text:'Can you tell a grown-up you trust?'}),
+        E('span',{text:'A parent, a teacher, a school counselor, a family member, a coach — anyone who cares about you. You can even show them this screen.'})
+      ]),
+      helpResources(),
+      E('div',{class:'note calm'},[E('span',{class:'nt',text:'If you or someone is in danger right now'}),
+        E('span',{text:'Tell a grown-up immediately, or call your local emergency number. I’m a caring friend, but I can’t help in an emergency.'})]),
+      E('button',{class:'btn primary block',style:'margin-top:6px',on:{click:close}},'I’ll reach out 💚'),
+      E('button',{class:'linkbtn',style:'display:block;margin:12px auto 0',on:{click:close}},'Close')
+    ];
+  });
+}
+function helpResources(){
+  var box = E('div',{},[
+    E('h2',{class:'section',style:'margin-top:14px',text:'Talk to someone who can help'}),
+    E('p',{class:'faint',text:'A grown-up should set up the right numbers for where you live.'})
+  ]);
+  // Placeholder resources — MUST be verified & localized before real use.
+  var r1 = E('div',{class:'helpcard'},[
+    E('div',{},[E('span',{class:'hn',text:'ERAN — emotional first aid (Israel)'}), E('span',{class:'needsverify',text:'needs verification'})]),
+    E('div',{class:'hd',text:'Reported line: 1201. Free, confidential, 24/7. A grown-up should confirm this number is current for your region.'})
+  ]);
+  var r2 = E('div',{class:'helpcard'},[
+    E('div',{},[E('span',{class:'hn',text:'105 — child & youth protection (Israel)'}), E('span',{class:'needsverify',text:'needs verification'})]),
+    E('div',{class:'hd',text:'Reported national line for protecting children and youth. To be verified and localized before launch.'})
+  ]);
+  var r3 = E('div',{class:'helpcard'},[
+    E('div',{},[E('span',{class:'hn',text:'Your local helpline'}), E('span',{class:'needsverify',text:'configure per region'})]),
+    E('div',{class:'hd',text:'In the full product, a trusted local crisis line for your country/region goes here, reviewed by professionals.'})
+  ]);
+  box.appendChild(r1); box.appendChild(r2); box.appendChild(r3);
+  return box;
+}
+
+/* ---------------- JOURNEY ---------------- */
+function renderJourney(){
+  $app.appendChild(E('div',{class:'card'},[
+    E('h2',{class:'section',text:'Your journey together'}),
+    E('p',{class:'faint',text:'No points, no streaks. '+pet()+' grows from real care — and so do you.'}),
+    arcRow(),
+    E('div',{class:'vine'},[E('i',{style:'width:'+(progressToNext()*100)+'%'})]),
+    E('p',{class:'muted',style:'margin-top:10px;text-align:center',text: S.stage>=5
+      ? pet()+' is radiant — grown and resilient, just like the strength you’ve been building.'
+      : 'You’re growing together. Keep caring in your own time.'})
+  ]));
+
+  // reflection (warm framing, never judgmental)
+  $app.appendChild(E('h2',{class:'section',text:'What you’ve shared'}));
+  var list = E('div',{class:'reflectlist'});
+  [[S.counts.breaths,'times you breathed together'],
+   [S.counts.feelings,'feelings you bravely named'],
+   [S.counts.quests,'real-life adventures you tried'],
+   [S.counts.checkins,'gentle check-ins'],
+   [S.counts.nourish+S.counts.rests,'moments of self-care']]
+  .forEach(function(r){ list.appendChild(E('div',{class:'reflect'},[
+    E('div',{class:'n',text:String(r[0])}), E('div',{class:'x',text:r[1]})])); });
+  $app.appendChild(list);
+
+  // recent moods (soft, no labels of good/bad)
+  if(S.moodLog.length){
+    var mc = E('div',{class:'card soft'},[
+      E('h2',{class:'section',text:'Recent feelings'}),
+      E('p',{class:'faint',text:'Every color is okay. Feelings come and go.'})
+    ]);
+    var track = E('div',{class:'moodtrack'});
+    S.moodLog.slice(-21).forEach(function(m){ track.appendChild(E('span',{class:'mdot',style:'background:'+(MOODCOLOR[m.m]||'#CBD3CB')})); });
+    mc.appendChild(track); $app.appendChild(mc);
+  }
+
+  // what the pet "learned"
+  var learned = [];
+  if(S.childName) learned.push('Your name is '+S.childName);
+  learned.push('Your friend is '+pet());
+  if(S.likeThing) learned.push('Calm for you: '+S.likeThing);
+  if(S.ageBand) learned.push('You’re '+S.ageBand.replace('-','–'));
+  learned.push('Together since '+ (S.createdAt||'today'));
+  var lc = E('div',{class:'card'},[
+    E('h2',{class:'section',text:'What '+pet()+' remembers about you'}),
+    E('p',{class:'faint',text:'Stored only on this device — just between you two.'})
+  ]);
+  var chips = E('div',{class:'chips'});
+  learned.forEach(function(t){ chips.appendChild(E('span',{class:'chip',text:t})); });
+  lc.appendChild(chips); $app.appendChild(lc);
+
+  $app.appendChild(studioFooter());
+}
+function arcRow(){
+  var row = E('div',{class:'arc'});
+  for(var i=1;i<=5;i++){
+    var cls = 'arcnode' + (i<=S.stage?' reached':'') + (i===S.stage?' current':'');
+    row.appendChild(E('div',{class:cls},[
+      E('div',{class:'mini',html:petSVG(i,'')}),
+      E('div',{class:'mlabel',text:STAGE_NAMES[i]})
+    ]));
+  }
+  return row;
+}
+
+/* ---------------- ABOUT / SAFETY / PRIVACY ---------------- */
+function renderAbout(){
+  $app.appendChild(E('div',{class:'card'},[
+    E('h2',{class:'section',text:'About Tend'}),
+    E('p',{class:'muted',text:'Tend is a gentle companion. You care for a little creature, and as you practice calm and coping skills, it grows alongside you — reflecting your own strength back to you.'}),
+    E('div',{class:'note warm'},[E('span',{class:'nt',text:'This is a concept prototype (v0)'}),
+      E('span',{text:'It shows the idea, tone, and core loop. It is not a finished or clinical product, and its words have not yet been reviewed by child psychologists.'})])
+  ]));
+
+  $app.appendChild(E('div',{class:'card'},[
+    E('h2',{class:'section',text:'A friend, not a doctor'}),
+    E('div',{class:'note calm'},[
+      E('span',{text:'Tend is a supportive companion — not a doctor, therapist, or emergency service, and not a replacement for one. If you’re struggling, please talk to a trusted grown-up or a professional. In an emergency, contact your local emergency number right away.'})]),
+    E('button',{class:'btn amber block',style:'margin-top:6px',on:{click:openCrisis}},'Talk to someone who can help')
+  ]));
+
+  $app.appendChild(E('div',{class:'card'},[
+    E('h2',{class:'section',text:'Your privacy'}),
+    E('div',{class:'note green'},[
+      E('span',{class:'nt',text:'Everything stays on this device'}),
+      E('span',{text:'No accounts. No sign-ups. No social features. Nothing you do is sent anywhere or shared with anyone. Tend never asks for your last name, address, school, or photos. Designed with children’s privacy (COPPA) in mind — we collect as little as possible, and only a first name or nickname if you choose to give one.'})]),
+    E('p',{class:'faint',text:'A grown-up (or you) can erase everything below.'}),
+    E('button',{class:'btn ghost block',style:'margin-top:6px',on:{click:confirmReset}},'Reset — erase everything')
+  ]));
+
+  $app.appendChild(studioFooter());
+}
+function confirmReset(){
+  openSheet(function(close){
+    return [
+      E('div',{class:'grab'}),
+      E('h3',{text:'Erase everything?'}),
+      E('p',{class:'muted',text:'This clears '+pet()+', your name, and all your progress from this device. It can’t be undone. '+pet()+' will start over, shy and new.'}),
+      E('button',{class:'btn amber block',style:'margin-top:10px',on:{click:function(){ doReset(); }}},'Yes, erase and start over'),
+      E('button',{class:'btn ghost block',style:'margin-top:10px',on:{click:close}},'Keep '+pet())
+    ];
+  });
+}
+function doReset(){
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  S = blankState(); ob = {step:0,name:'',kid:'',age:'',like:''};
+  closeOverlay(); route='today'; render();
+}
+
+/* ---------------- studio footer (logo on DARK-GREY chip — brand rule) ---------------- */
+function studioFooter(){
+  return E('div',{class:'studio'},[
+    E('div',{class:'logochip'},[ E('img',{src:'3shamrocks.png',alt:'3Shamrocks Studio'}) ]),
+    E('div',{class:'tm',text:'Tend™ — a 3Shamrocks Studio app'}),
+    E('div',{class:'cp',text:'© 2026 3Shamrocks Studio. All rights reserved.'})
+  ]);
+}
+
+/* ---------------- overlay plumbing ---------------- */
+function openSheet(builder, onClose){
+  closeOverlay();
+  var sheet = E('div',{class:'sheet',role:'dialog','aria-modal':'true'});
+  var ov = E('div',{class:'overlay',on:{click:function(e){ if(e.target===ov){ closeOverlay(); if(onClose)onClose(); } }}},[sheet]);
+  var nodes = builder(function(){ closeOverlay(); if(onClose)onClose(); });
+  (Array.isArray(nodes)?nodes:[nodes]).forEach(function(n){ if(n) sheet.appendChild(n); });
+  $overlayRoot.appendChild(ov);
+  ov._onClose = onClose;
+}
+function closeOverlay(){ stopBreath(); clear($overlayRoot); }
+
+/* ---------------- evolution celebration (gentle, not loud) ---------------- */
+function celebrateEvolution(stage){
+  openSheet(function(close){
+    return [
+      E('div',{class:'grab'}),
+      E('div',{class:'celebrate'},[
+        E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(stage,'great')})]),
+        E('div',{class:'spark',text:'✨'}),
+        E('h3',{text:'Something is changing…'}),
+        E('p',{class:'muted',text:pet()+' is becoming '+STAGE_NAMES[stage]+' — '+STAGE_BLURB[stage]+'.'}),
+        E('div',{class:'bubble',style:'margin:10px auto 0'},[E('span',{class:'who',text:pet()}),
+          E('span',{text:'I feel safer with you. We’re growing — together.'})])
+      ]),
+      E('button',{class:'btn primary block',style:'margin-top:16px',on:{click:close}},'💚')
+    ];
+  });
+}
+
+/* ---------------- boot ---------------- */
+render();
+</script>
+</body>
+</html>

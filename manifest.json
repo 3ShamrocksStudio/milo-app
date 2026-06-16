@@ -1,0 +1,21 @@
+{
+  "name": "Tend — the friend who grows with you",
+  "short_name": "Tend",
+  "description": "A gentle, Tamagotchi-style emotional-support companion that grows with you while you practice real calm and coping skills. A 3Shamrocks Studio concept prototype. Private and on-device.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E9F3EE",
+  "theme_color": "#6FB199",
+  "lang": "en",
+  "categories": ["health", "lifestyle", "education"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
