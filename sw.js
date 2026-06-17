@@ -1,4 +1,4 @@
-// Tend™ Service Worker — by 3Shamrocks Studio
+// Milo™ Service Worker — by 3Shamrocks Studio
 // © 2026 3Shamrocks Studio. All rights reserved.
 //
 // NOTE: github.io serves every project of an org from ONE shared origin
@@ -7,7 +7,7 @@
 // (a) uses network-first for navigations so a stale shell can never trap the
 // child mid-session, and (b) deletes every cache it does not own on activate.
 
-const CACHE_NAME = 'tend-v1-cache';
+const CACHE_NAME = 'milo-v1-cache';
 const urlsToCache = [
   './',
   'index.html',

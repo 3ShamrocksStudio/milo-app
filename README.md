@@ -1,15 +1,20 @@
-# Tend™ — the friend who grows with you 🌱
+# Milo™ — Milo grows with you 🌱
 
 A gentle, **Tamagotchi-style emotional-support companion** for kids and teens (ages 6–14). You
-care for a soft, dog-hearted little creature, and as you practice **real** calm and coping skills,
-it grows alongside you — reflecting your own strength back to you.
+care for a soft, dog-hearted little creature named **Milo**, and as you practice **real** calm and
+coping skills, it grows alongside you — reflecting your own strength back to you.
+
+> 🌟 **A quiet secret:** **M.I.L.O.** spells **"My Inner Little One."** A child first just knows
+> Milo as their friend. As the companion evolves through its five stages, one letter's meaning is
+> revealed at a time (M → I → L → O), with the full phrase blooming at the final **Radiant** stage —
+> a gentle reveal that caring for Milo has been a way of caring for the little one inside themselves.
 
 > ⚠️ **This is a concept prototype (v0).** It demonstrates the idea, tone, pet, and core loop. It
 > is **not** a finished or clinical product, **not** a replacement for a doctor or therapist, and
 > **not** for emergencies. The crisis resources shown are unverified placeholders. See
 > [`CONCEPT.md`](CONCEPT.md) for the full design and an honest list of what a real product needs.
 
-**Live:** https://3shamrocksstudio.github.io/tend-app/
+**Live:** https://3shamrocksstudio.github.io/milo-app/
 
 A single-file, dependency-free Progressive Web App by [3Shamrocks Studio](https://github.com/3ShamrocksStudio).
 Palette: calm green `#6FB199`, soft blue `#7FA9C7`, warm amber `#E6B274`.
@@ -29,7 +34,7 @@ Palette: calm green `#6FB199`, soft blue `#7FA9C7`, warm amber `#E6B274`.
   no alarming reds.
 - **Privacy-first** — no accounts, no social features; everything stays on-device (`localStorage`),
   nothing leaves the device. Designed with **COPPA** in mind. A **Reset** control erases everything.
-- **Not medical** — a clear, gentle disclaimer; Tend is a companion, not a clinician.
+- **Not medical** — a clear, gentle disclaimer; Milo is a companion, not a clinician.
 - **Crisis-aware off-ramp** — the lowest feeling (and the About screen) surfaces a warm "talk to
   someone who can help" panel. Crisis numbers are **placeholders marked `needs verification`** and
   must be localized and professionally verified before any real use.
@@ -54,4 +59,4 @@ with a reset control. No backend, no tracking, no analytics. Runs fully offline 
 
 ---
 
-© 2026 **3Shamrocks Studio.** All rights reserved. · Tend™ — a 3Shamrocks Studio app.
+© 2026 **3Shamrocks Studio.** All rights reserved. · Milo™ — a 3Shamrocks Studio app.

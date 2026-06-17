@@ -1,6 +1,6 @@
 {
-  "name": "Tend — the friend who grows with you",
-  "short_name": "Tend",
+  "name": "Milo — Milo grows with you",
+  "short_name": "Milo",
   "description": "A gentle, Tamagotchi-style emotional-support companion that grows with you while you practice real calm and coping skills. A 3Shamrocks Studio concept prototype. Private and on-device.",
   "start_url": "./index.html",
   "scope": "./",

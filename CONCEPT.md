@@ -1,6 +1,6 @@
-# Tend — Concept Note
+# Milo — Concept Note
 
-> **the friend who grows with you**
+> **Milo grows with you**
 >
 > A concept prototype (v0) by 3Shamrocks Studio. This document captures the idea, the design,
 > the non-negotiables, and an honest account of what this proof-of-concept does versus what a
@@ -10,12 +10,20 @@
 
 ## The name
 
-**Tend.** To *tend* is to care for something gently and continuously — a garden, a fire, a
-creature, a friend. The word holds the whole product in one syllable: small daily acts of care
-that, over time, grow something resilient. The child tends the companion; in doing so, they
-practice tending themselves.
+**Milo.** A warm, friendly, gender-neutral name a child can say easily and make their own — the
+name of a friend, not a feature. The companion is always introduced simply as *Milo, your friend.*
 
-Tagline: **the friend who grows with you.**
+But the name carries a quiet secret. **M.I.L.O. spells "My Inner Little One."** The child never
+learns this up front. As the companion evolves through its five stages, **one letter's meaning is
+revealed at a time** — M when Milo first wakes, then I, then L, then O — with the full phrase
+*My Inner Little One* blooming at the final **Radiant** stage. The reveal lands a gentle truth:
+caring for Milo has been a way of caring for the gentle little one inside themselves. The egg is
+optional and self-contained — clearing the letter list disables it without affecting the rest of
+the app.
+
+Canon: **Milo** · domain **milo.pet** · hidden **M.I.L.O. = My Inner Little One**.
+
+Tagline: **Milo grows with you.**
 
 ---
 
@@ -24,7 +32,8 @@ Tagline: **the friend who grows with you.**
 A soft, round, **gender-neutral** creature with big, calm eyes. It is **"dog-hearted"** —
 loyal, attuned, and non-judgmental — but deliberately a **blank-slate** creature, not a literal
 dog, so any child (boy or girl, 6–14) can project their own friend onto it. A subtle heart marking
-on its belly ties it, quietly, to the 3Shamrocks green-heart mark.
+on its belly ties it, quietly, to the 3Shamrocks green-heart mark. The child gives Milo their own
+chosen name during onboarding (Milo is the product; the pet is theirs).
 
 The pet **learns** from the child (remembers their name, a nickname, an age band, one thing that
 makes them feel calm, and their recent moods) and **talks back** warmly in short, plain language.
@@ -36,15 +45,16 @@ All pet art is hand-authored inline SVG so the app is fully self-contained and o
 ### The 5-stage evolution arc
 
 Earned by *genuine engagement* — caring actions, coping practice, and real-life quests — **never**
-by points-chasing, streaks, or pressure. The bond never decays; skipping days costs nothing.
+by points-chasing, streaks, or pressure. The bond never decays; skipping days costs nothing. Each
+new stage also unlocks one letter of the M.I.L.O. secret.
 
-| Stage | Name | Meaning |
-|------:|------|---------|
-| 1 | **Curled / shy** | Just arrived. Needs warmth and trust. Eyes half-closed, tucked, muted colour. |
-| 2 | **Awake / curious** | Begins to bond and "talk back." Eyes open, ears perk, colour warms. |
-| 3 | **Steady** | Calm-together / co-regulation. Relaxed, content, softly green. |
-| 4 | **Brave** | Tries challenges alongside the child. Stands taller, small explorer's scarf, faint aura. |
-| 5 | **Radiant** | Grown and resilient — reflects the child's own growth. Glowing, brightest, sparkles. |
+| Stage | Name | Meaning | Letter |
+|------:|------|---------|:------:|
+| 1 | **Curled / shy** | Just arrived. Needs warmth and trust. Eyes half-closed, tucked, muted colour. | — |
+| 2 | **Awake / curious** | Begins to bond and "talk back." Eyes open, ears perk, colour warms. | **M** — My |
+| 3 | **Steady** | Calm-together / co-regulation. Relaxed, content, softly green. | **I** — Inner |
+| 4 | **Brave** | Tries challenges alongside the child. Stands taller, small explorer's scarf, faint aura. | **L** — Little |
+| 5 | **Radiant** | Grown and resilient — reflects the child's own growth. Glowing, brightest, sparkles. | **O** — One |
 
 Progress is shown as a soft "growing-together" vine, **not** a countdown or a streak meter — a
 sense of momentum without anxiety.
@@ -55,7 +65,6 @@ sense of momentum without anxiety.
 
 1. **Gentle daily check-in** — *"How are you today?"* A simple, no-pressure feeling picker
    (Great · Good · Okay · Not great · Really not okay) with an "I'd rather not say" escape hatch.
-   Then: *"Let's check on [pet]."*
 2. **Care actions that double as coping skills:**
    - **Breathe together** — a paced breathing animation (in 4s · hold 2s · out 6s, 3 rounds).
      The child follows the circle; the pet breathes too. This is real co-regulation.
@@ -83,7 +92,7 @@ This builds **real strength** — it is explicitly **not escapism**.
   Everything is **on-device** (`localStorage` only); **nothing leaves the device.** A clear,
   age-appropriate privacy note is included, and a **Reset** control erases everything. Designed
   with **COPPA** in mind — minimal data, and only a first name / nickname *if the child chooses*.
-- **Not a medical or therapy product.** A clear, gentle note states Tend is a supportive
+- **Not a medical or therapy product.** A clear, gentle note states Milo is a supportive
   companion — not a doctor, therapist, or emergency service, and not a replacement for one.
 - **Crisis-aware off-ramp.** If the child picks the lowest feeling ("Really not okay"), the pet
   responds with warmth and gently encourages telling a trusted adult, and surfaces a calm
@@ -98,7 +107,7 @@ This builds **real strength** — it is explicitly **not escapism**.
 
 The crisis panel is intentionally calm, not alarming. It (1) thanks the child for sharing,
 (2) encourages telling a trusted grown-up (parent, teacher, counselor, family member) and notes
-they can show this screen, (3) lists helplines, and (4) states plainly that Tend cannot help in
+they can show this screen, (3) lists helplines, and (4) states plainly that Milo cannot help in
 an emergency and to contact local emergency services.
 
 **Crisis resources are placeholders and are clearly marked `needs verification` / `configure per
@@ -115,17 +124,22 @@ crisis resource per region before launch.
 - The full core loop: onboarding (meet + name your companion) → daily check-in → a care/coping
   action → a real-life quest → the pet visibly evolving a stage.
 - The tone: warm, patient, trauma-informed, shame-free.
-- The pet, its personality ("talks back," remembers, mirrors mood), and the 5-stage evolution.
+- The pet, its personality ("talks back," remembers, mirrors mood), the 5-stage evolution, and the
+  quiet M.I.L.O. = "My Inner Little One" reveal.
 - Co-regulation breathing as a genuine, usable exercise.
 - The privacy model (fully on-device, no accounts, reset) and the safety/crisis framing.
 - 3Shamrocks branding and a self-contained, installable PWA.
 
-### What the full product still needs (honest list)
+### What the full product still needs (honest list — the real next phase)
 - **Professional psychological review.** A real content library co-designed and reviewed by
   **child & adolescent psychologists** and trauma specialists — every line of microcopy, every
   quest, every response, vetted for clinical soundness and developmental fit.
 - **Real, verified crisis resources**, localized per country/region, reviewed by professionals,
   with a clear escalation protocol — replacing all `needs-verification` placeholders.
+- **Child-safety & COPPA/GDPR-K review** — formal legal and safeguarding review before any child
+  uses this as real support.
+- **A trusted-adult oversight layer** — carefully designed, privacy-preserving ways a parent,
+  carer, or clinician can be appropriately looped in, **without surveillance** of the child.
 - **Safeguarding & duty-of-care design** — guidance on what the app does (and does not) detect,
   how it routes a child toward human help, and explicit limits (it is not monitoring or a
   reporting tool).
@@ -133,12 +147,14 @@ crisis resource per region before launch.
   behavioral activation) in the research literature, ideally with outcome evaluation.
 - **Accessibility & localization** — screen-reader passes, dyslexia-friendly options, reduced-
   motion (partially handled), full multi-language support including RTL.
-- **Caregiver layer** (carefully designed, privacy-preserving) — optional age-appropriate ways a
-  trusted adult can be looped in, without surveillance.
 - **Robust content scheduling** — a larger, rotating, age-banded library of quests and reflections.
-- **Independent safety, security, and privacy audit**; COPPA / GDPR-K legal review; an ethics
-  review for working with at-risk and vulnerable children.
+- **Independent safety, security, and privacy audit**; an ethics review for working with at-risk
+  and vulnerable children.
 - **Real device testing with the target age groups**, with clinicians observing, before any release.
 
-> Tend is a **prototype** to demonstrate a caring idea. It is **not** ready to be used as real
+> Milo is a **prototype** to demonstrate a caring idea. It is **not** ready to be used as real
 > support for a child in distress. Treat it as a design artifact, not a clinical tool.
+
+---
+
+© 2026 **3Shamrocks Studio.** All rights reserved. · Milo™ — a 3Shamrocks Studio app.

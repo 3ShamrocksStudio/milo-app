@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#6FB199">
-<title>Tend — the friend who grows with you</title>
-<meta name="description" content="Tend is a gentle, Tamagotchi-style emotional-support companion that grows with you while you practice real calm-and-coping skills. A 3Shamrocks Studio prototype. Private and on-device.">
+<title>Milo — Milo grows with you</title>
+<meta name="description" content="Milo is a gentle, Tamagotchi-style emotional-support companion that grows with you while you practice real calm-and-coping skills. A 3Shamrocks Studio prototype. Private and on-device.">
 
 <!-- CSP: no eval, on-device only. Inline style/script are used because this is a single-file PWA;
      a production build would move to nonce-based CSP. Nothing connects off-device except Google Fonts. -->
@@ -222,6 +222,18 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 /* celebrate */
 .celebrate{text-align:center}
 .celebrate .spark{font-size:2.2rem}
+
+/* M.I.L.O. acrostic — the quiet Easter egg, revealed one letter per stage */
+.milo{display:flex;gap:8px;justify-content:center;margin:8px 0 2px}
+.miloltr{flex:1 1 0;max-width:74px;text-align:center;border-radius:14px;padding:10px 4px 8px;
+  border:1.5px solid var(--line);background:var(--card-2);transition:border-color .6s ease,background .6s ease}
+.miloltr .lg{font-size:1.55rem;font-weight:700;color:var(--ink-faint);line-height:1;transition:color .6s ease}
+.miloltr .wd{font-size:.6rem;font-weight:700;letter-spacing:.2px;margin-top:6px;min-height:1.4em;color:var(--ink-faint);text-transform:uppercase;transition:color .6s ease}
+.miloltr.on{border-color:var(--green);background:var(--green-soft)}
+.miloltr.on .lg{color:var(--green-deep)}
+.miloltr.on .wd{color:var(--green)}
+.milocap{text-align:center;font-size:.82rem;color:var(--ink-soft);margin-top:10px}
+.milofull{text-align:center;font-weight:700;color:var(--green-deep);font-size:1.06rem;margin-top:6px}
 </style>
 </head>
 <body>
@@ -246,17 +258,33 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 
 /* ============================================================
    BRAND — the product NAME lives HERE, in ONE place.
-   The name is still being finalized (Tend / Suno / Mello / Huglet…).
    To rename the whole app: change BRAND.name below. That updates the
    document title, header, footer, and every line of in-app copy.
-   (Only manifest.json — the installed-app name — needs a separate
-   one-line edit, since it is a static file the browser reads directly.)
+   (Only manifest.json + sw.js — static files the browser reads
+   directly — need a separate one-line edit.)
+
+   NOTE: the name "Milo" carries a hidden Easter egg — M.I.L.O. spells
+   "My Inner Little One" (see MILO_LETTERS below). If you change the
+   name, that acrostic no longer fits, so clear MILO_LETTERS to disable
+   the reveal (the rest of the app keeps working).
    ============================================================ */
 var BRAND = {
-  name: 'Tend',                              // ← change this to rename the app
-  tagline: 'the friend who grows with you'
+  name: 'Milo',                              // ← change this to rename the app
+  tagline: 'Milo grows with you'
 };
 document.title = BRAND.name + ' — ' + BRAND.tagline;
+
+/* ---- M.I.L.O. = "My Inner Little One" -----------------------------
+   The name is always on screen; what's hidden is what each letter
+   secretly stands for. As the companion evolves, ONE letter's meaning
+   is quietly revealed per stage — M on reaching stage 2, I at 3, L at
+   4, O at 5 — with the full phrase blooming at the Radiant stage.
+   At stage 1 the child just knows "Milo, my friend." -------------- */
+var MILO_LETTERS = ['M', 'I', 'L', 'O'];
+var MILO_MEANING = ['My', 'Inner', 'Little', 'One'];
+var MILO_PHRASE  = 'My Inner Little One';
+// How many letters' meanings are unlocked at the current stage (0–4).
+function miloRevealed(){ return Math.max(0, Math.min(MILO_LETTERS.length, S.stage - 1)); }
 
 /* ---------- Service worker: own it, evict strays (shared github.io origin) ---------- */
 if ('serviceWorker' in navigator) {
@@ -297,7 +325,7 @@ var $overlayRoot = document.getElementById('overlayRoot');
 /* ============================================================
    STATE  (on-device, single namespaced key)
    ============================================================ */
-var KEY = 'tend.v1';
+var KEY = 'milo.v1';
 var STAGE_NAMES = ['', 'Curled', 'Awake', 'Steady', 'Brave', 'Radiant'];
 var STAGE_BLURB = ['',
   'just arrived — needs warmth and trust',
@@ -913,6 +941,26 @@ function renderJourney(){
       : 'You’re growing together. Keep caring in your own time.'})
   ]));
 
+  // M.I.L.O. secret — appears only once the first letter has unlocked (stage 2+),
+  // so at the very start the child simply knows "Milo, my friend."
+  if(MILO_LETTERS.length && miloRevealed() > 0){
+    var rev = miloRevealed(), full = rev >= MILO_LETTERS.length;
+    var eggCard = E('div',{class:'card soft'},[
+      E('h2',{class:'section',text:'Milo’s little secret'}),
+      E('p',{class:'faint',text: full
+        ? 'You found all of it. Milo’s name was a quiet message the whole time.'
+        : 'As Milo grows, a hidden meaning is appearing — one letter at a time.'}),
+      miloAcrostic(rev)
+    ]);
+    if(full){
+      eggCard.appendChild(E('div',{class:'milofull',text:MILO_PHRASE}));
+      eggCard.appendChild(E('p',{class:'milocap',text:'Caring for Milo has been a way of caring for the gentle little one inside you. 💚'}));
+    } else {
+      eggCard.appendChild(E('p',{class:'milocap',text:'Keep growing together to discover the rest.'}));
+    }
+    $app.appendChild(eggCard);
+  }
+
   // reflection (warm framing, never judgmental)
   $app.appendChild(E('h2',{class:'section',text:'What you’ve shared'}));
   var list = E('div',{class:'reflectlist'});
@@ -968,8 +1016,8 @@ function arcRow(){
 /* ---------------- ABOUT / SAFETY / PRIVACY ---------------- */
 function renderAbout(){
   $app.appendChild(E('div',{class:'card'},[
-    E('h2',{class:'section',text:'About Tend'}),
-    E('p',{class:'muted',text:'Tend is a gentle companion. You care for a little creature, and as you practice calm and coping skills, it grows alongside you — reflecting your own strength back to you.'}),
+    E('h2',{class:'section',text:'About '+BRAND.name}),
+    E('p',{class:'muted',text:BRAND.name+' is a gentle companion. You care for a little creature, and as you practice calm and coping skills, it grows alongside you — reflecting your own strength back to you.'}),
     E('div',{class:'note warm'},[E('span',{class:'nt',text:'This is a concept prototype (v0)'}),
       E('span',{text:'It shows the idea, tone, and core loop. It is not a finished or clinical product, and its words have not yet been reviewed by child psychologists.'})])
   ]));
@@ -977,7 +1025,7 @@ function renderAbout(){
   $app.appendChild(E('div',{class:'card'},[
     E('h2',{class:'section',text:'A friend, not a doctor'}),
     E('div',{class:'note calm'},[
-      E('span',{text:'Tend is a supportive companion — not a doctor, therapist, or emergency service, and not a replacement for one. If you’re struggling, please talk to a trusted grown-up or a professional. In an emergency, contact your local emergency number right away.'})]),
+      E('span',{text:BRAND.name+' is a supportive companion — not a doctor, therapist, or emergency service, and not a replacement for one. If you’re struggling, please talk to a trusted grown-up or a professional. In an emergency, contact your local emergency number right away.'})]),
     E('button',{class:'btn amber block',style:'margin-top:6px',on:{click:openCrisis}},'Talk to someone who can help')
   ]));
 
@@ -985,7 +1033,7 @@ function renderAbout(){
     E('h2',{class:'section',text:'Your privacy'}),
     E('div',{class:'note green'},[
       E('span',{class:'nt',text:'Everything stays on this device'}),
-      E('span',{text:'No accounts. No sign-ups. No social features. Nothing you do is sent anywhere or shared with anyone. Tend never asks for your last name, address, school, or photos. Designed with children’s privacy (COPPA) in mind — we collect as little as possible, and only a first name or nickname if you choose to give one.'})]),
+      E('span',{text:'No accounts. No sign-ups. No social features. Nothing you do is sent anywhere or shared with anyone. '+BRAND.name+' never asks for your last name, address, school, or photos. Designed with children’s privacy (COPPA) in mind — we collect as little as possible, and only a first name or nickname if you choose to give one.'})]),
     E('p',{class:'faint',text:'A grown-up (or you) can erase everything below.'}),
     E('button',{class:'btn ghost block',style:'margin-top:6px',on:{click:confirmReset}},'Reset — erase everything')
   ]));
@@ -1013,7 +1061,7 @@ function doReset(){
 function studioFooter(){
   return E('div',{class:'studio'},[
     E('div',{class:'logochip'},[ E('img',{src:'3shamrocks.png',alt:'3Shamrocks Studio'}) ]),
-    E('div',{class:'tm',text:'Tend™ — a 3Shamrocks Studio app'}),
+    E('div',{class:'tm',text:BRAND.name+'™ — a 3Shamrocks Studio app'}),
     E('div',{class:'cp',text:'© 2026 3Shamrocks Studio. All rights reserved.'})
   ]);
 }
@@ -1031,20 +1079,49 @@ function openSheet(builder, onClose){
 function closeOverlay(){ stopBreath(); clear($overlayRoot); }
 
 /* ---------------- evolution celebration (gentle, not loud) ---------------- */
+/* The M.I.L.O. acrostic row. revealed = how many letters' meanings show. */
+function miloAcrostic(revealed){
+  var row = E('div',{class:'milo'});
+  for(var i=0;i<MILO_LETTERS.length;i++){
+    var on = i < revealed;
+    row.appendChild(E('div',{class:'miloltr'+(on?' on':'')},[
+      E('div',{class:'lg',text:MILO_LETTERS[i]}),
+      E('div',{class:'wd',text: on ? MILO_MEANING[i] : '·'})
+    ]));
+  }
+  return row;
+}
+
 function celebrateEvolution(stage){
+  // Which letter's meaning unlocks on reaching this stage (M at 2 … O at 5).
+  var letterIdx = stage - 2;                       // 0..3 for stages 2..5
+  var revealing = letterIdx >= 0 && letterIdx < MILO_LETTERS.length && MILO_LETTERS.length > 0;
+  var finalReveal = revealing && (letterIdx === MILO_LETTERS.length - 1);
   openSheet(function(close){
-    return [
+    var kids = [
       E('div',{class:'grab'}),
       E('div',{class:'celebrate'},[
         E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(stage,'great')})]),
-        E('div',{class:'spark',text:'✨'}),
+        E('div',{class:'spark',text: finalReveal ? '🌟' : '✨'}),
         E('h3',{text:'Something is changing…'}),
         E('p',{class:'muted',text:pet()+' is becoming '+STAGE_NAMES[stage]+' — '+STAGE_BLURB[stage]+'.'}),
         E('div',{class:'bubble',style:'margin:10px auto 0'},[E('span',{class:'who',text:pet()}),
           E('span',{text:'I feel safer with you. We’re growing — together.'})])
-      ]),
-      E('button',{class:'btn primary block',style:'margin-top:16px',on:{click:close}},'💚')
+      ])
     ];
+    if(revealing){
+      var egg = E('div',{class:'celebrate',style:'margin-top:16px'});
+      egg.appendChild(miloAcrostic(stage - 1));     // stages 2..5 → 1..4 letters lit
+      if(finalReveal){
+        egg.appendChild(E('div',{class:'milofull',text:MILO_PHRASE}));
+        egg.appendChild(E('p',{class:'milocap',text:'Milo was never just a name. M·I·L·O — '+MILO_PHRASE+'. That gentle one inside you, all along. 💚'}));
+      } else {
+        egg.appendChild(E('p',{class:'milocap',text:'A little secret unlocks: “'+MILO_LETTERS[letterIdx]+'” in Milo is for “'+MILO_MEANING[letterIdx]+'.”'}));
+      }
+      kids.push(egg);
+    }
+    kids.push(E('button',{class:'btn primary block',style:'margin-top:16px',on:{click:close}},'💚'));
+    return kids;
   });
 }
 
