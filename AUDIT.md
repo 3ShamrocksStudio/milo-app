@@ -54,8 +54,27 @@ legally cleared product** — see "Open items / real next phase" at the end.
 
 - ✅ 3Shamrocks logo shown on a **dark-grey chip** (per brand rule), `studioFooter()`.
 - ✅ © 2026 3Shamrocks Studio footer on every screen; "Milo™ — a 3Shamrocks Studio app".
-- ⚠️ **No dedicated Milo wordmark/logo exists.** The app icon (`icon.svg`) is the pet's face, used
-  as a stand-in. A real Milo logo is a design task for the full product — **not faked here.**
+- ✅ Approved **Grok creature key art** added in `Brand/logos/` (warm, soft, abstract, on-palette,
+  uncanny-valley-safe). Brand/marketing asset only.
+- ⚠️ **In-app character is intentionally hand-authored inline SVG**, not the raster render, so it
+  can animate across five stages and mirror mood. The app icon (`icon.svg`) is the pet's face.
+  A polished standalone wordmark/logo remains a full-product design task — **not faked here.**
+
+## What changed in this pass (June 2026, post-research)
+
+Grounded in the just-completed [`support-animal-research.md`](support-animal-research.md), which
+names **co-regulated breathing** as the #1 transferable, screen-deliverable mechanism:
+
+- ✅ **Breathing promoted to the lead feature** — a prominent hero card above the other care
+  actions on the home screen.
+- ✅ **The creature now visibly co-regulates** — it breathes *with* the child (expand/contract
+  inside a soft halo) for the whole exercise, not just at the end.
+- ✅ **Gentle, opt-out haptics** synced to the breath (the research's named closest substitute for
+  soothing contact). Feature-detected; silent no-op on devices/browsers without the Vibration API
+  (e.g. iOS Safari); never used for alarms or pressure.
+- ✅ **Honest "evidence-informed, not a treatment" note** added to About — accurate framing, no
+  overclaiming, reinforcing the trusted-adult off-ramp.
+- ✅ Reduced-motion respected in the breathing animation; zero console errors after changes.
 
 ## Open items / real next phase (must precede any real-child use)
 

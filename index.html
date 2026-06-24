@@ -197,13 +197,40 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 .sheet h3{margin:2px 0 4px;font-size:1.18rem}
 .grab{width:42px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 12px}
 
-/* ---- breathing ---- */
+/* ---- breathing (co-regulation: the pet breathes WITH the child) ---- */
 .breathscene{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:6px 0 4px}
-.breathorb{width:170px;height:170px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 50% 40%,#CFEAF6,#9FC8DE);box-shadow:0 0 0 14px rgba(159,200,222,.18),0 0 0 30px rgba(159,200,222,.10);
-  transform:scale(.48);transition:transform 4s ease-in-out;color:var(--blue-deep);font-weight:700}
+.breathwrap{position:relative;width:230px;height:230px;display:flex;align-items:center;justify-content:center;margin:2px auto}
+.breathorb{position:absolute;width:190px;height:190px;border-radius:50%;
+  background:radial-gradient(circle at 50% 40%,#CFEAF6,#9FC8DE);box-shadow:0 0 0 16px rgba(159,200,222,.16),0 0 0 34px rgba(159,200,222,.09);
+  transform:scale(.55);transition:transform 4s ease-in-out;will-change:transform}
+.breathpet{position:relative;z-index:1;width:150px;height:150px;animation:none !important;
+  transform:scale(.78);transition:transform 4s ease-in-out;will-change:transform}
+.breathpet svg{width:100%;height:100%;overflow:visible}
 .breathlabel{font-size:1.25rem;font-weight:700;color:var(--blue-deep);min-height:1.5em}
 .breathcount{font-size:.82rem;color:var(--ink-faint);font-weight:600}
+.breathopts{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:2px}
+.buzztoggle{display:inline-flex;align-items:center;gap:7px;background:var(--card-2);border:1.5px solid var(--line);
+  border-radius:99px;padding:6px 13px;font-size:.78rem;font-weight:600;color:var(--ink-soft)}
+.buzztoggle.on{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-deep)}
+.buzztoggle .dot{width:9px;height:9px;border-radius:50%;background:var(--ink-faint)}
+.buzztoggle.on .dot{background:var(--blue-deep)}
+@media (prefers-reduced-motion:reduce){.breathorb,.breathpet{transition-duration:.4s !important}}
+
+/* ---- breathe hero (the lead feature) ---- */
+.bhero{background:linear-gradient(150deg,#E6F3FB,#EAF6F1);border:1px solid #CFE6F1;
+  border-radius:var(--radius);padding:16px;box-shadow:var(--shadow-sm);margin:12px 0;
+  display:flex;align-items:center;gap:14px;text-align:left;width:100%;
+  transition:transform .15s ease,box-shadow .15s ease}
+.bhero:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.bhero:active{transform:scale(.99)}
+.bhero .bico{width:62px;height:62px;flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.9rem;background:radial-gradient(circle at 50% 40%,#CFEAF6,#9FC8DE);
+  box-shadow:0 0 0 8px rgba(159,200,222,.16);animation:herobreathe 5.5s ease-in-out infinite}
+@keyframes herobreathe{0%,100%{transform:scale(.94)}50%{transform:scale(1.04)}}
+@media (prefers-reduced-motion:reduce){.bhero .bico{animation:none}}
+.bhero .bt{font-weight:700;font-size:1.05rem;color:var(--blue-deep)}
+.bhero .bk{font-size:.64rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--blue);margin-bottom:1px}
+.bhero .bd{font-size:.82rem;color:var(--ink-soft);line-height:1.4;margin-top:2px}
 
 /* onboarding */
 .ob{padding-top:8px;animation:rise .4s ease both}
@@ -339,7 +366,7 @@ function blankState(){
   return {
     v:1, onboarded:false,
     petName:'', childName:'', ageBand:'', likeThing:'',
-    growth:0, stage:1,
+    growth:0, stage:1, hapticsOn:true,
     counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0},
     todayMood:'', checkinDate:'', questDate:'', moodLog:[],
     questIndex:0, lastVisit:'', createdAt:''
@@ -352,6 +379,18 @@ function load(){
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 function today(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+
+/* ---- gentle haptics (closest digital stand-in for soothing contact) ----
+   Synced to the breathing phases. Where the platform allows it (Android/
+   Chrome support Vibration; iOS Safari ignores it — degrades silently).
+   Opt-out any time; never used for alarms or pressure, only for calm. */
+var HAPTICS_SUPPORTED = (typeof navigator !== 'undefined' && 'vibrate' in navigator);
+function buzz(pattern){
+  if(S.hapticsOn === false || !HAPTICS_SUPPORTED) return;
+  try{ navigator.vibrate(pattern); }catch(e){}
+}
+function buzzStop(){ if(HAPTICS_SUPPORTED){ try{ navigator.vibrate(0); }catch(e){} } }
+function reduceMotion(){ try{ return window.matchMedia('(prefers-reduced-motion:reduce)').matches; }catch(e){ return false; } }
 
 /* growth + evolution (no streaks, no decay, no pressure) */
 function stageForGrowth(g){ var s=1; for(var i=1;i<=5;i++){ if(g>=THRESH[i]) s=i; } return s; }
@@ -667,10 +706,21 @@ function renderToday(){
   // check-in
   $app.appendChild(checkinCard());
 
-  // care actions
-  $app.appendChild(E('h2',{class:'section',text:'Gentle ways to care'}));
+  // LEAD feature — co-regulated breathing, given pride of place
+  $app.appendChild(E('button',{class:'bhero',on:{click:openBreathing}},[
+    E('div',{class:'bico',text:'🫧'}),
+    E('div',{},[
+      E('div',{class:'bk',text:'Breathe together'}),
+      E('div',{class:'bt',text: simple()? 'Slow down with '+pet() : 'Calm-together breathing'}),
+      E('div',{class:'bd',text: simple()
+        ? 'Follow '+pet()+'. In… and slowly out. We get calm together.'
+        : pet()+' breathes with you — in for 4, hold, out for 6. The one skill that travels with you.'})
+    ])
+  ]));
+
+  // other gentle care actions
+  $app.appendChild(E('h2',{class:'section',text:'Other gentle ways to care'}));
   var grid = E('div',{class:'grid2'});
-  grid.appendChild(actionCard('ic-blue','🫁','Breathe together','Slow breaths to calm us both.',openBreathing));
   grid.appendChild(actionCard('ic-green','🏷️','Name the feeling','Put a word to what’s here.',openNameFeeling));
   grid.appendChild(actionCard('ic-amber','🍎','Nourish','A small kindness for your body.',openNourish));
   grid.appendChild(actionCard('ic-green','🌙','Rest','Slow down for a moment.',openRest));
@@ -776,39 +826,69 @@ function questLater(){
 var breathTimer = null;
 function openBreathing(){
   var rounds = 3, current = 0;
+  var rm = reduceMotion();
+  // exhale shrink is gentler when reduced-motion is on
+  var inScale = {orb:1, pet:1}, outScale = rm ? {orb:.82, pet:.7} : {orb:.55, pet:.78};
   openSheet(function(close){
-    var orb = E('div',{class:'breathorb',text:''});
+    // the pet sits inside a soft halo; both expand and contract WITH the breath
+    var orb = E('div',{class:'breathorb'});
+    var petEl = E('div',{class:'breathpet',html:petSVG(S.stage,'good')});
+    var stage = E('div',{class:'breathwrap'},[orb, petEl]);
     var label = E('div',{class:'breathlabel',text:'Let’s begin'});
-    var count = E('div',{class:'breathcount',text:'Follow '+pet()+'. Breathe with the circle.'});
+    var count = E('div',{class:'breathcount',text:'Follow '+pet()+'.'});
+
+    // gentle haptics opt-out (only shown where the device can actually buzz)
+    var toggle = null;
+    if(HAPTICS_SUPPORTED){
+      toggle = E('button',{class:'buzztoggle'+(S.hapticsOn!==false?' on':''),
+        'aria-pressed': String(S.hapticsOn!==false),
+        on:{click:function(){
+          S.hapticsOn = !(S.hapticsOn!==false); save();
+          toggle.classList.toggle('on', S.hapticsOn!==false);
+          toggle.setAttribute('aria-pressed', String(S.hapticsOn!==false));
+          if(S.hapticsOn!==false) buzz(30); else buzzStop();
+        }}},
+        [E('span',{class:'dot'}), E('span',{text:'Gentle buzz'})]);
+    }
+
     var scene = E('div',{class:'breathscene'},[
-      E('div',{style:'font-size:.95rem;color:var(--ink-soft);font-weight:600',text:simple()?'Breathe with your friend':'Co-regulation — we breathe together'}),
-      orb, label, count
+      E('div',{style:'font-size:.95rem;color:var(--ink-soft);font-weight:600',
+        text:simple()?'Breathe with '+pet():'Co-regulation — '+pet()+' breathes with you'}),
+      stage, label, count,
+      toggle ? E('div',{class:'breathopts'},[toggle]) : null
     ]);
     var done = E('button',{class:'btn ghost block',style:'margin-top:14px',on:{click:function(){ stopBreath(); close(); }}},'I’m done');
-    function phase(name, dur, scale, then){
+
+    function setScale(s, dur){
+      orb.style.transitionDuration = petEl.style.transitionDuration = (dur/1000)+'s';
+      orb.style.transform = 'scale('+s.orb+')';
+      petEl.style.transform = 'scale('+s.pet+')';
+    }
+    function phase(name, dur, s, then){
       label.textContent = name;
-      orb.style.transitionDuration = (dur/1000)+'s';
-      orb.style.transform = 'scale('+scale+')';
+      if(s) setScale(s, dur);
       breathTimer = setTimeout(then, dur);
     }
     function cycle(){
       if(current>=rounds){ finish(); return; }
       count.textContent = 'Round '+(current+1)+' of '+rounds;
-      phase(simple()?'Breathe in 🌸':'Breathe in…', 4000, 1, function(){
-        phase('Hold gently…', 2000, 1, function(){
-          phase(simple()?'Let it out 🍃':'Breathe out…', 6000, .48, function(){
+      buzz(45);                                            // a soft cue: breathe in
+      phase(simple()?'Breathe in 🌸':'Breathe in…', 4000, inScale, function(){
+        buzz(25);                                          // settle into the hold
+        phase('Hold gently…', 2000, null, function(){
+          buzz([0,90,140,90]);                             // a slow, calming pulse on the out-breath
+          phase(simple()?'Let it out 🍃':'Breathe out…', 6000, outScale, function(){
             current++; cycle();
           });
         });
       });
     }
     function finish(){
-      label.textContent = 'Beautiful.';
-      orb.style.transform='scale(.7)';
-      count.textContent = '';
+      buzzStop();
+      buzz([0,40,60,40]);                                  // a gentle "well done" flutter
       clear(scene); scene.appendChild(E('div',{class:'petstage'},[
         E('div',{class:'petwrap',html:petSVG(S.stage,'good')}),
-        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'We did that together. Feel how we’re a little calmer now? That calm is yours to keep.'})])
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'We did that together. Feel how we’re a little calmer now? That calm is yours to keep — you can breathe like this anywhere, even without me.'})])
       ]));
       done.textContent = 'All done 💚';
       S.counts.breaths++; save(); addGrowth(2);
@@ -817,7 +897,7 @@ function openBreathing(){
     return [ E('div',{class:'grab'}), scene, done ];
   }, function(){ stopBreath(); });
 }
-function stopBreath(){ if(breathTimer){ clearTimeout(breathTimer); breathTimer=null; } }
+function stopBreath(){ if(breathTimer){ clearTimeout(breathTimer); breathTimer=null; } buzzStop(); }
 
 var FEELINGS = ['Happy','Calm','Excited','Proud','Sad','Worried','Angry','Tired','Lonely','Scared','Frustrated','Mixed-up'];
 function openNameFeeling(){
@@ -1019,7 +1099,9 @@ function renderAbout(){
     E('h2',{class:'section',text:'About '+BRAND.name}),
     E('p',{class:'muted',text:BRAND.name+' is a gentle companion. You care for a little creature, and as you practice calm and coping skills, it grows alongside you — reflecting your own strength back to you.'}),
     E('div',{class:'note warm'},[E('span',{class:'nt',text:'This is a concept prototype (v0)'}),
-      E('span',{text:'It shows the idea, tone, and core loop. It is not a finished or clinical product, and its words have not yet been reviewed by child psychologists.'})])
+      E('span',{text:'It shows the idea, tone, and core loop. It is not a finished or clinical product, and its words have not yet been reviewed by child psychologists.'})]),
+    E('div',{class:'note green'},[E('span',{class:'nt',text:'Gently grounded in research'}),
+      E('span',{text:BRAND.name+' leans on the few things that calm, non-judgmental companions seem to genuinely help with: breathing slowly together, putting words to feelings, and steady, unhurried presence. That’s why breathing comes first. '+BRAND.name+' is evidence-informed — not a proven treatment, and never a substitute for a real person who can help.'})])
   ]));
 
   $app.appendChild(E('div',{class:'card'},[

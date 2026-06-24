@@ -22,8 +22,13 @@ Palette: calm green `#6FB199`, soft blue `#7FA9C7`, warm amber `#E6B274`.
 ## The core loop
 
 - **Gentle daily check-in** — no-pressure feeling picker, with an "I'd rather not say" option.
-- **Care actions that are coping skills** — paced **breathing** (co-regulation), **name the
-  feeling**, **nourish**, **rest**.
+- **Co-regulated breathing — the lead feature.** Milo breathes *with* the child (in 4 · hold 2 ·
+  out 6), the creature expanding and contracting inside a soft halo. Optional **gentle haptics**
+  pulse in time with the breath where the device supports it (Android/Chrome; iOS ignores it and it
+  degrades silently) — the closest digital stand-in for soothing contact, and easy to switch off.
+  This is the single most evidence-supported, screen-deliverable mechanism (see
+  [`support-animal-research.md`](support-animal-research.md)), so it leads the home screen.
+- **Other care actions that are coping skills** — **name the feeling**, **nourish**, **rest**.
 - **Small real-life quests** framed as gentle adventures — log them, the pet responds and grows.
 - **A 5-stage pet evolution** — Curled → Awake → Steady → Brave → Radiant — earned by genuine
   care, never by streaks or pressure. The bond never decays; skipping a day costs nothing.
@@ -51,6 +56,11 @@ Palette: calm green `#6FB199`, soft blue `#7FA9C7`, warm amber `#E6B274`.
 - `3shamrocks.png` — studio mark (shown on a dark-grey chip, per brand rule).
 - `CONCEPT.md` — the concept note: name, pet, evolution arc, core loop, safety framing, and
   PoC-vs-full-product gap.
+- `support-animal-research.md` — the evidence review (therapeutic/ESA animals for at-risk kids
+  6–14) that grounds the design: breathing-first, non-judgmental presence, no streaks, crisis-aware.
+- `Brand/logos/` — approved Grok-generated key art for the creature (warm, soft, abstract,
+  uncanny-valley-safe). Marketing/brand use; the *in-app* character is hand-authored inline SVG so
+  it can animate across all five stages and mirror mood — a static render can't.
 
 ## Tech
 

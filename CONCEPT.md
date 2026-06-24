@@ -66,8 +66,11 @@ sense of momentum without anxiety.
 1. **Gentle daily check-in** — *"How are you today?"* A simple, no-pressure feeling picker
    (Great · Good · Okay · Not great · Really not okay) with an "I'd rather not say" escape hatch.
 2. **Care actions that double as coping skills:**
-   - **Breathe together** — a paced breathing animation (in 4s · hold 2s · out 6s, 3 rounds).
-     The child follows the circle; the pet breathes too. This is real co-regulation.
+   - **Breathe together** — *the lead feature.* A paced breathing animation (in 4s · hold 2s ·
+     out 6s, 3 rounds). The creature itself expands and contracts inside a soft halo so the child
+     follows *Milo*, not just a circle — this is real co-regulation. Optional **gentle haptics**
+     pulse in time with the breath where the device allows (feature-detected; silently absent on
+     iOS Safari), easy to switch off — the closest digital stand-in for soothing contact.
    - **Name the feeling** — emotional-literacy practice: pick the feeling that's here; the pet
      validates it as "a visitor that will move along."
    - **Nourish** — self-care nudge (water, a snack, fresh air, a stretch).
