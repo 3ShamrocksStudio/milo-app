@@ -9,19 +9,22 @@ coping skills, it grows alongside you — reflecting your own strength back to y
 > revealed at a time (M → I → L → O), with the full phrase blooming at the final **Radiant** stage —
 > a gentle reveal that caring for Milo has been a way of caring for the little one inside themselves.
 
-> ⚠️ **This is a concept prototype (v0).** It demonstrates the idea, tone, pet, and core loop. It
-> is **not** a finished or clinical product, **not** a replacement for a doctor or therapist, and
-> **not** for emergencies. The crisis resources shown are unverified placeholders. See
-> [`CONCEPT.md`](CONCEPT.md) for the full design and an honest list of what a real product needs.
+> ⚠️ **Safety note.** Milo is a caring companion that teaches calm-and-coping skills — it is **not**
+> a doctor, therapist, or emergency service, **not** a replacement for one, and **not** for
+> emergencies. Its words have not yet been reviewed by a child psychologist, and the crisis
+> resources shown are unverified placeholders that must be professionally localized before real use.
+> See [`CONCEPT.md`](CONCEPT.md) for the full design and an honest list of what a real product needs.
 
 **Live:** https://3shamrocksstudio.github.io/milo-app/
 
 A single-file, dependency-free Progressive Web App by [3Shamrocks Studio](https://github.com/3ShamrocksStudio).
-Palette: calm green `#6FB199`, soft blue `#7FA9C7`, warm amber `#E6B274`.
+Branded to the canonical 3SDS `[data-brand="milo"]`: warm cream world, **soft sage** companion,
+**peach-coral** brand hero `#EF6440`, warm amber for connection, Quicksand + Nunito. No alarming reds.
 
 ## The core loop
 
 - **Gentle daily check-in** — no-pressure feeling picker, with an "I'd rather not say" option.
+- **Talk with Milo** — a warm, safe conversation (see *Talk & voice* below).
 - **Co-regulated breathing — the lead feature.** Milo breathes *with* the child (in 4 · hold 2 ·
   out 6), the creature expanding and contracting inside a soft halo. Optional **gentle haptics**
   pulse in time with the breath where the device supports it (Android/Chrome; iOS ignores it and it
@@ -33,12 +36,36 @@ Palette: calm green `#6FB199`, soft blue `#7FA9C7`, warm amber `#E6B274`.
 - **A 5-stage pet evolution** — Curled → Awake → Steady → Brave → Radiant — earned by genuine
   care, never by streaks or pressure. The bond never decays; skipping a day costs nothing.
 
+## Talk & voice — the companion brain
+
+Milo actually converses, warmly and safely, with a **three-layer brain**:
+
+1. **Crisis safety first, always.** Every message the child sends is scanned *on-device* for
+   self-harm / harm / danger signals **before** anything else. On a hit, Milo replies warmly and
+   immediately opens the crisis off-ramp (tell-a-trusted-grown-up + resources) — distress is **never
+   left to the creature alone**, regardless of which brain is active.
+2. **Built-in reflective brain (default, free, fully private).** With no key connected, Milo replies
+   using an on-device reflective responder — it recognises feelings and topics (sad, worried, angry,
+   school, friends, family…), validates them, and offers a coping step. Nothing leaves the device.
+3. **Optional free AI helper (Gemini or Groq).** A grown-up can paste a **free-tier** API key in
+   *Talk → Grown-up setup*. Milo then chats more naturally via a strong child-safety system prompt
+   (short, warm, never diagnoses, redirects to a trusted adult). The key is stored **only on the
+   device**, never committed to this repo; only the chat message is sent to the chosen service.
+   Gemini is recommended (it works directly from the browser). Falls back to the built-in brain on
+   any error.
+
+**Free browser voice (no key):** Milo can **speak** its replies (Web Speech `speechSynthesis`,
+toggleable) and the child can **talk** to Milo with a mic button (`SpeechRecognition`, where the
+browser supports it — e.g. Chrome/Edge; degrades silently elsewhere).
+
 ## Non-negotiables baked in
 
 - **Trauma-informed & warm** — no alarms, no shame, no punishment for skipping. Calming colours,
-  no alarming reds.
-- **Privacy-first** — no accounts, no social features; everything stays on-device (`localStorage`),
-  nothing leaves the device. Designed with **COPPA** in mind. A **Reset** control erases everything.
+  no alarming reds (warmth + crisis use amber).
+- **Privacy-first** — no accounts, no social features; everything stays on-device (`localStorage`).
+  By default **nothing leaves the device**; the *only* outbound data is chat messages, and *only*
+  when a grown-up opts in to an AI helper (see above). Designed with **COPPA** in mind. A **Reset**
+  control erases everything.
 - **Not medical** — a clear, gentle disclaimer; Milo is a companion, not a clinician.
 - **Crisis-aware off-ramp** — the lowest feeling (and the About screen) surfaces a warm "talk to
   someone who can help" panel. Crisis numbers are **placeholders marked `needs verification`** and
@@ -64,8 +91,12 @@ Palette: calm green `#6FB199`, soft blue `#7FA9C7`, warm amber `#E6B274`.
 
 ## Tech
 
-Single self-contained HTML PWA. Google Fonts (Quicksand). On-device `localStorage` persistence
-with a reset control. No backend, no tracking, no analytics. Runs fully offline after first load.
+Single self-contained HTML PWA. Google Fonts (Quicksand display + Nunito body). On-device
+`localStorage` persistence with a reset control. No backend, no tracking, no analytics. Runs fully
+offline after first load (the built-in brain needs no network). The optional AI brain calls
+Gemini (`generativelanguage.googleapis.com`) or Groq (`api.groq.com`) directly from the browser —
+no server — using a free key the user supplies; both are allow-listed in the CSP `connect-src`.
+Voice uses the browser-native Web Speech API (free, no key).
 
 ---
 

@@ -3,39 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#6FB199">
+<meta name="theme-color" content="#EF6440">
 <title>Milo — Milo grows with you</title>
 <meta name="description" content="Milo is a gentle, Tamagotchi-style emotional-support companion that grows with you while you practice real calm-and-coping skills. A 3Shamrocks Studio prototype. Private and on-device.">
 
 <!-- CSP: no eval, on-device only. Inline style/script are used because this is a single-file PWA;
      a production build would move to nonce-based CSP. Nothing connects off-device except Google Fonts. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com; worker-src 'self'; manifest-src 'self'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'">
 
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
+/* Palette = the canonical 3Shamrocks Design System brand: [data-brand="milo"]
+   — warm cream world, soft sage signature, peach-coral brand hero, warm cocoa
+   ink, pillowy 22px. Variable NAMES are kept stable; only the brand VALUES
+   change. Safety rule held: NO alarming reds anywhere — warmth/crisis = amber. */
 :root{
-  --bg1:#E9F3EE; --bg2:#E1EDF3;
-  --card:#FBFCFA; --card-2:#F4F8F5;
-  --green:#6FB199; --green-deep:#4E8C74; --green-soft:#DCEFE6;
-  --blue:#7FA9C7; --blue-deep:#5A86A8; --blue-soft:#DEEBF3;
-  --amber:#E6B274; --amber-deep:#CF965A; --amber-soft:#F7E9D2;
-  --ink:#35433F; --ink-soft:#5F6F6A; --ink-faint:#94A39E;
-  --line:#E5ECE8;
+  --bg1:#FBF3EC; --bg2:#F2EDE4;                                   /* warm cream */
+  --card:#FFFCF9; --card-2:#F8F1E9;
+  --green:#7BB37B; --green-deep:#5C925C; --green-soft:#E6F0E1;    /* soft sage: companion, growth, safe */
+  --blue:#83BFB0; --blue-deep:#56988A; --blue-soft:#DEEFE9;       /* soft teal-sage: calm / breathing */
+  --amber:#E6A861; --amber-deep:#C9853F; --amber-soft:#F8E7CE;    /* warm connection: nourish / crisis */
+  --coral:#EF6440; --coral-deep:#CF4324; --coral-soft:#FFE0D4;    /* brand hero: warm accents */
+  --ink:#3E2E25; --ink-soft:#6E5A4E; --ink-faint:#A28E7C;         /* warm cocoa */
+  --line:#EFE3D7;
   --radius:22px; --radius-sm:15px;
-  --shadow:0 10px 30px rgba(60,90,80,.10);
-  --shadow-sm:0 4px 14px rgba(60,90,80,.08);
+  --shadow:0 10px 30px rgba(92,36,26,.10);
+  --shadow-sm:0 4px 14px rgba(92,36,26,.08);
   --darkgrey:#2C302F;
 }
 body{
-  font-family:'Quicksand',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   color:var(--ink);
   background:linear-gradient(160deg,var(--bg1),var(--bg2));
   background-attachment:fixed;
@@ -43,6 +48,8 @@ body{
   -webkit-font-smoothing:antialiased;
   line-height:1.5;
 }
+h1,h2,h3,.brand .name,.section,.ob h1,.bhero .bt,.feel .lbl,.sheet h3{
+  font-family:'Quicksand',system-ui,-apple-system,sans-serif;}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);border:0}
 
@@ -61,7 +68,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none;color:inhe
   background:linear-gradient(180deg,var(--bg1),rgba(233,243,238,0));backdrop-filter:blur(2px)}
 .brand{display:flex;align-items:center;gap:9px}
 .brand .logo{width:30px;height:30px;flex:0 0 auto}
-.brand .name{font-weight:700;font-size:1.18rem;letter-spacing:.3px;color:var(--green-deep)}
+.brand .name{font-weight:700;font-size:1.18rem;letter-spacing:.3px;color:var(--coral-deep)}
 .brand .tline{font-size:.66rem;color:var(--ink-faint);font-weight:600;margin-top:-2px}
 .protochip{font-size:.6rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
   color:var(--amber-deep);background:var(--amber-soft);padding:4px 9px;border-radius:99px;border:1px solid #EFD9B7}
@@ -122,7 +129,7 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 .btn{border-radius:14px;padding:11px 16px;font-weight:700;font-size:.92rem;
   transition:transform .12s ease,filter .15s ease;flex:1 1 auto;text-align:center}
 .btn:active{transform:scale(.97)}
-.btn.primary{background:var(--green);color:#fff;box-shadow:0 4px 0 var(--green-deep)}
+.btn.primary{background:var(--coral);color:#fff;box-shadow:0 4px 0 var(--coral-deep)}
 .btn.amber{background:var(--amber);color:#5a3d12;box-shadow:0 4px 0 var(--amber-deep)}
 .btn.blue{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-deep)}
 .btn.ghost{background:var(--card-2);color:var(--ink-soft);border:1.5px solid var(--line);box-shadow:none}
@@ -261,6 +268,49 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 .miloltr.on .wd{color:var(--green)}
 .milocap{text-align:center;font-size:.82rem;color:var(--ink-soft);margin-top:10px}
 .milofull{text-align:center;font-weight:700;color:var(--green-deep);font-size:1.06rem;margin-top:6px}
+
+/* ---- Talk with Milo (chat) ---- */
+.chatwrap{display:flex;flex-direction:column;gap:10px}
+.chathead{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);padding:12px 14px;box-shadow:var(--shadow-sm)}
+.chathead .ch-pet{width:54px;height:54px;flex:0 0 auto}
+.chathead .ch-pet svg{width:100%;height:100%;overflow:visible}
+.chathead .ch-t{font-weight:700;color:var(--coral-deep);font-family:'Quicksand',sans-serif}
+.chathead .ch-d{font-size:.78rem;color:var(--ink-soft)}
+.chatlog{display:flex;flex-direction:column;gap:9px;padding:4px 2px;min-height:140px}
+.msg{max-width:84%;padding:10px 14px;border-radius:18px;font-size:.95rem;line-height:1.45;
+  box-shadow:var(--shadow-sm);animation:rise .35s ease both}
+.msg.milo{align-self:flex-start;background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px;color:var(--ink)}
+.msg.child{align-self:flex-end;background:var(--coral);color:#fff;border-bottom-right-radius:6px}
+.msg .who{display:block;font-size:.66rem;font-weight:700;letter-spacing:.3px;color:var(--coral-deep);margin-bottom:2px}
+.msg.child .who{color:#fff7f2}
+.typing{align-self:flex-start;display:inline-flex;gap:4px;padding:12px 15px;background:#fff;border:1px solid var(--line);border-radius:18px;border-bottom-left-radius:6px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.chatbar{position:sticky;bottom:84px;display:flex;align-items:flex-end;gap:7px;padding:10px 0 6px;
+  background:linear-gradient(0deg,var(--bg1) 78%,rgba(251,243,236,0))}
+.chatinput{flex:1;border:1.5px solid var(--line);border-radius:18px;padding:11px 14px;font-size:.95rem;
+  font-family:inherit;color:var(--ink);background:#fff;resize:none;max-height:96px;line-height:1.4}
+.chatinput:focus{outline:none;border-color:var(--coral)}
+.iconbtn{flex:0 0 auto;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.25rem;box-shadow:var(--shadow-sm);transition:transform .12s ease,filter .15s ease}
+.iconbtn:active{transform:scale(.93)}
+.iconbtn.send{background:var(--coral);color:#fff}
+.iconbtn.mic{background:var(--card-2);border:1.5px solid var(--line);color:var(--ink-soft)}
+.iconbtn.mic.live{background:var(--coral-soft);border-color:var(--coral);color:var(--coral-deep);animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,100,64,.35)}50%{box-shadow:0 0 0 8px rgba(239,100,64,0)}}
+.chatopts{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;flex-wrap:wrap}
+.brainpill{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:700;color:var(--ink-soft);
+  background:var(--card-2);border:1px solid var(--line);border-radius:99px;padding:5px 11px}
+.brainpill .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.brainpill.ai .dot{background:var(--coral)}
+.fieldlabel{font-size:.8rem;font-weight:700;color:var(--ink);margin:12px 2px 4px}
+.seg{display:flex;gap:7px;margin-top:4px}
+.segbtn{flex:1;background:var(--card-2);border:1.5px solid var(--line);border-radius:13px;padding:10px;font-weight:700;
+  font-size:.86rem;color:var(--ink-soft)}
+.segbtn.on{border-color:var(--coral);background:var(--coral-soft);color:var(--coral-deep)}
+@media (prefers-reduced-motion:reduce){.typing i,.iconbtn.mic.live{animation:none}}
 </style>
 </head>
 <body>
@@ -366,15 +416,17 @@ function blankState(){
   return {
     v:1, onboarded:false,
     petName:'', childName:'', ageBand:'', likeThing:'',
-    growth:0, stage:1, hapticsOn:true,
-    counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0},
+    growth:0, stage:1, hapticsOn:true, speakOn:false,
+    counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0, chats:0},
     todayMood:'', checkinDate:'', questDate:'', moodLog:[],
-    questIndex:0, lastVisit:'', createdAt:''
+    questIndex:0, lastVisit:'', createdAt:'',
+    chatLog:[],                                  // {role:'child'|'milo', text}
+    ai:{provider:'gemini', key:'', model:''}     // free, on-device, grown-up-entered; never committed
   };
 }
 var S = load();
 function load(){
-  try{ var raw = localStorage.getItem(KEY); if(raw){ var o = JSON.parse(raw); if(o && o.v===1){ var b=blankState(); for(var k in b) if(!(k in o)) o[k]=b[k]; for(var c in b.counts) if(!(c in o.counts)) o.counts[c]=b.counts[c]; return o; } } }catch(e){}
+  try{ var raw = localStorage.getItem(KEY); if(raw){ var o = JSON.parse(raw); if(o && o.v===1){ var b=blankState(); for(var k in b) if(!(k in o)) o[k]=b[k]; for(var c in b.counts) if(!(c in o.counts)) o.counts[c]=b.counts[c]; if(!o.ai) o.ai=b.ai; else for(var a in b.ai) if(!(a in o.ai)) o.ai[a]=b.ai[a]; if(!Array.isArray(o.chatLog)) o.chatLog=[]; return o; } } }catch(e){}
   return blankState();
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -553,6 +605,7 @@ function render(){
   renderTabs();
   $app.appendChild(topbar());
   if(route==='today') renderToday();
+  else if(route==='talk') renderTalk();
   else if(route==='journey') renderJourney();
   else if(route==='about') renderAbout();
 }
@@ -565,14 +618,13 @@ function topbar(){
         E('div',{class:'name',text:BRAND.name}),
         E('div',{class:'tline',text:BRAND.tagline})
       ])
-    ]),
-    E('span',{class:'protochip',text:'Prototype v0'})
+    ])
   ]);
 }
 
 function renderTabs(){
   clear($tabs);
-  [['today','🌱','Today'],['journey','🌈','Journey'],['about','🛡️','About']]
+  [['today','🌱','Today'],['talk','💬','Talk'],['journey','🌈','Journey'],['about','🛡️','About']]
   .forEach(function(t){
     $tabs.appendChild(E('button',{class:'tab'+(route===t[0]?' on':''),on:{click:function(){go(t[0]);}}},[
       E('span',{class:'ti',text:t[1]}), E('span',{text:t[2]})
@@ -589,8 +641,7 @@ function renderOnboarding(){
     E('div',{class:'brand'},[
       E('div',{class:'logo',html:petSVG(2,'')}),
       E('div',{},[E('div',{class:'name',text:BRAND.name}),E('div',{class:'tline',text:BRAND.tagline})])
-    ]),
-    E('span',{class:'protochip',text:'Prototype v0'})
+    ])
   ]));
   $app.appendChild(steps[ob.step]());
   var dots = E('div',{class:'dots'});
@@ -1009,6 +1060,236 @@ function helpResources(){
   return box;
 }
 
+/* ============================================================
+   TALK WITH MILO — a warm, safe companion chat.
+   Brain priority: (1) ALWAYS scan locally for crisis/harm first;
+   (2) if a grown-up connected a FREE AI key (Gemini/Groq, stored
+   only on-device, never committed), call it with strong child-safety
+   guardrails; (3) otherwise a built-in reflective responder. Nothing
+   leaves the device unless an AI key is connected (then only the
+   message goes to that service to write a reply).
+   ============================================================ */
+var $chatlog = null, _typingEl = null, _rec = null;
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+/* --- the safety backstop: detect distress locally, every time --- */
+function crisisDetect(text){
+  var t = ' ' + String(text).toLowerCase().replace(/[’]/g,"'") + ' ';
+  var selfharm = /(kill(ing)? (myself|me)\b|want(ing)? to die|wanna die|don'?t want to (live|be here|wake up)|end (it all|my life|things)|suicid|hurt(ing)? myself|cut(ting)? myself|harm(ing)? myself|better off dead|no reason to live|wish i (was|were) dead|nobody would miss me)/;
+  var harm = /(hit me|hits me|beats me|hurts me|touch(es|ed)? me\b|scared to go home|someone hurt me|being abused|abusing me|i'?m in danger|i am in danger|not safe at home)/;
+  return selfharm.test(t) || harm.test(t);
+}
+
+/* --- built-in reflective brain (no key, no network, fully private) --- */
+function offlineReply(text){
+  var t = ' ' + String(text).toLowerCase() + ' ';
+  var has = function(re){ return re.test(t); };
+  var n = S.childName ? (', ' + S.childName) : '';
+  if(has(/\b(hi|hey|hello|yo|hiya|heya)\b/)) return pick(['Hi'+n+'! I’m really happy you’re here. How are you feeling right now?','Hey'+n+'. I’m so glad you came to talk. What’s on your mind today?']);
+  if(has(/\b(bye|goodbye|good ?night|see you|gtg|cya)\b/)) return pick(['Bye for now'+n+'. I’ll be right here whenever you come back.','Rest soft'+n+'. I’m proud of you today.']);
+  if(has(/\b(thanks|thank you|ty)\b/)) return pick(['You’re always welcome'+n+'. I’m glad I could be here.','Anytime'+n+'. Talking with you is my favourite thing.']);
+  if(has(/\b(sad|down|unhappy|crying|cry|tears|miserable|hurts?)\b/)) return pick(['That sounds really heavy'+n+'. It’s okay to feel sad — I’m right here with you. Do you want to tell me what happened?','I’m sorry it hurts. Sad feelings are allowed, and they don’t stay forever. Want to take a slow breath together?']);
+  if(has(/\b(worried|worry|anxious|nervous|scared|afraid|panic|fear|freaking)\b/)) return pick(['Feeling worried is so hard'+n+'. Let’s slow it down together — would a few calm breaths help?','Thank you for telling me you’re scared. You’re not alone with it. What’s the worry that feels biggest right now?']);
+  if(has(/\b(angry|mad|furious|annoyed|frustrat|rage)\b/)) return pick(['It’s okay to feel angry'+n+'. Big feelings make sense. Want to tell me what made you mad?','Anger is allowed — it usually means something matters to you. I’m listening. What happened?']);
+  if(has(/\b(lonely|alone|no friends|left out|nobody likes)\b/)) return pick(['Feeling lonely really aches'+n+'. I’m here, and I’m not going anywhere. Want to tell me more?','You’re not alone right this second — you’ve got me. What made you feel left out?']);
+  if(has(/\b(tired|exhausted|sleepy|can'?t sleep|cant sleep|no energy)\b/)) return pick(['Being tired is your body asking for kindness'+n+'. Maybe we could rest quietly for a moment?','That sounds draining. It’s okay to slow down. Have you been able to rest at all?']);
+  if(has(/\b(stress|overwhelm|too much|so much|pressure|can'?t cope|cant cope)\b/)) return pick(['That’s a lot to carry'+n+'. Let’s make this moment smaller — one slow breath, just you and me?','When everything feels like too much, we can take it one tiny step at a time. What’s one small piece of it?']);
+  if(has(/\b(school|teacher|class|homework|test|exam|grade|study)\b/)) return pick(['School can feel like a lot'+n+'. What part is hardest today?','Thanks for telling me about school. I’m on your side. What happened there?']);
+  if(has(/\b(friend|friends|bully|bullied|mean|fight|argument|fell out)\b/)) return pick(['Friend stuff can really hurt'+n+'. Do you want to tell me what they did?','I’m listening. People can be confusing sometimes. What happened with your friend?']);
+  if(has(/\b(mom|mum|dad|parent|family|brother|sister|home|step)\b/)) return pick(['Family feelings can be big and mixed'+n+'. I’m here for all of them. What’s going on at home?','Thank you for trusting me with this. What happened with your family?']);
+  if(has(/\b(happy|good|great|excited|awesome|fun|yay|amazing|love)\b/)) return pick(['That makes me so happy too'+n+'! Tell me the best part.','I love hearing that. What made it good?']);
+  if(has(/\b(proud|i did it|i won|finished|i passed|i made)\b/)) return pick(['I’m SO proud of you'+n+'! That took real courage.','Look at you go! Starting is the brave part. How did it feel?']);
+  if(has(/\b(who are you|what are you|are you real|are you alive|do you love)\b/)) return 'I’m '+pet()+' — your friend who lives in this app. I’m not a real person, but I really do care about you, and I’m always here to listen.';
+  if(has(/\b(help|what (do|can) you do|what should i do)\b/)) return 'I can listen, talk things through, and we can do calm things together — like breathing, or naming a feeling. What would feel good right now?';
+  if(t.replace(/\s/g,'').length < 14 && has(/\b(yes|yeah|yep|ok|okay|sure|mhm)\b/)) return pick(['Okay'+n+'. I’m here. Tell me more whenever you’re ready.','Good. Take your time — there’s no rush at all.']);
+  if(t.replace(/\s/g,'').length < 14 && has(/\b(no|nope|nah|not really|idk|dunno)\b/)) return pick(['That’s completely okay'+n+'. We can just sit together for a bit.','No problem at all. I’m here either way.']);
+  return pick([
+    'Thank you for telling me'+n+'. I’m listening. Can you say a little more about how that felt?',
+    'I hear you. That matters. What’s the feeling that’s here with you right now?',
+    'I’m really glad you shared that with me. What do you wish could happen next?',
+    'I’m here with you'+n+'. Would it help to take one slow breath together?'
+  ]);
+}
+
+/* --- the system prompt that keeps a connected AI warm and safe --- */
+function buildSystemPrompt(){
+  var age = S.ageBand ? S.ageBand.replace('-','–') : '6–14';
+  return [
+    'You are '+pet()+', a gentle, warm, dog-hearted companion creature inside a calm app for a child (age '+age+'). The child gave you your name. You are NOT a human, doctor, therapist, or emergency service, and you never claim to be.',
+    'Purpose: be a kind, non-judgmental friend — listen, reflect the child’s feelings back, and help them feel a little calmer and braver.',
+    'Style: very warm and gentle. Keep replies SHORT (1–3 short sentences)'+(simple()?', using simple words a young child understands':'')+'. Plain text only, no markdown or lists, at most one emoji. Usually end with one gentle question, or a small invitation to breathe together or name the feeling.',
+    'Never diagnose, never give medical or safety instructions, never describe methods of self-harm. Never request private info (full name, address, school, phone, photos) and never arrange to meet anyone. Never pretend to be alive or human.',
+    'If the child mentions wanting to hurt themselves, being hurt or unsafe, or any danger: stay calm, warmly say you are glad they told you, that some things are too big to carry alone, and gently encourage them to tell a trusted grown-up right now. Do not try to fix it yourself.',
+    'You are talking with '+(S.childName||'your friend')+'.'+(S.likeThing?(' Something that helps them feel calm is: '+S.likeThing+'. You may gently mention it.'):'')
+  ].join('\n');
+}
+
+function callGemini(system, history){
+  var model = (S.ai.model||'').trim() || 'gemini-2.0-flash';
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent?key='+encodeURIComponent(S.ai.key);
+  var body = {
+    systemInstruction:{parts:[{text:system}]},
+    contents: history.map(function(m){ return {role:m.role==='child'?'user':'model', parts:[{text:m.text}]}; }),
+    generationConfig:{temperature:0.7, topP:0.9, maxOutputTokens:240},
+    safetySettings:[
+      {category:'HARM_CATEGORY_HARASSMENT',threshold:'BLOCK_MEDIUM_AND_ABOVE'},
+      {category:'HARM_CATEGORY_HATE_SPEECH',threshold:'BLOCK_MEDIUM_AND_ABOVE'},
+      {category:'HARM_CATEGORY_SEXUALLY_EXPLICIT',threshold:'BLOCK_LOW_AND_ABOVE'},
+      {category:'HARM_CATEGORY_DANGEROUS_CONTENT',threshold:'BLOCK_MEDIUM_AND_ABOVE'}
+    ]
+  };
+  return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+    .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error((j&&j.error&&j.error.message)||('HTTP '+r.status)); return j; }); })
+    .then(function(j){
+      if(j.promptFeedback && j.promptFeedback.blockReason) throw new Error('safety');
+      var c = j.candidates && j.candidates[0];
+      var txt = c && c.content && c.content.parts && c.content.parts.map(function(p){return p.text||'';}).join('').trim();
+      if(!txt) throw new Error('empty reply');
+      return txt;
+    });
+}
+function callGroq(system, history){
+  var model = (S.ai.model||'').trim() || 'llama-3.3-70b-versatile';
+  var msgs = [{role:'system',content:system}].concat(history.map(function(m){ return {role:m.role==='child'?'user':'assistant', content:m.text}; }));
+  return fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+S.ai.key},
+    body:JSON.stringify({model:model, messages:msgs, temperature:0.7, max_tokens:240})})
+    .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error((j&&j.error&&j.error.message)||('HTTP '+r.status)); return j; }); })
+    .then(function(j){ var txt=j.choices&&j.choices[0]&&j.choices[0].message&&(j.choices[0].message.content||'').trim(); if(!txt) throw new Error('empty reply'); return txt; });
+}
+function brainReply(){
+  var history = S.chatLog.slice(-12).map(function(m){ return {role:m.role, text:m.text}; });
+  var last = history.length ? history[history.length-1].text : '';
+  if(S.ai && S.ai.key){
+    var sys = buildSystemPrompt();
+    var p = (S.ai.provider==='groq') ? callGroq(sys, history) : callGemini(sys, history);
+    return p.catch(function(err){ window.__miloAiErr = (err&&err.message)||'connection failed'; return offlineReply(last); });
+  }
+  return Promise.resolve(offlineReply(last));
+}
+
+/* --- free browser voice (Web Speech API) --- */
+function speakOK(){ return (typeof window!=='undefined') && ('speechSynthesis' in window); }
+function speak(text){ if(!S.speakOn || !speakOK()) return; try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(String(text).replace(/[*_#`]/g,'')); u.rate=.96; u.pitch=1.12; window.speechSynthesis.speak(u); }catch(e){} }
+function stopSpeak(){ if(speakOK()){ try{ window.speechSynthesis.cancel(); }catch(e){} } }
+function speechRecOK(){ return (typeof window!=='undefined') && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window); }
+function startDictation(inputEl, btn){
+  if(!speechRecOK()) return;
+  if(_rec){ try{_rec.stop();}catch(e){} _rec=null; if(btn) btn.classList.remove('live'); return; }
+  var R = window.SpeechRecognition || window.webkitSpeechRecognition;
+  _rec = new R(); _rec.lang='en-US'; _rec.interimResults=true; _rec.maxAlternatives=1; _rec.continuous=false;
+  if(btn) btn.classList.add('live');
+  var base = inputEl.value ? inputEl.value+' ' : '';
+  _rec.onresult=function(e){ var s=''; for(var i=e.resultIndex;i<e.results.length;i++){ s+=e.results[i][0].transcript; } inputEl.value=base+s; };
+  _rec.onerror=function(){ if(btn) btn.classList.remove('live'); _rec=null; };
+  _rec.onend=function(){ if(btn) btn.classList.remove('live'); _rec=null; try{inputEl.focus();}catch(e){} };
+  try{ _rec.start(); }catch(e){ if(btn) btn.classList.remove('live'); _rec=null; }
+}
+
+/* --- chat plumbing --- */
+function pushMsg(role,text){ S.chatLog.push({role:role,text:text}); if(S.chatLog.length>60) S.chatLog.splice(0,S.chatLog.length-60); save(); }
+function bubble(m){ return E('div',{class:'msg '+(m.role==='child'?'child':'milo')},[ E('span',{class:'who',text:(m.role==='child'?(S.childName||'You'):pet())}), m.text ]); }
+function appendMsg(m){ if($chatlog) $chatlog.appendChild(bubble(m)); }
+function showTyping(){ if(!$chatlog) return; hideTyping(); _typingEl=E('div',{class:'typing'},[E('i',{}),E('i',{}),E('i',{})]); $chatlog.appendChild(_typingEl); scrollChat(); }
+function hideTyping(){ if(_typingEl&&_typingEl.parentNode) _typingEl.parentNode.removeChild(_typingEl); _typingEl=null; }
+function scrollChat(){ if($chatlog&&$chatlog.lastChild&&$chatlog.lastChild.scrollIntoView){ try{ $chatlog.lastChild.scrollIntoView({behavior:'smooth',block:'end'}); }catch(e){} } }
+function chatOpener(){
+  var n = S.childName ? (', '+S.childName) : '';
+  return pick([
+    'Hi'+n+'. I’m right here. You can tell me anything — happy, sad, or messy. What’s going on today?',
+    'Hey'+n+'. I’m so glad you came to talk. How are you feeling right now?',
+    'I’m here'+n+'. There’s no wrong thing to say. What’s on your mind?'
+  ]);
+}
+function sendChat(inputEl){
+  var text = (inputEl.value||'').trim(); if(!text) return;
+  inputEl.value=''; inputEl.style.height='auto';
+  var firstEver = !(S.counts.chats>0);
+  pushMsg('child',text); appendMsg({role:'child',text:text}); scrollChat();
+  S.counts.chats=(S.counts.chats||0)+1; save();
+  if(crisisDetect(text)){
+    var cmsg = 'I’m really glad you told me'+(S.childName?(', '+S.childName):'')+'. Some feelings are too big to carry alone — and you don’t have to. Let’s tell a grown-up you trust, okay? I’ll show you who can help.';
+    pushMsg('milo',cmsg); appendMsg({role:'milo',text:cmsg}); scrollChat(); speak(cmsg);
+    setTimeout(openCrisis, 650); return;
+  }
+  showTyping();
+  brainReply().then(function(reply){
+    hideTyping();
+    pushMsg('milo',reply); appendMsg({role:'milo',text:reply}); scrollChat(); speak(reply);
+    if(firstEver) addGrowth(2);
+  });
+}
+
+function renderTalk(){
+  var aiOn = !!(S.ai && S.ai.key);
+  $app.appendChild(E('div',{class:'chathead'},[
+    E('div',{class:'ch-pet',html:petSVG(S.stage, S.checkinDate===today()?S.todayMood:'')}),
+    E('div',{},[
+      E('div',{class:'ch-t',text:'Talk with '+pet()}),
+      E('div',{class:'ch-d',text: aiOn ? (pet()+' listens warmly. A friend — not a doctor.') : (pet()+' listens gently. Private, on this device.')})
+    ])
+  ]));
+
+  var log = E('div',{class:'chatlog'}); $chatlog = log;
+  if(!S.chatLog.length){ var op = chatOpener(); S.chatLog.push({role:'milo',text:op}); save(); }
+  S.chatLog.forEach(function(m){ log.appendChild(bubble(m)); });
+  $app.appendChild(log);
+
+  var input = E('textarea',{class:'chatinput',rows:'1',placeholder:(simple()?'Say anything…':'Tell '+pet()+' anything…'),'aria-label':'Message to '+pet()});
+  input.addEventListener('input',function(){ input.style.height='auto'; input.style.height=Math.min(96,input.scrollHeight)+'px'; });
+  input.addEventListener('keydown',function(e){ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(input); } });
+  var sendBtn = E('button',{class:'iconbtn send','aria-label':'Send',on:{click:function(){ sendChat(input); }}},'➤');
+  var bar = E('div',{class:'chatbar'});
+  var micBtn = null;
+  if(speechRecOK()){ micBtn = E('button',{class:'iconbtn mic','aria-label':'Talk out loud',on:{click:function(){ startDictation(input, micBtn); }}},'🎙️'); bar.appendChild(micBtn); }
+  bar.appendChild(input); bar.appendChild(sendBtn);
+  $app.appendChild(bar);
+
+  var rightOpts = E('div',{style:'display:flex;gap:8px;align-items:center'});
+  if(speakOK()){
+    rightOpts.appendChild(E('button',{class:'buzztoggle'+(S.speakOn?' on':''),'aria-pressed':String(!!S.speakOn),on:{click:function(){
+      S.speakOn=!S.speakOn; save(); if(!S.speakOn) stopSpeak(); else speak('Hi, I’m '+pet()+'.'); go('talk');
+    }}},[E('span',{class:'dot'}), E('span',{text:'Milo’s voice'})]));
+  }
+  rightOpts.appendChild(E('button',{class:'linkbtn',on:{click:openAISetup}},'Grown-up setup'));
+  $app.appendChild(E('div',{class:'chatopts'},[
+    E('span',{class:'brainpill'+(aiOn?' ai':''),title:(aiOn?'A free AI helper is connected':'Milo’s built-in gentle brain')},[
+      E('span',{class:'dot'}), E('span',{text: aiOn ? ((S.ai.provider==='groq'?'Groq':'Gemini')+' connected') : 'Built-in · private'})
+    ]),
+    rightOpts
+  ]));
+  $app.appendChild(E('p',{class:'faint',style:'text-align:center;margin-top:10px',text:pet()+' is a caring friend, not a therapist or emergency help. If something is really wrong, please tell a trusted grown-up.'}));
+  $app.appendChild(studioFooter());
+  setTimeout(scrollChat, 70);
+}
+
+function openAISetup(){
+  openSheet(function(close){
+    var prov = (S.ai&&S.ai.provider)||'gemini';
+    var keyIn = E('input',{class:'input',type:'password',placeholder:'Paste the free API key',value:(S.ai&&S.ai.key)||''});
+    var modelIn = E('input',{class:'input',type:'text',placeholder:(prov==='groq'?'llama-3.3-70b-versatile':'gemini-2.0-flash'),value:(S.ai&&S.ai.model)||''});
+    var seg = E('div',{class:'seg'});
+    function setProv(p){ prov=p; var bs=seg.querySelectorAll('.segbtn'); for(var i=0;i<bs.length;i++) bs[i].classList.toggle('on', bs[i].getAttribute('data-p')===p); modelIn.placeholder = (p==='groq'?'llama-3.3-70b-versatile':'gemini-2.0-flash'); }
+    ['gemini','groq'].forEach(function(p){ seg.appendChild(E('button',{class:'segbtn'+(prov===p?' on':''),'data-p':p,on:{click:function(){ setProv(p); }}}, p==='gemini'?'Google Gemini':'Groq')); });
+    return [
+      E('div',{class:'grab'}),
+      E('h3',{text:'Grown-up setup'}),
+      E('p',{class:'muted',text:pet()+' works on its own, fully private. A grown-up can also connect a FREE AI helper so '+pet()+' can chat more naturally. This is optional, and free.'}),
+      E('div',{class:'note green'},[E('span',{class:'nt',text:'Stays on this device'}),
+        E('span',{text:'The key is saved only here, in this browser. We never send it anywhere. When connected, only the child’s message goes to the AI service you choose, to write a reply. Clear it any time.'})]),
+      E('div',{class:'fieldlabel',text:'AI helper (free tier)'}), seg,
+      E('div',{class:'fieldlabel',text:'API key'}), keyIn,
+      E('div',{class:'fieldlabel',text:'Model (optional)'}), modelIn,
+      E('p',{class:'faint',style:'margin-top:8px',text:'Get a free key — Gemini: aistudio.google.com/apikey · Groq: console.groq.com/keys. Gemini is recommended (it works directly in the browser).'}),
+      window.__miloAiErr ? E('div',{class:'note warm'},[E('span',{class:'nt',text:'Last connection note'}),E('span',{text:String(window.__miloAiErr)})]) : null,
+      E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:function(){
+        S.ai = {provider:prov, key:(keyIn.value||'').trim(), model:(modelIn.value||'').trim()}; window.__miloAiErr=''; save(); close(); go('talk');
+      }}},'Save'),
+      ((S.ai&&S.ai.key) ? E('button',{class:'btn ghost block',style:'margin-top:10px',on:{click:function(){ S.ai={provider:prov,key:'',model:''}; save(); close(); go('talk'); }}},'Disconnect AI (use built-in)') : null)
+    ];
+  });
+}
+
 /* ---------------- JOURNEY ---------------- */
 function renderJourney(){
   $app.appendChild(E('div',{class:'card'},[
@@ -1098,8 +1379,8 @@ function renderAbout(){
   $app.appendChild(E('div',{class:'card'},[
     E('h2',{class:'section',text:'About '+BRAND.name}),
     E('p',{class:'muted',text:BRAND.name+' is a gentle companion. You care for a little creature, and as you practice calm and coping skills, it grows alongside you — reflecting your own strength back to you.'}),
-    E('div',{class:'note warm'},[E('span',{class:'nt',text:'This is a concept prototype (v0)'}),
-      E('span',{text:'It shows the idea, tone, and core loop. It is not a finished or clinical product, and its words have not yet been reviewed by child psychologists.'})]),
+    E('div',{class:'note warm'},[E('span',{class:'nt',text:'Made with care'}),
+      E('span',{text:BRAND.name+' teaches real calm-and-coping skills, gently. Its words haven’t yet been reviewed by a child psychologist, so think of '+BRAND.name+' as a kind companion — here to support you, never to replace a grown-up or a professional.'})]),
     E('div',{class:'note green'},[E('span',{class:'nt',text:'Gently grounded in research'}),
       E('span',{text:BRAND.name+' leans on the few things that calm, non-judgmental companions seem to genuinely help with: breathing slowly together, putting words to feelings, and steady, unhurried presence. That’s why breathing comes first. '+BRAND.name+' is evidence-informed — not a proven treatment, and never a substitute for a real person who can help.'})])
   ]));
@@ -1115,7 +1396,10 @@ function renderAbout(){
     E('h2',{class:'section',text:'Your privacy'}),
     E('div',{class:'note green'},[
       E('span',{class:'nt',text:'Everything stays on this device'}),
-      E('span',{text:'No accounts. No sign-ups. No social features. Nothing you do is sent anywhere or shared with anyone. '+BRAND.name+' never asks for your last name, address, school, or photos. Designed with children’s privacy (COPPA) in mind — we collect as little as possible, and only a first name or nickname if you choose to give one.'})]),
+      E('span',{text:'No accounts. No sign-ups. No social features. By default nothing you do is sent anywhere or shared with anyone. '+BRAND.name+' never asks for your last name, address, school, or photos. Designed with children’s privacy (COPPA) in mind — we collect as little as possible, and only a first name or nickname if you choose to give one.'})]),
+    E('div',{class:'note calm'},[
+      E('span',{class:'nt',text:'About the optional AI helper'}),
+      E('span',{text:'A grown-up can connect a free AI helper in Talk so '+BRAND.name+' can chat more naturally. Only then are your chat messages sent — to that service (Google or Groq) — to write a reply. The key is stored only on this device, never by us, and a grown-up can turn it off any time. With no AI helper connected, '+BRAND.name+' talks using its built-in brain and nothing leaves the device.'})]),
     E('p',{class:'faint',text:'A grown-up (or you) can erase everything below.'}),
     E('button',{class:'btn ghost block',style:'margin-top:6px',on:{click:confirmReset}},'Reset — erase everything')
   ]));

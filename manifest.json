@@ -1,7 +1,7 @@
 {
   "name": "Milo — Milo grows with you",
   "short_name": "Milo",
-  "description": "A gentle, Tamagotchi-style emotional-support companion that grows with you while you practice real calm and coping skills. A 3Shamrocks Studio concept prototype. Private and on-device.",
+  "description": "A gentle, dog-hearted emotional-support companion that grows with you while you practice real calm-and-coping skills and talk things through. By 3Shamrocks Studio. Private and on-device.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

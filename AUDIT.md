@@ -22,13 +22,15 @@ legally cleared product** — see "Open items / real next phase" at the end.
 | Check | Status | Notes |
 |------|:------:|------|
 | No accounts / no sign-up | ✅ | None present. |
-| localStorage only, nothing leaves device | ✅ | Single namespaced key `milo.v1`; no network writes. CSP `connect-src 'self'`. |
+| localStorage only by default | ✅ | Single namespaced key `milo.v1`; no network writes by default. The built-in brain is fully on-device. |
 | No PII solicited | ✅ | First name / nickname optional; explicitly never asks last name, address, school, photos. |
 | User-erasable | ✅ | About → "Reset — erase everything" clears the key and restarts. |
-| No analytics / trackers / third-party beacons | ✅ | Only outbound request is Google Fonts CSS/woff (style + font-src pinned in CSP). |
+| No analytics / trackers / third-party beacons | ✅ | No analytics. Outbound requests are limited to Google Fonts, and — only if a grown-up opts in — the chosen AI helper. |
+| Optional AI helper is transparent + opt-in | ✅ | Off by default. Key is grown-up-entered, stored only on-device (in `milo.v1`), **never committed** to the repo and never sent anywhere by us. When connected, only the child's chat message goes to Gemini/Groq. About + setup copy state this plainly; can be disconnected any time. CSP `connect-src` pins exactly the two allowed hosts. |
 
-> Note: Google Fonts is the one off-device fetch. For a strict no-third-party posture the font
-> should be self-hosted before real use. Flagged, not hidden.
+> Note: Google Fonts is one off-device fetch; the optional AI helper is the other (opt-in only).
+> For a strict no-third-party posture, self-host fonts and proxy/disable AI before real use.
+> Flagged, not hidden.
 
 ## Accessibility (WCAG AA — prototype level)
 
@@ -75,6 +77,27 @@ names **co-regulated breathing** as the #1 transferable, screen-deliverable mech
 - ✅ **Honest "evidence-informed, not a treatment" note** added to About — accurate framing, no
   overclaiming, reinforcing the trusted-adult off-ramp.
 - ✅ Reduced-motion respected in the breathing animation; zero console errors after changes.
+
+## What changed in the full-completion pass (June 2026)
+
+- ✅ **Talk with Milo — a real conversation.** New tab. A **three-layer brain**: (1) on-device
+  crisis/harm scan on *every* message → warm reply + crisis off-ramp (verified: "i want to die"
+  intercepts and routes to a grown-up, never handled by the creature alone); (2) a built-in
+  reflective responder (free, fully private, recognises feelings/topics and offers a coping step);
+  (3) an **optional free AI helper** (Gemini/Groq) connected by a grown-up with their own free key.
+- ✅ **AI is safe + private by design.** Strong child-safety system prompt (warm, short, never
+  diagnoses, redirects to a trusted adult, never claims to be human). Key stored only on-device,
+  **never committed**; only the chat message is sent, and only when opted in. Gemini path verified
+  end-to-end (correct request/parse; falls back to the built-in brain on any error). CSP pins the
+  two allowed hosts. About + setup copy disclose the data flow plainly.
+- ✅ **Free browser voice.** Milo can speak replies (`speechSynthesis`, toggle) and the child can
+  talk via mic (`SpeechRecognition`), both feature-detected and degrading silently.
+- ✅ **Branded to the canonical 3SDS `[data-brand="milo"]`** — warm cream, soft sage, peach-coral
+  hero, Quicksand + Nunito; the "no alarming reds" safety rule preserved (warmth/crisis = amber).
+- ✅ **Dev text removed** ("Prototype v0" chips, version language) — replaced with product-grade,
+  still-honest safety copy. © 2026 3Shamrocks Studio + small 3S logo present on every screen.
+- ✅ Verified at **390×844**, zero console errors across chat, crisis, breathing, check-in, growth,
+  Journey, About, and setup.
 
 ## Open items / real next phase (must precede any real-child use)
 
