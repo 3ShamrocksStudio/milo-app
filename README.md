@@ -21,9 +21,22 @@ A single-file, dependency-free Progressive Web App by [3Shamrocks Studio](https:
 Branded to the canonical 3SDS `[data-brand="milo"]`: warm cream world, **soft sage** companion,
 **peach-coral** brand hero `#EF6440`, warm amber for connection, Quicksand + Nunito. No alarming reds.
 
-## The core loop
+## The core loop — *the flip*
 
-- **Gentle daily check-in** — no-pressure feeling picker, with an "I'd rather not say" option.
+Milo's defining move: **Milo is the one who needs support, and the child is the helper.**
+Grounded in the **helper-therapy principle** — caring for a vulnerable other builds the child's own
+agency, resilience, and self-worth. By helping Milo, the child rehearses and internalises the very
+same coping skills, and feels capable rather than "fixed."
+
+- **Milo shares a hard moment** (worried, sad, scared, overwhelmed, lonely, frustrated, embarrassed)
+  and invites the child to help.
+- **The child coaches Milo:** reads/names Milo's feeling → chooses how to help — **breathe with**,
+  **comfort** (kind words), or **cheer on** (reframe/encourage).
+- **Milo visibly calms, thanks the child, and reflects the skill back:** *"You just did the very
+  thing that helps when YOU feel this way too — you're really good at this."* The empowerment is the
+  point: the child is the capable, caring one.
+- **A gentle "and how are you, helper?" self-check** remains — secondary, and still routes the
+  lowest feeling straight to the crisis off-ramp (safety is never suppressed by the helper framing).
 - **Talk with Milo** — a warm, safe conversation (see *Talk & voice* below).
 - **Co-regulated breathing — the lead feature.** Milo breathes *with* the child (in 4 · hold 2 ·
   out 6), the creature expanding and contracting inside a soft halo. Optional **gentle haptics**

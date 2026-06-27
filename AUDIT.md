@@ -99,6 +99,25 @@ names **co-regulated breathing** as the #1 transferable, screen-deliverable mech
 - ✅ Verified at **390×844**, zero console errors across chat, crisis, breathing, check-in, growth,
   Journey, About, and setup.
 
+## What changed in the helper-flip pass (June 2026)
+
+The core loop was **flipped to the helper-therapy model**: Milo is the one who needs support; the
+child is the helper-coach. Empowerment comes from the child being the capable, caring one.
+
+- ✅ **Flipped home loop.** Milo shares a hard moment (worried/sad/scared/overwhelmed/lonely/
+  frustrated/embarrassed) and invites help → child reads & names Milo's feeling → chooses to
+  **breathe with / comfort / cheer on** Milo → Milo visibly calms, thanks the child, and **reflects
+  the skill back** ("you can do this for yourself too"). Once helped, home shows the calmer,
+  grateful Milo. Verified end-to-end at 390×844.
+- ✅ **SAFETY PRESERVED — the non-negotiable.** The child's OWN distress is never suppressed by the
+  helper framing: (a) the secondary "and how are you, helper?" self-check still routes "really not
+  okay" to the crisis off-ramp (verified — sheet + resources open); (b) the Talk chat still scans
+  the **child's own words** on every message and fires the off-ramp (verified `crisisDetect`
+  intact); (c) the off-ramp copy/resources are unchanged and still badged `needs verification`.
+- ✅ **No-alarming-reds preserved** — the "needs you" accents use the brand peach-coral/amber warmth,
+  not alarm red. Helper-therapy grounding added to About. Reduced-motion respected on the new
+  "needs-you" pulse. Zero console errors.
+
 ## Open items / real next phase (must precede any real-child use)
 
 1. **Clinical review** of every line of copy by child/adolescent psychologists + trauma specialists.

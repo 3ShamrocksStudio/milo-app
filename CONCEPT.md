@@ -61,27 +61,38 @@ sense of momentum without anxiety.
 
 ---
 
-## The core loop
+## The core loop — *the flip* (the defining design choice)
 
-1. **Gentle daily check-in** — *"How are you today?"* A simple, no-pressure feeling picker
-   (Great · Good · Okay · Not great · Really not okay) with an "I'd rather not say" escape hatch.
-2. **Care actions that double as coping skills:**
-   - **Breathe together** — *the lead feature.* A paced breathing animation (in 4s · hold 2s ·
-     out 6s, 3 rounds). The creature itself expands and contracts inside a soft halo so the child
-     follows *Milo*, not just a circle — this is real co-regulation. Optional **gentle haptics**
-     pulse in time with the breath where the device allows (feature-detected; silently absent on
-     iOS Safari), easy to switch off — the closest digital stand-in for soothing contact.
-   - **Name the feeling** — emotional-literacy practice: pick the feeling that's here; the pet
-     validates it as "a visitor that will move along."
-   - **Nourish** — self-care nudge (water, a snack, fresh air, a stretch).
-   - **Rest** — permission to slow down; the pet curls up with the child.
-3. **A small real-life quest, framed as a gentle adventure** — e.g. *"do one kind thing,"*
-   *"try the hard thing for 2 minutes,"* *"tell a trusted grown-up one true thing,"* *5-4-3-2-1
-   grounding.* The child logs *"I did it"* (or *"maybe later,"* with zero shame) → the pet
-   responds and grows.
-4. **The pet reflects the child's mood and mirrors calm** throughout.
+Milo **flips the usual companion dynamic**: instead of the app asking the child *"how do you
+feel?"*, **Milo is the one having a hard moment, and the child is the helper.** This is grounded in
+the **helper-therapy principle** — when a child cares for a vulnerable other, they build their own
+agency, resilience, and self-worth. By helping Milo, the child *rehearses and internalises the very
+same coping skills*, and feels **capable** rather than "fixed." The empowerment is the mechanism.
 
-This builds **real strength** — it is explicitly **not escapism**.
+1. **Milo shares a hard moment and invites help.** Milo expresses a feeling in an age-appropriate,
+   embodied way (*"My tummy feels all fluttery, and I keep thinking about tomorrow. Will you help
+   me?"*) — rotating across worried · sad · scared · overwhelmed · lonely · frustrated · embarrassed.
+2. **The child coaches Milo through it** — the same coping skills, now child-as-helper:
+   - **Read & name Milo's feeling** — emotional-literacy practice (no wrong answer; Milo affirms
+     the child's read: *"You really see me"*).
+   - **Choose how to help:**
+     - **Breathe with Milo** — *the lead co-regulation feature.* Paced breathing (in 4 · hold 2 ·
+       out 6); the creature expands/contracts inside a soft halo and calms *because the child
+       breathes too*. Optional **gentle haptics** (feature-detected; silently absent on iOS Safari).
+     - **Comfort Milo** — the child picks kind, soothing words to give Milo.
+     - **Cheer Milo on** — the child reframes/encourages, helping Milo feel brave.
+   - **Milo visibly calms, thanks the child, and reflects the skill back:** *"You just did the very
+     thing that helps when YOU feel this way too — you're really good at this."*
+3. **A gentle "and how are you, helper?" self-check** stays — *secondary*, and still routes the
+   lowest feeling straight to the crisis off-ramp. **The helper framing never suppresses the child's
+   own distress signal** (see Non-negotiables).
+4. **Name a feeling · Take care · Rest together** — supporting "ways to be there for Milo."
+5. **A small real-life quest** (*do one kind thing · try the hard thing for 2 minutes · tell a
+   trusted grown-up one true thing · 5-4-3-2-1 grounding*) — logged with zero shame; the bond grows.
+
+The pet mirrors calm throughout, and the **M.I.L.O. = "My Inner Little One"** reveal lands deeper
+under the flip: by caring for Milo, the child has been caring for the gentle little one inside
+*themselves*. This builds **real strength** — it is explicitly **not escapism**.
 
 ---
 

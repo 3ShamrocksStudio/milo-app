@@ -311,6 +311,34 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
   font-size:.86rem;color:var(--ink-soft)}
 .segbtn.on{border-color:var(--coral);background:var(--coral-soft);color:var(--coral-deep)}
 @media (prefers-reduced-motion:reduce){.typing i,.iconbtn.mic.live{animation:none}}
+
+/* ---- THE FLIP — Milo-needs-you helper UI ---- */
+.bhero.help{background:linear-gradient(150deg,#FFE9E0,#FBEFEA);border-color:#F6C9B8}
+.bhero .bk.help{color:var(--coral-deep)}
+.bico.hc{background:radial-gradient(circle at 50% 40%,#FFD8C8,#F2A88D);box-shadow:0 0 0 8px rgba(239,100,64,.14)}
+.bubble.need{border:1.5px solid #F6C9B8;animation:needpulse 2.8s ease-in-out infinite}
+@keyframes needpulse{0%,100%{box-shadow:var(--shadow-sm)}50%{box-shadow:0 8px 24px rgba(239,100,64,.22)}}
+.feelpick{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:8px}
+.fchip{background:var(--card-2);border:1.5px solid var(--line);border-radius:99px;padding:11px 18px;
+  font-weight:700;font-size:.95rem;color:var(--ink);text-transform:capitalize;transition:transform .12s ease,border-color .15s,background .15s}
+.fchip:hover{border-color:var(--coral);background:var(--coral-soft);color:var(--coral-deep)}
+.fchip:active{transform:scale(.94)}
+.helpgrid{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.helpchoice{display:flex;align-items:center;gap:13px;background:#fff;border:1.5px solid var(--line);
+  border-radius:16px;padding:13px 15px;text-align:left;box-shadow:var(--shadow-sm);
+  transition:transform .12s ease,border-color .15s}
+.helpchoice:hover{border-color:var(--coral);transform:translateY(-2px)}
+.helpchoice:active{transform:scale(.99)}
+.hc-ico{width:46px;height:46px;flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;background:var(--coral-soft)}
+.hc-t{font-weight:700;color:var(--ink);font-family:'Quicksand',sans-serif}
+.hc-d{font-size:.8rem;color:var(--ink-soft);margin-top:1px}
+.linelist{display:flex;flex-direction:column;gap:9px;margin-top:8px}
+.lineopt{background:var(--card-2);border:1.5px solid var(--line);border-radius:14px;padding:13px 15px;
+  font-size:.95rem;color:var(--ink);line-height:1.4;text-align:left;transition:transform .12s ease,border-color .15s,background .15s}
+.lineopt:hover{border-color:var(--coral);background:var(--coral-soft)}
+.lineopt:active{transform:scale(.99)}
+@media (prefers-reduced-motion:reduce){.bubble.need{animation:none}}
 </style>
 </head>
 <body>
@@ -417,9 +445,10 @@ function blankState(){
     v:1, onboarded:false,
     petName:'', childName:'', ageBand:'', likeThing:'',
     growth:0, stage:1, hapticsOn:true, speakOn:false,
-    counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0, chats:0},
+    counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0, chats:0, helps:0},
     todayMood:'', checkinDate:'', questDate:'', moodLog:[],
     questIndex:0, lastVisit:'', createdAt:'',
+    helpedDate:'', miloMomentIndex:0,            // the flip: child helps Milo through its hard moments
     chatLog:[],                                  // {role:'child'|'milo', text}
     ai:{provider:'gemini', key:'', model:''}     // free, on-device, grown-up-entered; never committed
   };
@@ -593,6 +622,150 @@ var QUESTS = [
 function currentQuest(){ return QUESTS[S.questIndex % QUESTS.length]; }
 
 /* ============================================================
+   THE FLIP — Milo needs support; the CHILD is the helper-coach.
+   Helper-therapy principle: by caring for a vulnerable other, the
+   child rehearses and internalises the very same coping skills, and
+   feels capable and worthwhile. Milo shares a hard moment and invites
+   help; the child names Milo's feeling and chooses how to help; Milo
+   visibly calms and reflects the skill back ("you can do this for you
+   too"). Safety is unchanged: the child's OWN words are still scanned
+   for distress and the crisis off-ramp always fires (see selfCheck +
+   chat). Helping Milo never suppresses a real signal from the child.
+   ============================================================ */
+var MILO_MOMENTS = [
+  {feeling:'worried',     says:'My tummy feels all fluttery, and I keep thinking about tomorrow.'},
+  {feeling:'sad',         says:'Everything feels a little grey today, and I’m not even sure why.'},
+  {feeling:'scared',      says:'There was a loud noise and now my heart is beating really fast.'},
+  {feeling:'overwhelmed', says:'There’s SO much happening at once and my head feels too full.'},
+  {feeling:'lonely',      says:'I feel like nobody really notices me today.'},
+  {feeling:'frustrated',  says:'I tried and tried and it still went wrong. I kind of want to give up.'},
+  {feeling:'embarrassed', says:'I made a mistake in front of everyone, and I just want to hide.'}
+];
+var FEELING_POOL = ['worried','sad','scared','overwhelmed','lonely','frustrated','embarrassed','nervous','shy','tired'];
+var COMFORTS = [
+  'You’re safe right now. I’m right here with you.',
+  'It’s okay to feel this way. Feelings are allowed.',
+  'You don’t have to carry it alone — I’ve got you.',
+  'This feeling is just a visitor. It will move along.'
+];
+var ENCOURAGES = [
+  'You’re braver than you think.',
+  'One tiny step is enough. You can do the hard thing.',
+  'You’ve gotten through hard moments before — you will again.',
+  'I believe in you, and I’m right beside you.'
+];
+function currentMoment(){ return MILO_MOMENTS[S.miloMomentIndex % MILO_MOMENTS.length]; }
+function helpedToday(){ return S.helpedDate === today(); }
+function rnd(a){ return a[Math.floor(Math.random()*a.length)]; }
+function pickFeelingOptions(correct){
+  var pool = FEELING_POOL.filter(function(f){ return f!==correct; });
+  var chosen = [correct];
+  for(var i=0;i<3 && pool.length;i++){ chosen.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]); }
+  for(var j=chosen.length-1;j>0;j--){ var k=Math.floor(Math.random()*(j+1)); var t=chosen[j]; chosen[j]=chosen[k]; chosen[k]=t; }
+  return chosen;
+}
+function markHelped(){
+  var first = !helpedToday();
+  S.helpedDate = today();
+  S.counts.helps = (S.counts.helps||0)+1;
+  S.miloMomentIndex = (S.miloMomentIndex||0)+1;     // a fresh moment next time
+  if(first) addGrowth(2);
+  save();
+}
+function helperName(){ return S.childName ? (', '+S.childName) : ''; }
+
+/* Step 1 — Milo shares its struggle and the child reads its feeling */
+function openHelpMilo(){
+  var m = currentMoment();
+  openSheet(function(close){
+    var opts = pickFeelingOptions(m.feeling);
+    var chips = E('div',{class:'feelpick'});
+    opts.forEach(function(f){ chips.appendChild(E('button',{class:'fchip',on:{click:function(){ helpStep2(close, m, f); }}}, f)); });
+    return [
+      E('div',{class:'grab'}),
+      E('div',{class:'petstage'},[
+        E('div',{class:'petwrap',html:petSVG(S.stage,'low')}),
+        E('div',{class:'bubble need'},[E('span',{class:'who',text:pet()}),
+          E('span',{text:m.says+' Can you help me'+helperName()+'?'})])
+      ]),
+      E('h3',{style:'text-align:center;margin-top:14px',text:'What do you think '+pet()+' is feeling?'}),
+      E('p',{class:'faint',style:'text-align:center',text:'However you read it is okay — you know '+pet()+' best.'}),
+      chips
+    ];
+  });
+}
+/* Step 2 — affirm the child's read, then choose how to help */
+function helpStep2(closePrev, m, named){
+  closePrev();
+  openSheet(function(close){
+    var affirm = (named===m.feeling)
+      ? 'Yes — I think you’re right. I do feel '+named+'. You really see me.'
+      : 'Maybe a bit '+named+'… and a little '+m.feeling+' too. Thank you for noticing — naming it already helps.';
+    return [
+      E('div',{class:'grab'}),
+      E('div',{class:'petstage'},[
+        E('div',{class:'petwrap',html:petSVG(S.stage,'okay')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:affirm})])
+      ]),
+      E('h3',{style:'text-align:center;margin-top:14px',text:'How will you help '+pet()+'?'}),
+      E('div',{class:'helpgrid'},[
+        helpChoice('🫧','Breathe with '+pet(),'Slow it down together', function(){ close(); openBreathing(true); }),
+        helpChoice('💛','Comfort '+pet(),'Say something kind', function(){ helpComfort(close, m); }),
+        helpChoice('⭐','Cheer '+pet()+' on','Help it feel brave', function(){ helpEncourage(close, m); })
+      ])
+    ];
+  });
+}
+function helpChoice(emoji,title,desc,fn){
+  return E('button',{class:'helpchoice',on:{click:fn}},[
+    E('div',{class:'hc-ico',text:emoji}),
+    E('div',{},[E('div',{class:'hc-t',text:title}), E('div',{class:'hc-d',text:desc})])
+  ]);
+}
+function helpComfort(closePrev, m){
+  closePrev();
+  openSheet(function(close){
+    var list = E('div',{class:'linelist'});
+    COMFORTS.forEach(function(c){ list.appendChild(E('button',{class:'lineopt',on:{click:function(){ helpResolve(m,'comfort'); }}}, '“'+c+'”')); });
+    return [ E('div',{class:'grab'}), E('h3',{style:'text-align:center',text:'Choose something kind to tell '+pet()}),
+      E('p',{class:'faint',style:'text-align:center',text:'Saying it to '+pet()+' is a way of learning to say it to yourself.'}), list,
+      E('button',{class:'linkbtn',style:'display:block;margin:14px auto 0',on:{click:close}},'Back') ];
+  });
+}
+function helpEncourage(closePrev, m){
+  closePrev();
+  openSheet(function(close){
+    var list = E('div',{class:'linelist'});
+    ENCOURAGES.forEach(function(e){ list.appendChild(E('button',{class:'lineopt',on:{click:function(){ helpResolve(m,'encourage'); }}}, '“'+e+'”')); });
+    return [ E('div',{class:'grab'}), E('h3',{style:'text-align:center',text:'Cheer '+pet()+' on'}),
+      E('p',{class:'faint',style:'text-align:center',text:'The brave words you give '+pet()+' are yours to keep too.'}), list,
+      E('button',{class:'linkbtn',style:'display:block;margin:14px auto 0',on:{click:close}},'Back') ];
+  });
+}
+/* Resolve — Milo visibly calms, thanks the child, reflects the skill back */
+function helpResolve(m, kind){
+  closeOverlay();
+  markHelped();
+  openSheet(function(close){
+    var thanks = (kind==='encourage')
+      ? 'Your words made me stand a little taller. I can try now — thank you.'
+      : 'That helped so much. My heart feels slower already. Thank you for staying with me.';
+    var reflect = 'You just did the very thing that helps when YOU feel '+m.feeling+' too. You’re really good at this'+helperName()+'.';
+    return [
+      E('div',{class:'grab'}),
+      E('div',{class:'celebrate'},[
+        E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage,'great')})]),
+        E('div',{class:'spark',text:'💛'}),
+        E('h3',{text:pet()+' feels calmer'}),
+        E('div',{class:'bubble',style:'margin:6px auto 0'},[E('span',{class:'who',text:pet()}),E('span',{text:thanks})]),
+        E('p',{class:'milocap',text:reflect})
+      ]),
+      E('button',{class:'btn primary block',style:'margin-top:16px',on:{click:function(){ close(); render(); }}},'💚')
+    ];
+  });
+}
+
+/* ============================================================
    ROUTER / RENDER
    ============================================================ */
 var route = 'today';
@@ -745,37 +918,54 @@ function renderToday(){
   }
   S.lastVisit = today(); save();
 
-  var moodPicked = S.checkinDate === today();
+  var helped = helpedToday();
+  var m = currentMoment();
 
-  // pet + bubble
+  // HERO — the flip: Milo shares a feeling and needs the child; once helped
+  // today, Milo is calmer thanks to them.
+  var heroText = helped
+    ? 'Thanks to you'+helperName()+', I feel much better today. You’re a really good friend.'
+    : m.says + ' Will you help me' + helperName() + '?';
   $app.appendChild(E('div',{class:'card petstage'},[
-    E('div',{class:'petwrap',html:petSVG(S.stage, moodPicked? S.todayMood : '')}),
-    E('div',{class:'bubble'},[ E('span',{class:'who',text:pet()}), E('span',{text:greetLine}) ]),
+    E('div',{class:'petwrap',html:petSVG(S.stage, helped? 'good' : 'low')}),
+    E('div',{class:'bubble'+(helped?'':' need')},[ E('span',{class:'who',text:pet()}), E('span',{text:heroText}) ]),
     E('div',{class:'faint',style:'margin-top:8px',text:STAGE_NAMES[S.stage]+' · '+STAGE_BLURB[S.stage]})
   ]));
 
-  // check-in
-  $app.appendChild(checkinCard());
+  // PRIMARY — Help Milo (the flipped core loop). The child is the capable, caring one.
+  $app.appendChild(E('button',{class:'bhero help',on:{click:openHelpMilo}},[
+    E('div',{class:'bico hc',text:'💛'}),
+    E('div',{},[
+      E('div',{class:'bk help',text: helped ? 'You were there for '+pet()+' today' : pet()+' needs you'}),
+      E('div',{class:'bt',text: helped ? 'Sit with '+pet()+' again' : 'Help '+pet()+' feel better'}),
+      E('div',{class:'bd',text: helped
+        ? 'You already helped today — but '+pet()+' always loves your company.'
+        : (simple()? 'When you help '+pet()+', you learn the calm for you too.' : 'When you comfort '+pet()+', you’re practising the very same calm for yourself.')})
+    ])
+  ]));
 
-  // LEAD feature — co-regulated breathing, given pride of place
-  $app.appendChild(E('button',{class:'bhero',on:{click:openBreathing}},[
+  // Breathe WITH Milo — co-regulation
+  $app.appendChild(E('button',{class:'bhero',on:{click:function(){ openBreathing(false); }}},[
     E('div',{class:'bico',text:'🫧'}),
     E('div',{},[
       E('div',{class:'bk',text:'Breathe together'}),
       E('div',{class:'bt',text: simple()? 'Slow down with '+pet() : 'Calm-together breathing'}),
       E('div',{class:'bd',text: simple()
-        ? 'Follow '+pet()+'. In… and slowly out. We get calm together.'
-        : pet()+' breathes with you — in for 4, hold, out for 6. The one skill that travels with you.'})
+        ? 'In… and slowly out. You and '+pet()+' get calm together.'
+        : 'You and '+pet()+' breathe as one — in 4, hold, out 6. The skill that travels with you.'})
     ])
   ]));
 
-  // other gentle care actions
-  $app.appendChild(E('h2',{class:'section',text:'Other gentle ways to care'}));
+  // more ways to be there for Milo
+  $app.appendChild(E('h2',{class:'section',text:'More ways to be there for '+pet()}));
   var grid = E('div',{class:'grid2'});
-  grid.appendChild(actionCard('ic-green','🏷️','Name the feeling','Put a word to what’s here.',openNameFeeling));
-  grid.appendChild(actionCard('ic-amber','🍎','Nourish','A small kindness for your body.',openNourish));
-  grid.appendChild(actionCard('ic-green','🌙','Rest','Slow down for a moment.',openRest));
+  grid.appendChild(actionCard('ic-green','🏷️','Name a feeling','Help '+pet()+' (and you) find the word.',openNameFeeling));
+  grid.appendChild(actionCard('ic-amber','🍎','Take care','A small kindness for both your bodies.',openNourish));
+  grid.appendChild(actionCard('ic-green','🌙','Rest together','Curl up and slow down.',openRest));
   $app.appendChild(grid);
+
+  // the child's OWN gentle check-in — kept, secondary, and crisis-safe
+  $app.appendChild(selfCheckCard());
 
   // quest
   $app.appendChild(questCard());
@@ -783,11 +973,13 @@ function renderToday(){
   $app.appendChild(studioFooter());
 }
 
-function checkinCard(){
+function selfCheckCard(){
   var picked = S.checkinDate === today();
   var card = E('div',{class:'card'},[
-    E('h2',{class:'section',text:simple()? 'How do you feel?' : 'How are you today?'}),
-    E('div',{class:'faint',text: picked? 'Thanks for checking in today.' : 'No pressure — pick whatever fits, or skip.'})
+    E('h2',{class:'section',text:simple()? 'And you?' : 'And how are you, helper?'}),
+    E('div',{class:'faint',text: picked
+      ? 'Thanks for checking in — '+pet()+' is glad you did.'
+      : pet()+' wonders about you too. No pressure — pick what fits, or skip.'})
   ]);
   var row = E('div',{class:'feelrow'});
   MOODS.forEach(function(m){
@@ -875,7 +1067,7 @@ function questLater(){
 
 /* ---------------- CARE OVERLAYS ---------------- */
 var breathTimer = null;
-function openBreathing(){
+function openBreathing(forMilo){
   var rounds = 3, current = 0;
   var rm = reduceMotion();
   // exhale shrink is gentler when reduced-motion is on
@@ -904,7 +1096,8 @@ function openBreathing(){
 
     var scene = E('div',{class:'breathscene'},[
       E('div',{style:'font-size:.95rem;color:var(--ink-soft);font-weight:600',
-        text:simple()?'Breathe with '+pet():'Co-regulation — '+pet()+' breathes with you'}),
+        text: forMilo ? ('You’re helping '+pet()+' settle — breathe together')
+          : (simple()?'Breathe with '+pet():'Co-regulation — '+pet()+' breathes with you')}),
       stage, label, count,
       toggle ? E('div',{class:'breathopts'},[toggle]) : null
     ]);
@@ -937,12 +1130,16 @@ function openBreathing(){
     function finish(){
       buzzStop();
       buzz([0,40,60,40]);                                  // a gentle "well done" flutter
+      var fin = forMilo
+        ? 'You helped me slow right down — thank you. And here’s the secret: the calm you just gave me is the very same calm you can give yourself, anywhere.'
+        : 'We did that together. Feel how we’re a little calmer now? That calm is yours to keep — you can breathe like this anywhere, even without me.';
       clear(scene); scene.appendChild(E('div',{class:'petstage'},[
-        E('div',{class:'petwrap',html:petSVG(S.stage,'good')}),
-        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'We did that together. Feel how we’re a little calmer now? That calm is yours to keep — you can breathe like this anywhere, even without me.'})])
+        E('div',{class:'petwrap',html:petSVG(S.stage,'great')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:fin})])
       ]));
       done.textContent = 'All done 💚';
       S.counts.breaths++; save(); addGrowth(2);
+      if(forMilo) markHelped();
     }
     setTimeout(cycle, 500);
     return [ E('div',{class:'grab'}), scene, done ];
@@ -954,12 +1151,12 @@ var FEELINGS = ['Happy','Calm','Excited','Proud','Sad','Worried','Angry','Tired'
 function openNameFeeling(){
   openSheet(function(close){
     var chosen = E('div',{class:'bubble',style:'margin:0 auto'},[E('span',{class:'who',text:pet()}),
-      E('span',{text: simple()? 'What are you feeling? Tap one.' : 'There are no wrong feelings. Which one is here right now?'})]);
+      E('span',{text: simple()? 'Help me find the word. Tap one.' : 'Can you help me find the word for what’s here? There are no wrong feelings — pick one, for me or for you.'})]);
     var wrap = E('div',{class:'suggrow',style:'justify-content:center;margin-top:14px'});
     FEELINGS.forEach(function(f){
       wrap.appendChild(E('button',{class:'sugg',on:{click:function(){ confirmFeeling(f, close); }}},f));
     });
-    return [ E('div',{class:'grab'}), E('h3',{text:'Name the feeling'}), chosen, wrap,
+    return [ E('div',{class:'grab'}), E('h3',{text:'Name a feeling'}), chosen, wrap,
       E('button',{class:'linkbtn',style:'display:block;margin:16px auto 0',on:{click:close}},'Not right now') ];
   });
 }
@@ -970,7 +1167,7 @@ function confirmFeeling(f, closePrev){
     return [
       E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage,'')}),
         E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),
-          E('span',{text:'Thank you for naming it. Feeling “'+f.toLowerCase()+'” is allowed — it’s just a visitor, and it will move along. I’m here while it does.'})])]),
+          E('span',{text:'Thank you for helping me name it. Feeling “'+f.toLowerCase()+'” is allowed — for me, or for you. It’s just a visitor, and it will move along. We’re here while it does.'})])]),
       E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:close}},'Okay')
     ];
   });
@@ -985,8 +1182,8 @@ function openNourish(){
         E('div',{class:'ico ic-amber',text:o[0]}), E('div',{class:'t',text:o[1]})
       ]));
     });
-    return [ E('div',{class:'grab'}), E('h3',{text:'Nourish'}),
-      E('p',{class:'muted',text:'Taking care of your body is taking care of you. What can you give yourself right now?'}),
+    return [ E('div',{class:'grab'}), E('h3',{text:'Take care'}),
+      E('p',{class:'muted',text:'Looking after our bodies helps our feelings settle. What kind thing can you give yourself — and '+pet()+' — right now?'}),
       wrap, E('button',{class:'linkbtn',style:'display:block;margin:16px auto 0',on:{click:close}},'Maybe later') ];
   });
 }
@@ -1294,7 +1491,7 @@ function openAISetup(){
 function renderJourney(){
   $app.appendChild(E('div',{class:'card'},[
     E('h2',{class:'section',text:'Your journey together'}),
-    E('p',{class:'faint',text:'No points, no streaks. '+pet()+' grows from real care — and so do you.'}),
+    E('p',{class:'faint',text:'No points, no streaks. '+pet()+' grows because you show up for it — and you grow right alongside.'}),
     arcRow(),
     E('div',{class:'vine'},[E('i',{style:'width:'+(progressToNext()*100)+'%'})]),
     E('p',{class:'muted',style:'margin-top:10px;text-align:center',text: S.stage>=5
@@ -1322,14 +1519,14 @@ function renderJourney(){
     $app.appendChild(eggCard);
   }
 
-  // reflection (warm framing, never judgmental)
-  $app.appendChild(E('h2',{class:'section',text:'What you’ve shared'}));
+  // reflection (warm framing, never judgmental) — the helper's record of care
+  $app.appendChild(E('h2',{class:'section',text:'How you’ve shown up for '+pet()}));
   var list = E('div',{class:'reflectlist'});
-  [[S.counts.breaths,'times you breathed together'],
-   [S.counts.feelings,'feelings you bravely named'],
+  [[S.counts.helps||0,'times you were there for '+pet()],
+   [S.counts.breaths,'times you breathed together'],
+   [S.counts.feelings,'feelings you helped name'],
    [S.counts.quests,'real-life adventures you tried'],
-   [S.counts.checkins,'gentle check-ins'],
-   [S.counts.nourish+S.counts.rests,'moments of self-care']]
+   [S.counts.nourish+S.counts.rests,'moments of gentle care']]
   .forEach(function(r){ list.appendChild(E('div',{class:'reflect'},[
     E('div',{class:'n',text:String(r[0])}), E('div',{class:'x',text:r[1]})])); });
   $app.appendChild(list);
@@ -1378,7 +1575,9 @@ function arcRow(){
 function renderAbout(){
   $app.appendChild(E('div',{class:'card'},[
     E('h2',{class:'section',text:'About '+BRAND.name}),
-    E('p',{class:'muted',text:BRAND.name+' is a gentle companion. You care for a little creature, and as you practice calm and coping skills, it grows alongside you — reflecting your own strength back to you.'}),
+    E('p',{class:'muted',text:'Here’s the gentle twist: '+BRAND.name+' is the one who has hard moments — and YOU are the helper. When you comfort '+BRAND.name+', breathe with it, and cheer it on, you’re quietly learning the very same calm for yourself. Helping is how you grow.'}),
+    E('div',{class:'note green'},[E('span',{class:'nt',text:'Why being the helper helps you'}),
+      E('span',{text:'This is called the “helper principle”: when a child cares for a vulnerable other, they build their own confidence, resilience, and sense of worth. You’re not being fixed — you’re being the capable, caring one. That’s where the strength comes from.'})]),
     E('div',{class:'note warm'},[E('span',{class:'nt',text:'Made with care'}),
       E('span',{text:BRAND.name+' teaches real calm-and-coping skills, gently. Its words haven’t yet been reviewed by a child psychologist, so think of '+BRAND.name+' as a kind companion — here to support you, never to replace a grown-up or a professional.'})]),
     E('div',{class:'note green'},[E('span',{class:'nt',text:'Gently grounded in research'}),
