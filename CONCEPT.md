@@ -61,34 +61,47 @@ sense of momentum without anxiety.
 
 ---
 
-## The core loop — *the flip* (the defining design choice)
+## The core loop — *mutual empowerment & growth* (the defining design choice)
 
-Milo **flips the usual companion dynamic**: instead of the app asking the child *"how do you
-feel?"*, **Milo is the one having a hard moment, and the child is the helper.** This is grounded in
-the **helper-therapy principle** — when a child cares for a vulnerable other, they build their own
-agency, resilience, and self-worth. By helping Milo, the child *rehearses and internalises the very
-same coping skills*, and feels **capable** rather than "fixed." The empowerment is the mechanism.
+Milo **flips the usual companion dynamic** into a **two-way bond**: instead of the app asking the
+child *"how do you feel?"*, **Milo sometimes has a small wobble and the child helps — then Milo
+turns around and cares for the child.** This is grounded in the **helper-therapy principle** (when a
+child cares for a vulnerable other, they build their own agency, resilience, and self-worth). By
+helping Milo, the child *rehearses and internalises the very same coping skills* and feels
+**capable** rather than "fixed" — and **they grow stronger together**, each empowering the other.
 
-1. **Milo shares a hard moment and invites help.** Milo expresses a feeling in an age-appropriate,
-   embodied way (*"My tummy feels all fluttery, and I keep thinking about tomorrow. Will you help
-   me?"*) — rotating across worried · sad · scared · overwhelmed · lonely · frustrated · embarrassed.
-2. **The child coaches Milo through it** — the same coping skills, now child-as-helper:
+**Four guardrails make this safe for an at-risk child (non-negotiable):**
+1. **Mutual, not one-way.** Milo cares for the child too (the *door back*, below). The child is
+   never the sole caretaker of a needy creature.
+2. **Un-failable.** Milo's wobbles are always **light and always soothable**; **any** help the child
+   offers works and visibly calms Milo. No failing, no inconsolable pet, no guilt, no dependence.
+3. **Door back to the child.** After helping Milo, Milo reciprocates — *"you helped me… now how are
+   YOU?"* — a safe channel for the child's own feelings (and it still routes the lowest mood to the
+   crisis off-ramp).
+4. **Skill bridge.** Every coping skill the child uses on Milo is handed back for real life: *"you
+   can do this for yourself too."*
+
+1. **Milo shares a *light* wobble and invites help.** Always small and soothable (*"I've got a few
+   butterflies about tomorrow — nothing too big. Could you help me settle them?"*) — rotating across
+   worried · nervous · sad · frustrated · overwhelmed · shy · lonely.
+2. **The child coaches Milo through it** — the same coping skills, now child-as-helper (with an
+   explicit *"there's no wrong way — anything you pick will help"*):
    - **Read & name Milo's feeling** — emotional-literacy practice (no wrong answer; Milo affirms
      the child's read: *"You really see me"*).
-   - **Choose how to help:**
-     - **Breathe with Milo** — *the lead co-regulation feature.* Paced breathing (in 4 · hold 2 ·
-       out 6); the creature expands/contracts inside a soft halo and calms *because the child
-       breathes too*. Optional **gentle haptics** (feature-detected; silently absent on iOS Safari).
-     - **Comfort Milo** — the child picks kind, soothing words to give Milo.
-     - **Cheer Milo on** — the child reframes/encourages, helping Milo feel brave.
-   - **Milo visibly calms, thanks the child, and reflects the skill back:** *"You just did the very
-     thing that helps when YOU feel this way too — you're really good at this."*
-3. **A gentle "and how are you, helper?" self-check** stays — *secondary*, and still routes the
-   lowest feeling straight to the crisis off-ramp. **The helper framing never suppresses the child's
-   own distress signal** (see Non-negotiables).
-4. **Name a feeling · Take care · Rest together** — supporting "ways to be there for Milo."
-5. **A small real-life quest** (*do one kind thing · try the hard thing for 2 minutes · tell a
-   trusted grown-up one true thing · 5-4-3-2-1 grounding*) — logged with zero shame; the bond grows.
+   - **Choose how to help:** **Breathe with Milo** (lead co-regulation; the creature expands/
+     contracts in a halo and calms *because the child breathes too*; optional haptics) · **Comfort
+     Milo** (kind words) · **Cheer Milo on** (reframe/encourage).
+   - **Milo visibly calms, thanks the child, and bridges the skill back:** *"those slow breaths work
+     for YOU too — next time you feel this way, you can breathe just like that."*
+3. **Door back — Milo reciprocates.** Right after, Milo turns to care for the child: *"You looked
+   after me so kindly. Now it's my turn — how are YOU feeling? I look after you too."* → the feeling
+   picker. This (and the standalone *"Milo is checking on you"* card) **still routes the lowest mood
+   to the crisis off-ramp** — the helper framing never suppresses the child's own distress signal.
+4. **They grow together.** A single shared arc: as the bond deepens, **both** evolve — Milo through
+   Curled → Awake → Steady → Brave → Radiant, and the child alongside (*learning to notice feelings
+   → finding your calm → growing braver → shining*). The Journey screen shows both, side by side.
+5. **Name a feeling · Take care · Rest together · a small real-life quest** — supporting ways to be
+   there for Milo; logged with zero shame; the bond grows.
 
 The pet mirrors calm throughout, and the **M.I.L.O. = "My Inner Little One"** reveal lands deeper
 under the flip: by caring for Milo, the child has been caring for the gentle little one inside

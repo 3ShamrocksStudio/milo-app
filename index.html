@@ -339,6 +339,14 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 .lineopt:hover{border-color:var(--coral);background:var(--coral-soft)}
 .lineopt:active{transform:scale(.99)}
 @media (prefers-reduced-motion:reduce){.bubble.need{animation:none}}
+
+/* ---- shared growth (both Milo AND the child) ---- */
+.grow2{display:flex;align-items:stretch;gap:8px;margin-top:14px}
+.growcol{flex:1;background:var(--card-2);border:1px solid var(--line);border-radius:14px;padding:11px 10px;text-align:center}
+.growcol .gtag{font-size:.66rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--coral-deep)}
+.growcol .gval{font-family:'Quicksand',sans-serif;font-weight:700;font-size:1.05rem;color:var(--ink);margin:2px 0}
+.growcol .gsub{font-size:.72rem;color:var(--ink-soft);line-height:1.35}
+.growplus{display:flex;align-items:center;font-size:1.2rem;color:var(--green-deep);font-weight:700}
 </style>
 </head>
 <body>
@@ -433,11 +441,19 @@ var $overlayRoot = document.getElementById('overlayRoot');
 var KEY = 'milo.v1';
 var STAGE_NAMES = ['', 'Curled', 'Awake', 'Steady', 'Brave', 'Radiant'];
 var STAGE_BLURB = ['',
-  'just arrived — needs warmth and trust',
+  'just arrived — getting to know each other',
   'beginning to bond, starting to talk back',
   'calm together — you two co-regulate',
   'brave — tries gentle challenges with you',
-  'radiant — grown and resilient, like you'];
+  'radiant — grown and resilient, together'];
+/* The SHARED growth arc — the child grows right alongside Milo. Mutual
+   empowerment: each stage names how the CHILD is growing too. */
+var CHILD_GROWTH = ['',
+  'just getting to know each other',
+  'learning to notice feelings',
+  'finding your own calm',
+  'growing braver, together',
+  'shining — calm, kind, and strong'];
 var THRESH = [0, 0, 3, 9, 18, 30]; // growth points needed to REACH stage index (1..5)
 
 function blankState(){
@@ -632,16 +648,19 @@ function currentQuest(){ return QUESTS[S.questIndex % QUESTS.length]; }
    for distress and the crisis off-ramp always fires (see selfCheck +
    chat). Helping Milo never suppresses a real signal from the child.
    ============================================================ */
+/* Milo's wobbles are always LIGHT and always soothable — never heavy, never
+   a burden. Any help the child offers works. Milo can never be left
+   inconsolable, and the child can never "fail" or be made to feel guilty. */
 var MILO_MOMENTS = [
-  {feeling:'worried',     says:'My tummy feels all fluttery, and I keep thinking about tomorrow.'},
-  {feeling:'sad',         says:'Everything feels a little grey today, and I’m not even sure why.'},
-  {feeling:'scared',      says:'There was a loud noise and now my heart is beating really fast.'},
-  {feeling:'overwhelmed', says:'There’s SO much happening at once and my head feels too full.'},
-  {feeling:'lonely',      says:'I feel like nobody really notices me today.'},
-  {feeling:'frustrated',  says:'I tried and tried and it still went wrong. I kind of want to give up.'},
-  {feeling:'embarrassed', says:'I made a mistake in front of everyone, and I just want to hide.'}
+  {feeling:'worried',     says:'I’ve got a few butterflies about tomorrow — nothing too big. Could you help me settle them?'},
+  {feeling:'nervous',     says:'My thoughts are buzzing a little today. Will you help me slow them down?'},
+  {feeling:'sad',         says:'I’m feeling a tiny bit blue today. A little company would help so much.'},
+  {feeling:'frustrated',  says:'Something didn’t work the first time and I got a bit grumbly. Help me shake it off?'},
+  {feeling:'overwhelmed', says:'My head feels a little full. Could we make this moment smaller, together?'},
+  {feeling:'shy',         says:'I’m feeling kind of shy right now. Will you sit with me for a bit?'},
+  {feeling:'lonely',      says:'I just felt like having a friend nearby. Will you keep me company?'}
 ];
-var FEELING_POOL = ['worried','sad','scared','overwhelmed','lonely','frustrated','embarrassed','nervous','shy','tired'];
+var FEELING_POOL = ['worried','nervous','sad','frustrated','overwhelmed','shy','lonely','scared','tired','calm'];
 var COMFORTS = [
   'You’re safe right now. I’m right here with you.',
   'It’s okay to feel this way. Feelings are allowed.',
@@ -708,6 +727,7 @@ function helpStep2(closePrev, m, named){
         E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:affirm})])
       ]),
       E('h3',{style:'text-align:center;margin-top:14px',text:'How will you help '+pet()+'?'}),
+      E('p',{class:'faint',style:'text-align:center',text:'There’s no wrong way — anything you pick will help '+pet()+' feel better.'}),
       E('div',{class:'helpgrid'},[
         helpChoice('🫧','Breathe with '+pet(),'Slow it down together', function(){ close(); openBreathing(true); }),
         helpChoice('💛','Comfort '+pet(),'Say something kind', function(){ helpComfort(close, m); }),
@@ -742,7 +762,17 @@ function helpEncourage(closePrev, m){
       E('button',{class:'linkbtn',style:'display:block;margin:14px auto 0',on:{click:close}},'Back') ];
   });
 }
-/* Resolve — Milo visibly calms, thanks the child, reflects the skill back */
+/* The SKILL BRIDGE — the coping skill the child just used on Milo is handed
+   back for the child's own real life ("you can do this for yourself too"). */
+function skillBridge(kind, feeling){
+  if(kind==='breathe')  return 'And here’s the secret: those slow breaths work for YOU too. Next time you feel '+feeling+', you can breathe just like that.';
+  if(kind==='name')     return 'Naming a feeling makes it smaller — and that works for YOUR feelings too, not only mine.';
+  if(kind==='encourage')return 'Those brave words are yours to keep. You can say them to yourself next time something feels hard.';
+  return 'You just did the very thing that helps when YOU feel '+feeling+' too — you can always do this for yourself, '+(S.childName||'friend')+'.';
+}
+
+/* Resolve — Milo visibly calms, thanks the child, hands the skill back, then
+   RECIPROCATES by turning to care for the child (the door back). */
 function helpResolve(m, kind){
   closeOverlay();
   markHelped();
@@ -750,17 +780,38 @@ function helpResolve(m, kind){
     var thanks = (kind==='encourage')
       ? 'Your words made me stand a little taller. I can try now — thank you.'
       : 'That helped so much. My heart feels slower already. Thank you for staying with me.';
-    var reflect = 'You just did the very thing that helps when YOU feel '+m.feeling+' too. You’re really good at this'+helperName()+'.';
     return [
       E('div',{class:'grab'}),
       E('div',{class:'celebrate'},[
         E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage,'great')})]),
         E('div',{class:'spark',text:'💛'}),
-        E('h3',{text:pet()+' feels calmer'}),
+        E('h3',{text:'You helped '+pet()+' feel calmer'}),
         E('div',{class:'bubble',style:'margin:6px auto 0'},[E('span',{class:'who',text:pet()}),E('span',{text:thanks})]),
-        E('p',{class:'milocap',text:reflect})
+        E('p',{class:'milocap',text:skillBridge(kind, m.feeling)})
       ]),
-      E('button',{class:'btn primary block',style:'margin-top:16px',on:{click:function(){ close(); render(); }}},'💚')
+      E('button',{class:'btn primary block',style:'margin-top:16px',on:{click:openYourTurn}},'💚 '+pet()+'’s turn to check on you'),
+      E('button',{class:'linkbtn',style:'display:block;margin:12px auto 0',on:{click:function(){ close(); render(); }}},'Maybe later')
+    ];
+  });
+}
+
+/* The DOOR BACK — after the child cares for Milo, Milo reciprocates and gently
+   checks on the child. This keeps a safe channel for the child's OWN feelings;
+   the picker routes through pickMood, so a real distress signal still fires the
+   crisis off-ramp. Mutual care, never one-way. */
+function openYourTurn(){
+  closeOverlay();
+  openSheet(function(close){
+    var moods = E('div',{class:'feelrow'});
+    MOODS.forEach(function(mo){ moods.appendChild(E('button',{class:'feel',on:{click:function(){ pickMood(mo.k); }}},[
+      E('span',{class:'face',text:mo.face}), E('span',{class:'lbl',text:mo.lbl})])); });
+    return [
+      E('div',{class:'grab'}),
+      E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage,'good')}),
+        E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),
+          E('span',{text:'You looked after me so kindly. Now it’s my turn'+helperName()+' — how are YOU feeling? I look after you too. You can tell me anything, or skip.'})])]),
+      moods,
+      E('div',{class:'skiprow'},[E('button',{class:'linkbtn',on:{click:function(){ pickMood('skip'); }}},'I’d rather not say')])
     ];
   });
 }
@@ -929,7 +980,7 @@ function renderToday(){
   $app.appendChild(E('div',{class:'card petstage'},[
     E('div',{class:'petwrap',html:petSVG(S.stage, helped? 'good' : 'low')}),
     E('div',{class:'bubble'+(helped?'':' need')},[ E('span',{class:'who',text:pet()}), E('span',{text:heroText}) ]),
-    E('div',{class:'faint',style:'margin-top:8px',text:STAGE_NAMES[S.stage]+' · '+STAGE_BLURB[S.stage]})
+    E('div',{class:'faint',style:'margin-top:8px',text:'You & '+pet()+' · '+STAGE_NAMES[S.stage]+' — growing together'})
   ]));
 
   // PRIMARY — Help Milo (the flipped core loop). The child is the capable, caring one.
@@ -976,10 +1027,11 @@ function renderToday(){
 function selfCheckCard(){
   var picked = S.checkinDate === today();
   var card = E('div',{class:'card'},[
-    E('h2',{class:'section',text:simple()? 'And you?' : 'And how are you, helper?'}),
-    E('div',{class:'faint',text: picked
-      ? 'Thanks for checking in — '+pet()+' is glad you did.'
-      : pet()+' wonders about you too. No pressure — pick what fits, or skip.'})
+    E('h2',{class:'section',text: pet()+' is checking on you'}),
+    E('div',{class:'bubble',style:'margin:6px 0 2px'},[E('span',{class:'who',text:pet()}),
+      E('span',{text: picked
+        ? 'Thanks for telling me'+helperName()+'. I look after you, just like you look after me.'
+        : 'I look after you too'+helperName()+'. How are YOU feeling today? No pressure — pick what fits, or skip.'})])
   ]);
   var row = E('div',{class:'feelrow'});
   MOODS.forEach(function(m){
@@ -1101,7 +1153,8 @@ function openBreathing(forMilo){
       stage, label, count,
       toggle ? E('div',{class:'breathopts'},[toggle]) : null
     ]);
-    var done = E('button',{class:'btn ghost block',style:'margin-top:14px',on:{click:function(){ stopBreath(); close(); }}},'I’m done');
+    var finished = false;
+    var done = E('button',{class:'btn ghost block',style:'margin-top:14px',on:{click:function(){ stopBreath(); close(); if(finished && forMilo) openYourTurn(); }}},'I’m done');
 
     function setScale(s, dur){
       orb.style.transitionDuration = petEl.style.transitionDuration = (dur/1000)+'s';
@@ -1137,7 +1190,8 @@ function openBreathing(forMilo){
         E('div',{class:'petwrap',html:petSVG(S.stage,'great')}),
         E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:fin})])
       ]));
-      done.textContent = 'All done 💚';
+      finished = true;
+      done.textContent = forMilo ? ('All done — '+pet()+'’s turn to check on you 💚') : 'All done 💚';
       S.counts.breaths++; save(); addGrowth(2);
       if(forMilo) markHelped();
     }
@@ -1490,13 +1544,18 @@ function openAISetup(){
 /* ---------------- JOURNEY ---------------- */
 function renderJourney(){
   $app.appendChild(E('div',{class:'card'},[
-    E('h2',{class:'section',text:'Your journey together'}),
-    E('p',{class:'faint',text:'No points, no streaks. '+pet()+' grows because you show up for it — and you grow right alongside.'}),
+    E('h2',{class:'section',text:'Growing together'}),
+    E('p',{class:'faint',text:'No points, no streaks. You and '+pet()+' grow side by side — each helping the other become a little stronger.'}),
     arcRow(),
     E('div',{class:'vine'},[E('i',{style:'width:'+(progressToNext()*100)+'%'})]),
+    E('div',{class:'grow2'},[
+      E('div',{class:'growcol'},[E('div',{class:'gtag',text:pet()}), E('div',{class:'gval',text:STAGE_NAMES[S.stage]}), E('div',{class:'gsub',text:STAGE_BLURB[S.stage]})]),
+      E('div',{class:'growplus',text:'＋'}),
+      E('div',{class:'growcol'},[E('div',{class:'gtag',text:'You'}), E('div',{class:'gval',text:'Growing'}), E('div',{class:'gsub',text:CHILD_GROWTH[S.stage]})])
+    ]),
     E('p',{class:'muted',style:'margin-top:10px;text-align:center',text: S.stage>=5
-      ? pet()+' is radiant — grown and resilient, just like the strength you’ve been building.'
-      : 'You’re growing together. Keep caring in your own time.'})
+      ? 'Radiant — both of you. You grew '+pet()+', and '+pet()+' helped grow you. That strength is real, and it’s yours.'
+      : 'You’re growing together. Keep caring, in your own time — every kind moment helps you both.'})
   ]));
 
   // M.I.L.O. secret — appears only once the first letter has unlocked (stage 2+),
@@ -1575,9 +1634,11 @@ function arcRow(){
 function renderAbout(){
   $app.appendChild(E('div',{class:'card'},[
     E('h2',{class:'section',text:'About '+BRAND.name}),
-    E('p',{class:'muted',text:'Here’s the gentle twist: '+BRAND.name+' is the one who has hard moments — and YOU are the helper. When you comfort '+BRAND.name+', breathe with it, and cheer it on, you’re quietly learning the very same calm for yourself. Helping is how you grow.'}),
-    E('div',{class:'note green'},[E('span',{class:'nt',text:'Why being the helper helps you'}),
-      E('span',{text:'This is called the “helper principle”: when a child cares for a vulnerable other, they build their own confidence, resilience, and sense of worth. You’re not being fixed — you’re being the capable, caring one. That’s where the strength comes from.'})]),
+    E('p',{class:'muted',text:'Here’s the heart of it: you and '+BRAND.name+' look after EACH OTHER. Sometimes '+BRAND.name+' has a little wobble and you help it feel better; then '+BRAND.name+' turns around and checks on you. It’s a two-way friendship — and you grow stronger together, each helping the other.'}),
+    E('div',{class:'note green'},[E('span',{class:'nt',text:'Why caring for '+BRAND.name+' helps you too'}),
+      E('span',{text:'This is the “helper principle”: when a child cares for someone else, they build their own confidence, resilience, and sense of worth. You’re never being fixed — you’re the capable, caring one. And every calm thing you do for '+BRAND.name+' (breathing, naming a feeling, kind words) is a skill you can use for yourself, in real life.'})]),
+    E('div',{class:'note calm'},[E('span',{class:'nt',text:'You can never let '+BRAND.name+' down'}),
+      E('span',{text:BRAND.name+'’s wobbles are always small, and any way you choose to help always works. There’s no failing, no pressure, and no guilt for taking a break — '+BRAND.name+' is always okay, and always happy to see you.'})]),
     E('div',{class:'note warm'},[E('span',{class:'nt',text:'Made with care'}),
       E('span',{text:BRAND.name+' teaches real calm-and-coping skills, gently. Its words haven’t yet been reviewed by a child psychologist, so think of '+BRAND.name+' as a kind companion — here to support you, never to replace a grown-up or a professional.'})]),
     E('div',{class:'note green'},[E('span',{class:'nt',text:'Gently grounded in research'}),
@@ -1668,10 +1729,10 @@ function celebrateEvolution(stage){
       E('div',{class:'celebrate'},[
         E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(stage,'great')})]),
         E('div',{class:'spark',text: finalReveal ? '🌟' : '✨'}),
-        E('h3',{text:'Something is changing…'}),
-        E('p',{class:'muted',text:pet()+' is becoming '+STAGE_NAMES[stage]+' — '+STAGE_BLURB[stage]+'.'}),
+        E('h3',{text:'You’re both growing…'}),
+        E('p',{class:'muted',text:pet()+' is becoming '+STAGE_NAMES[stage]+' — and so are you'+helperName()+': '+CHILD_GROWTH[stage]+'.'}),
         E('div',{class:'bubble',style:'margin:10px auto 0'},[E('span',{class:'who',text:pet()}),
-          E('span',{text:'I feel safer with you. We’re growing — together.'})])
+          E('span',{text:'Look how far we’ve come. I grew because you were here — and you grew right alongside me. We’re stronger together.'})])
       ])
     ];
     if(revealing){

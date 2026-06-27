@@ -21,23 +21,28 @@ A single-file, dependency-free Progressive Web App by [3Shamrocks Studio](https:
 Branded to the canonical 3SDS `[data-brand="milo"]`: warm cream world, **soft sage** companion,
 **peach-coral** brand hero `#EF6440`, warm amber for connection, Quicksand + Nunito. No alarming reds.
 
-## The core loop — *the flip*
+## The core loop — *mutual empowerment & growth*
 
-Milo's defining move: **Milo is the one who needs support, and the child is the helper.**
-Grounded in the **helper-therapy principle** — caring for a vulnerable other builds the child's own
-agency, resilience, and self-worth. By helping Milo, the child rehearses and internalises the very
-same coping skills, and feels capable rather than "fixed."
+Milo's defining move is a **two-way bond**: **Milo sometimes needs a little help, the child helps —
+then Milo cares for the child right back.** Grounded in the **helper-therapy principle** (caring for
+a vulnerable other builds the child's own agency, resilience, and self-worth). By helping Milo the
+child rehearses the very same coping skills and feels capable — and **they grow stronger together**,
+each empowering the other.
 
-- **Milo shares a hard moment** (worried, sad, scared, overwhelmed, lonely, frustrated, embarrassed)
-  and invites the child to help.
-- **The child coaches Milo:** reads/names Milo's feeling → chooses how to help — **breathe with**,
-  **comfort** (kind words), or **cheer on** (reframe/encourage).
-- **Milo visibly calms, thanks the child, and reflects the skill back:** *"You just did the very
-  thing that helps when YOU feel this way too — you're really good at this."* The empowerment is the
-  point: the child is the capable, caring one.
-- **A gentle "and how are you, helper?" self-check** remains — secondary, and still routes the
-  lowest feeling straight to the crisis off-ramp (safety is never suppressed by the helper framing).
-- **Talk with Milo** — a warm, safe conversation (see *Talk & voice* below).
+Four guardrails keep it empowering, never burdening, for an at-risk child:
+
+- **Mutual, not one-way** — Milo cares for the child too; the child is never the sole caretaker.
+- **Un-failable** — Milo's wobbles are always **light and soothable**; **any** help the child picks
+  works and visibly calms Milo. No failing, no inconsolable pet, no guilt, no dependence.
+- **Door back to the child** — after helping Milo, Milo reciprocates: *"you helped me… now how are
+  YOU?"* → a feeling picker that **still routes the lowest mood to the crisis off-ramp**.
+- **Skill bridge** — every skill used on Milo is handed back for real life: *"you can do this for
+  yourself too."*
+
+The loop: Milo shares a light wobble → child reads & names the feeling → **breathe with / comfort /
+cheer on** → Milo calms, thanks the child, bridges the skill back → **Milo checks on the child** →
+**both grow** along one shared arc (Journey shows Milo *and* the child evolving side by side).
+Plus **Talk with Milo** — a warm, safe conversation (see *Talk & voice* below).
 - **Co-regulated breathing — the lead feature.** Milo breathes *with* the child (in 4 · hold 2 ·
   out 6), the creature expanding and contracting inside a soft halo. Optional **gentle haptics**
   pulse in time with the breath where the device supports it (Android/Chrome; iOS ignores it and it

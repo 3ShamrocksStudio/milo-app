@@ -118,6 +118,27 @@ child is the helper-coach. Empowerment comes from the child being the capable, c
   not alarm red. Helper-therapy grounding added to About. Reduced-motion respected on the new
   "needs-you" pulse. Zero console errors.
 
+## What changed in the mutual-empowerment pass (June 2026)
+
+Refined the flip into a **two-way bond** so it empowers without burdening an at-risk child:
+
+- ✅ **Mutual, not one-way.** After the child helps Milo, Milo **reciprocates** and checks on the
+  child (the "door back"); a standalone *"Milo is checking on you"* card frames the self-check as
+  Milo caring for the child. The child is never the sole caretaker.
+- ✅ **Un-failable.** Milo's moments rewritten to be **light and always soothable** ("a few
+  butterflies… nothing too big"); an explicit *"there's no wrong way — anything you pick will help"*
+  cue; the resolve copy never implies failure, and a no-guilt "Maybe later" exit. Verified ANY help
+  path calms Milo.
+- ✅ **Door back → still crisis-safe.** The reciprocal *"now how are YOU feeling?"* picker routes
+  through `pickMood` — verified that "Really not okay" from the door-back still fires the crisis
+  off-ramp + resources. Safety is never suppressed by the helper/reciprocity framing.
+- ✅ **Skill bridge** made explicit and skill-specific (breathing / naming / reframing → "you can do
+  this for yourself too").
+- ✅ **Shared growth arc.** Both Milo AND the child visibly grow together — `CHILD_GROWTH`
+  descriptors surfaced in the evolution celebration ("you're both growing…") and a dual Milo+You
+  panel on the Journey screen. Copy/tone reframed to "growing together."
+- ✅ Verified at **390×844**, zero console errors. SW cache bumped to v4.
+
 ## Open items / real next phase (must precede any real-child use)
 
 1. **Clinical review** of every line of copy by child/adolescent psychologists + trauma specialists.
