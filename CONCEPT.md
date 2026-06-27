@@ -109,6 +109,29 @@ under the flip: by caring for Milo, the child has been caring for the gentle lit
 
 ---
 
+## Simplicity first (the surface is a Tamagotchi; the depth is invisible)
+
+The surface must feel **as simple and familiar as a Tamagotchi**: choose a pet, care for it with
+easy taps, watch it respond and grow. A child gets it instantly. There is **no clinical feel and
+nothing that reads as "therapy."** Underneath that simple care loop, the experience *is* a
+self-therapy + mutual-growth session for both — but that depth stays **embedded and invisible**: the
+coping skills happen *through* the play (helping the pet, breathing together, naming a feeling),
+never as a separate, labelled "feature." Simplicity and smoothness always win over spectacle.
+
+## Milo's world (it lives in a place)
+
+Milo lives in a small world that **mirrors the bond**, built as a light **2.5D parallax scene
+(SVG + CSS, zero dependencies, GPU-composited)** — deliberately *not* Three.js/WebGL, to stay
+smooth, cool, and instant on a phone. It starts **muted and quiet** (overcast, a dim sun, bare
+hills, one sprout) and **visibly comes alive** as Milo and the child grow together — the sky warms
+and clears, hills green, flowers bloom, clouds drift, butterflies and then fireflies appear, ending
+in a radiant golden hour. The environment is the visible record of the relationship: calm, warm,
+wondrous, never alarming. Performance-first (only ~11 CSS-animated elements, no JS loop,
+reduced-motion freezes it). The child **chooses their creature** at onboarding (Sprout · Sky ·
+Sunny · Blossom — same soft form, different palette + ears).
+
+---
+
 ## Non-negotiables (baked in)
 
 - **Trauma-informed + warm.** No harsh alarms, no failure or shame states, no punishment for

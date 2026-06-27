@@ -139,6 +139,24 @@ Refined the flip into a **two-way bond** so it empowers without burdening an at-
   panel on the Journey screen. Copy/tone reframed to "growing together."
 - ✅ Verified at **390×844**, zero console errors. SW cache bumped to v4.
 
+## What changed in the living-world pass (June 2026)
+
+Milo now **lives in a place** — and the surface was kept Tamagotchi-simple.
+
+- ✅ **Living 2.5D world** on the home stage: a hand-built **SVG + CSS parallax scene (zero deps,
+  GPU-composited)** that mirrors the bond — muted/overcast/bare at stage 1 → warming sky, greening
+  hills, blooming flowers, drifting clouds, light-motes, butterflies → radiant golden hour with a
+  blossoming tree + fireflies at stage 5. Deliberately **not Three.js/WebGL** (battery/bundle/jank).
+- ✅ **Performance verified:** static SVG + only ~11 CSS-keyframe elements animating (compositor-
+  only), **no JS animation loop**, ~300 DOM nodes total, `prefers-reduced-motion` freezes all
+  motion. Smooth + instant on mobile; ~119 KB single file, fully offline.
+- ✅ **Pet choice at onboarding:** the child picks their creature (Sprout/Sky/Sunny/Blossom — same
+  soft dog-hearted form, different palette + ear shape) and names it; each grows through all 5 stages.
+- ✅ **Simplicity-first preserved:** the world is pure ambiance (no new interactions, no lag); the
+  surface remains an easy care loop with no clinical/therapy feel — the depth stays embedded.
+- ✅ **No-alarming-reds + 3SDS** held (cream/sage/peach/amber; gentle pink blossoms, never red).
+  All prior guardrails + crisis safety re-verified (self-check + chat off-ramp fire). SW cache v5.
+
 ## Open items / real next phase (must precede any real-child use)
 
 1. **Clinical review** of every line of copy by child/adolescent psychologists + trauma specialists.

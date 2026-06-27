@@ -54,6 +54,27 @@ Plus **Talk with Milo** — a warm, safe conversation (see *Talk & voice* below)
 - **A 5-stage pet evolution** — Curled → Awake → Steady → Brave → Radiant — earned by genuine
   care, never by streaks or pressure. The bond never decays; skipping a day costs nothing.
 
+## Milo's world (it lives in a place)
+
+Milo doesn't sit on a blank screen — it lives in a small world that **mirrors the bond**. The world
+is a light **2.5D parallax scene** (hand-built **SVG + CSS, zero dependencies**, GPU-composited — no
+Three.js/WebGL, no battery drain, no lag) that **comes alive as the two grow together**:
+
+- **Stage 1 (Curled):** muted, quiet, overcast — a dim sun, bare hills, a single sprout.
+- **Stages 2–4:** the sky warms and clears, hills green up, plants and flowers bloom in, clouds
+  drift, light-motes rise, the first butterflies appear.
+- **Stage 5 (Radiant):** golden hour — a blossoming tree, a full row of flowers, butterflies, and
+  fireflies; the creature radiant. The environment is the visible record of the relationship.
+
+Performance-first: the scene is static SVG with **only ~11 CSS-keyframe elements** animating
+(compositor-only, **no JS animation loop**), ~300 DOM nodes total, and `prefers-reduced-motion`
+freezes all motion. Smooth on a phone; tiny to load; fully offline. Calm and wondrous — never
+alarming, no alarming reds.
+
+**Choose your friend.** Onboarding lets the child pick their own creature — **Sprout · Sky · Sunny ·
+Blossom** (same soft, dog-hearted form; different palette + ears) — then name it. Every creature
+grows through the same five stages.
+
 ## Talk & voice — the companion brain
 
 Milo actually converses, warmly and safely, with a **three-layer brain**:

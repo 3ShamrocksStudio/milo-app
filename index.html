@@ -347,6 +347,43 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 .growcol .gval{font-family:'Quicksand',sans-serif;font-weight:700;font-size:1.05rem;color:var(--ink);margin:2px 0}
 .growcol .gsub{font-size:.72rem;color:var(--ink-soft);line-height:1.35}
 .growplus{display:flex;align-items:center;font-size:1.2rem;color:var(--green-deep);font-weight:700}
+
+/* ---- choose-your-creature (onboarding) ---- */
+.petpick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.petopt{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px 8px 12px;text-align:center;
+  box-shadow:var(--shadow-sm);transition:transform .14s ease,border-color .15s,box-shadow .15s}
+.petopt:active{transform:scale(.97)}
+.petopt.sel{border-color:var(--coral);box-shadow:0 6px 18px rgba(239,100,64,.18)}
+.po-art{width:92px;height:92px;margin:0 auto}
+.po-art svg{width:100%;height:100%;overflow:visible}
+.po-name{font-family:'Quicksand',sans-serif;font-weight:700;color:var(--ink);margin-top:2px}
+.po-sub{font-size:.72rem;color:var(--ink-soft)}
+.petopt.sel .po-name{color:var(--coral-deep)}
+
+/* ---- the living WORLD (2.5D parallax, grows with the bond) ---- */
+.worldstage{position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);
+  min-height:352px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:14px 16px 16px}
+.world{position:absolute;inset:0;z-index:0}
+.world>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.worldstage .petwrap{position:relative;z-index:3;width:148px;height:148px;margin-bottom:0}
+.worldstage .bubble{position:relative;z-index:3;max-width:300px}
+.worldstage .stageline{position:relative;z-index:3;margin-top:9px;font-size:.76rem;color:var(--ink-soft);font-weight:700;
+  background:rgba(255,252,249,.7);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:4px 13px;border-radius:99px}
+.w-ov{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.w-cloud{position:absolute;border-radius:50%;background:rgba(255,255,255,.72);filter:blur(2px);animation:wdrift linear infinite}
+.w-mote{position:absolute;width:7px;height:7px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,244,214,.95),rgba(255,244,214,0));animation:wrise ease-in infinite}
+.w-fly{position:absolute;animation:wflutter ease-in-out infinite}
+.w-fire{position:absolute;width:8px;height:8px;border-radius:50%;
+  background:radial-gradient(circle,#FFF1B8,rgba(255,221,120,0));animation:wglow ease-in-out infinite}
+@keyframes wdrift{from{transform:translate3d(-50px,0,0)}to{transform:translate3d(440px,0,0)}}
+@keyframes wrise{0%{transform:translate3d(0,12px,0);opacity:0}20%{opacity:.9}100%{transform:translate3d(0,-130px,0);opacity:0}}
+@keyframes wflutter{0%{transform:translate3d(0,0,0) rotate(-5deg)}25%{transform:translate3d(20px,-14px,0) rotate(6deg)}
+  50%{transform:translate3d(40px,2px,0) rotate(-3deg)}75%{transform:translate3d(20px,14px,0) rotate(5deg)}100%{transform:translate3d(0,0,0) rotate(-5deg)}}
+@keyframes wglow{0%,100%{opacity:.18;transform:translate3d(0,0,0)}50%{opacity:1;transform:translate3d(4px,-7px,0)}}
+.w-sway{transform-box:fill-box;transform-origin:bottom center;animation:wsway 6.5s ease-in-out infinite}
+@keyframes wsway{0%,100%{transform:rotate(-1.1deg)}50%{transform:rotate(1.1deg)}}
+@media (prefers-reduced-motion:reduce){.w-cloud,.w-mote,.w-fly,.w-fire,.w-sway{animation:none}}
 </style>
 </head>
 <body>
@@ -459,7 +496,7 @@ var THRESH = [0, 0, 3, 9, 18, 30]; // growth points needed to REACH stage index 
 function blankState(){
   return {
     v:1, onboarded:false,
-    petName:'', childName:'', ageBand:'', likeThing:'',
+    petName:'', childName:'', ageBand:'', likeThing:'', petType:'',
     growth:0, stage:1, hapticsOn:true, speakOn:false,
     counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0, chats:0, helps:0},
     todayMood:'', checkinDate:'', questDate:'', moodLog:[],
@@ -509,19 +546,47 @@ function progressToNext(){
    THE PET  — soft, round, gender-neutral, dog-hearted blob.
    Inline SVG, trusted static markup (no user data inside).
    ============================================================ */
+/* The child CHOOSES their creature at onboarding. Each type is the same soft,
+   round, gender-neutral, dog-hearted form — differing only in palette + ears.
+   Every creature grows through the same 5 stages (muted+shy → radiant). */
+var PETS = {
+  sprout: { name:'Sprout', sub:'sage & gentle', ear:'leaf',
+    body:['#AEB9B0','#93B9A2','#79B197','#5FA98C','#4FA98C'],
+    belly:['#CCD4CC','#C7E2D2','#BAE1CE','#B1E1CA','#CBF0DE'],
+    heart:['#C2CCC4','#E7BE92','#E4AC72','#E29A56','#EBB877'] },
+  sky: { name:'Sky', sub:'calm & dreamy', ear:'round',
+    body:['#AEB6BD','#9CB6CC','#83A8CA','#6E97C2','#5E91C4'],
+    belly:['#CDD5DC','#D4E3EF','#CADFEF','#C1DAED','#D4E9F7'],
+    heart:['#C2C9CE','#E7BE92','#E4AC72','#E29A56','#EBB877'] },
+  sunny: { name:'Sunny', sub:'warm & sunny', ear:'tiny',
+    body:['#BEB6AD','#D9B58B','#E1A877','#DA9A60','#E89A68'],
+    belly:['#DAD2CB','#F5E4CE','#F1DCBE','#ECD2B0','#FAE4CA'],
+    heart:['#CCC5BD','#E0A06C','#D98C50','#CC7C40','#E89F66'] },
+  blossom: { name:'Blossom', sub:'soft & sweet', ear:'round',
+    body:['#BCB4BB','#C8AAC7','#C295C1','#B681B5','#C892D2'],
+    belly:['#D9D2D9','#ECD8EB','#E7CEE9','#E1C3E7','#F1DDF3'],
+    heart:['#C8C2C8','#E7BE92','#E4AC72','#E29A56','#E8AEDA'] }
+};
+function curType(){ return PETS[S.petType] ? S.petType : (PETS[ob && ob.petType] ? ob.petType : 'sprout'); }
+function petPal(type, stage){ var p = PETS[type]||PETS.sprout; var i=Math.max(0,Math.min(4,(stage||1)-1)); return {body:p.body[i], belly:p.belly[i], heart:p.heart[i], ear:p.ear}; }
+
+/* structural growth (sizes/expression), shared by every creature */
 function petCfg(stage){
   var C = {
-    1:{body:'#AEB9B0',belly:'#CCD4CC',heart:'#C2CCC4',eyeRy:5,ear:34,cheek:.12,smile:2,mouthW:9,aura:0,feet:false,scarf:false,sparkle:false,bodyRy:50,bodyCy:144,sleepy:true},
-    2:{body:'#93B9A2',belly:'#C7E2D2',heart:'#E7BE92',eyeRy:16,ear:9,cheek:.30,smile:4,mouthW:14,aura:0,feet:true,scarf:false,sparkle:false,bodyRy:60,bodyCy:136},
-    3:{body:'#79B197',belly:'#BAE1CE',heart:'#E4AC72',eyeRy:15,ear:-2,cheek:.45,smile:6,mouthW:16,aura:0,feet:true,scarf:false,sparkle:false,bodyRy:61,bodyCy:135},
-    4:{body:'#5FA98C',belly:'#B1E1CA',heart:'#E29A56',eyeRy:16,ear:-11,cheek:.55,smile:7,mouthW:18,aura:.32,feet:true,scarf:true,sparkle:false,bodyRy:62,bodyCy:134},
-    5:{body:'url(#bodyGrad)',belly:'#CBF0DE',heart:'url(#heartGrad)',eyeRy:17,ear:-15,cheek:.62,smile:8,mouthW:20,aura:.55,feet:true,scarf:true,sparkle:true,bodyRy:63,bodyCy:133}
+    1:{eyeRy:5,ear:34,cheek:.12,smile:2,mouthW:9,aura:0,feet:false,scarf:false,sparkle:false,bodyRy:50,bodyCy:144,sleepy:true},
+    2:{eyeRy:16,ear:9,cheek:.30,smile:4,mouthW:14,aura:0,feet:true,scarf:false,sparkle:false,bodyRy:60,bodyCy:136},
+    3:{eyeRy:15,ear:-2,cheek:.45,smile:6,mouthW:16,aura:0,feet:true,scarf:false,sparkle:false,bodyRy:61,bodyCy:135},
+    4:{eyeRy:16,ear:-11,cheek:.55,smile:7,mouthW:18,aura:.32,feet:true,scarf:true,sparkle:false,bodyRy:62,bodyCy:134},
+    5:{eyeRy:17,ear:-15,cheek:.62,smile:8,mouthW:20,aura:.55,feet:true,scarf:true,sparkle:true,bodyRy:63,bodyCy:133}
   };
   return C[stage] || C[1];
 }
-// moodKey can subtly soften the face so the pet "mirrors" the child
-function petSVG(stage, moodKey){
+// moodKey subtly softens the face so the pet "mirrors" the child; type chooses palette
+function petSVG(stage, moodKey, type){
   var c = petCfg(stage);
+  var P = petPal(type || curType(), stage);
+  c = {body:P.body, belly:P.belly, heart:P.heart, earShape:P.ear,
+       eyeRy:c.eyeRy,ear:c.ear,cheek:c.cheek,smile:c.smile,mouthW:c.mouthW,aura:c.aura,feet:c.feet,scarf:c.scarf,sparkle:c.sparkle,bodyRy:c.bodyRy,bodyCy:c.bodyCy,sleepy:c.sleepy};
   var cx = 110;
   var eyeCy = c.bodyCy - 20;
   var eyeDx = 23;
@@ -537,9 +602,10 @@ function petSVG(stage, moodKey){
   function ear(side){
     var ex = cx + side*30, ey = c.bodyCy - c.bodyRy + 8;
     var rot = side*(c.ear); // positive -> droops outward/down
+    var d = {leaf:{rx:13,ry:22,ix:6.5,iy:13,oy:12}, round:{rx:15,ry:16,ix:8,iy:9,oy:8}, tiny:{rx:10,ry:13,ix:5,iy:7,oy:10}}[c.earShape] || {rx:13,ry:22,ix:6.5,iy:13,oy:12};
     return '<g transform="rotate('+rot+' '+ex+' '+ey+')">'
-      + '<ellipse cx="'+ex+'" cy="'+(ey-12)+'" rx="13" ry="22" fill="'+c.body+'"/>'
-      + '<ellipse cx="'+ex+'" cy="'+(ey-12)+'" rx="6.5" ry="13" fill="'+c.belly+'" opacity=".75"/>'
+      + '<ellipse cx="'+ex+'" cy="'+(ey-d.oy)+'" rx="'+d.rx+'" ry="'+d.ry+'" fill="'+c.body+'"/>'
+      + '<ellipse cx="'+ex+'" cy="'+(ey-d.oy)+'" rx="'+d.ix+'" ry="'+d.iy+'" fill="'+c.belly+'" opacity=".75"/>'
       + '</g>';
   }
   // eye group
@@ -857,10 +923,10 @@ function renderTabs(){
 }
 
 /* ---------------- ONBOARDING ---------------- */
-var ob = {step:0, name:'', kid:'', age:'', like:''};
+var ob = {step:0, name:'', kid:'', age:'', like:'', petType:''};
 function renderOnboarding(){
   clear($app);
-  var steps = [obWelcome, obMeet, obName, obYou, obReady];
+  var steps = [obWelcome, obChoose, obName, obYou, obReady];
   $app.appendChild(E('div',{class:'topbar'},[
     E('div',{class:'brand'},[
       E('div',{class:'logo',html:petSVG(2,'')}),
@@ -885,13 +951,25 @@ function obWelcome(){
     E('button',{class:'btn primary block',on:{click:function(){ob.step=1;renderOnboarding();}}},'Okay, let’s meet →')
   ]);
 }
-function obMeet(){
+function obChoose(){
+  var grid = E('div',{class:'petpick'});
+  Object.keys(PETS).forEach(function(key){
+    var card = E('button',{class:'petopt'+(ob.petType===key?' sel':''),on:{click:function(){
+      ob.petType = key;
+      var all = grid.querySelectorAll('.petopt'); for(var i=0;i<all.length;i++) all[i].classList.remove('sel');
+      card.classList.add('sel');
+    }}},[
+      E('div',{class:'po-art',html:petSVG(2,'great',key)}),
+      E('div',{class:'po-name',text:PETS[key].name}),
+      E('div',{class:'po-sub',text:PETS[key].sub})
+    ]);
+    grid.appendChild(card);
+  });
   return E('div',{class:'ob'},[
-    E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(1,'')}),
-      E('div',{class:'bubble'},[E('span',{class:'who',text:'…'}), E('span',{text:'(it’s curled up, a little shy)'})])]),
-    E('h2',{class:'section',text:'This little one just arrived.'}),
-    E('p',{class:'muted',text:'It’s shy, and not sure yet if the world is safe. With a bit of warmth and time, it will start to open up — and so might you.'}),
-    E('button',{class:'btn primary block',on:{click:function(){ob.step=2;renderOnboarding();}}},'I’d like to be its friend')
+    E('h2',{class:'section',text:'Choose your friend'}),
+    E('p',{class:'muted',text:'A little creature is waiting to meet you. Pick the one that feels like yours — there’s no wrong choice, and it’s yours to name next.'}),
+    grid,
+    E('button',{class:'btn primary block',style:'margin-top:16px',on:{click:function(){ if(!ob.petType) ob.petType='sprout'; ob.step=2; renderOnboarding(); }}},'This one’s mine →')
   ]);
 }
 function obName(){
@@ -945,6 +1023,7 @@ function obReady(){
 }
 function finishOnboarding(){
   S.petName = ob.name || 'Pip';
+  S.petType = ob.petType || 'sprout';
   S.childName = (ob.kid||'').trim();
   S.ageBand = ob.age || '';
   S.likeThing = (ob.like||'').trim();
@@ -953,6 +1032,78 @@ function finishOnboarding(){
   S.lastVisit = today();
   S.stage = 1; S.growth = 0;
   save(); go('today');
+}
+
+/* ============================================================
+   THE WORLD — Milo lives in a place. A light 2.5D parallax scene
+   (pure SVG + CSS, zero deps, GPU-composited) that MIRRORS the bond:
+   muted & quiet at stage 1 → it blooms, warms, lights up and gains
+   gentle life (plants, butterflies, fireflies, golden dusk) as the two
+   grow together. No JS animation loop; reduced-motion freezes it.
+   ============================================================ */
+function butterflySVG(col){
+  return '<svg width="22" height="18" viewBox="0 0 22 18" xmlns="http://www.w3.org/2000/svg"><g fill="'+col+'" opacity=".92">'
+    + '<ellipse cx="7" cy="6.5" rx="6" ry="6.5"/><ellipse cx="15" cy="6.5" rx="6" ry="6.5"/>'
+    + '<ellipse cx="7.5" cy="12" rx="4.6" ry="5"/><ellipse cx="14.5" cy="12" rx="4.6" ry="5"/></g>'
+    + '<rect x="10.4" y="2.5" width="1.2" height="13.5" rx=".6" fill="#6E5A4E"/></svg>';
+}
+function fSprout(x,s){ s=s||1; return '<g transform="translate('+x+' 294) scale('+s+')">'
+  + '<path d="M0 0 C -1 -10 -1 -16 0 -22" stroke="#5C925C" stroke-width="2.4" fill="none" stroke-linecap="round"/>'
+  + '<path d="M0 -14 C -10 -16 -13 -25 -3 -24 C -2 -19 -1 -16 0 -14 Z" fill="#7BB37B"/>'
+  + '<path d="M0 -18 C 10 -20 13 -29 3 -28 C 2 -23 1 -20 0 -18 Z" fill="#8FBF8F"/></g>'; }
+function fFlower(x,s,col){ s=s||1; col=col||'#F0B49A'; var pet='';
+  for(var i=0;i<5;i++){ pet += '<ellipse cx="0" cy="-37" rx="3.6" ry="6.6" fill="'+col+'" transform="rotate('+(i*72)+' 0 -30)"/>'; }
+  return '<g transform="translate('+x+' 294) scale('+s+')"><path d="M0 0 L0 -26" stroke="#5C925C" stroke-width="2.2" stroke-linecap="round"/>'
+  + '<path d="M0 -12 C 8 -14 11 -21 3 -20 C 2 -16 1 -14 0 -12 Z" fill="#7BB37B"/>'
+  + pet + '<circle cx="0" cy="-30" r="3.4" fill="#F6D98A"/></g>'; }
+function fTree(x,s,bloom){ s=s||1; var bl='';
+  if(bloom){ var pts=[[-14,-58],[6,-66],[18,-52],[-4,-44],[12,-40],[-20,-46],[8,-54]]; for(var i=0;i<pts.length;i++){ bl += '<circle cx="'+pts[i][0]+'" cy="'+pts[i][1]+'" r="3.1" fill="#F2C0D8"/>'; } }
+  return '<g transform="translate('+x+' 294) scale('+s+')"><rect x="-4" y="-46" width="8" height="46" rx="3" fill="#9A7558"/>'
+  + '<circle cx="0" cy="-56" r="24" fill="#7BB37B"/><circle cx="-18" cy="-46" r="16" fill="#88BE88"/>'
+  + '<circle cx="18" cy="-48" r="17" fill="#6FA86F"/><circle cx="0" cy="-40" r="17" fill="#83B883"/>' + bl + '</g>'; }
+function fBush(x,s){ s=s||1; return '<g transform="translate('+x+' 296) scale('+s+')">'
+  + '<circle cx="-9" cy="-8" r="11" fill="#6FA86F"/><circle cx="6" cy="-11" r="13" fill="#7BB37B"/><circle cx="17" cy="-6" r="9" fill="#88BE88"/></g>'; }
+
+function worldFlora(stage,prog){
+  if(stage<=1) return fSprout(195, .65 + prog*0.35);
+  if(stage===2) return fSprout(150,1) + fSprout(240,.9) + fFlower(300,.6+prog*.4,'#F0B49A');
+  if(stage===3) return fTree(70,1,false) + fSprout(330,1) + fFlower(160,1,'#F0B49A') + fFlower(300,1,'#C8A0D0') + fFlower(250,.55+prog*.45,'#F4CDA0');
+  if(stage===4) return fBush(40,1) + fTree(95,1.1,false) + fSprout(135,1) + fSprout(335,1)
+    + fFlower(160,1,'#F0B49A') + fFlower(210,1,'#C8A0D0') + fFlower(255,1,'#F4CDA0') + fFlower(305,1,'#9FCBE0') + fFlower(350,.55+prog*.45,'#F0B49A');
+  return fBush(40,1.05) + fBush(356,1) + fTree(95,1.2,true) + fSprout(130,1) + fSprout(338,1)
+    + fFlower(150,1.1,'#F0B49A') + fFlower(195,1,'#C8A0D0') + fFlower(240,1.1,'#F4CDA0') + fFlower(285,1,'#9FCBE0') + fFlower(322,1.05,'#F2C0D8');
+}
+function buildWorld(stage,prog){
+  stage = Math.max(1,Math.min(5,stage||1)); prog = Math.max(0,Math.min(1,prog||0));
+  var sky =  {1:['#DDE1E4','#E8E3DB'],2:['#E7DCE8','#F6EAD9'],3:['#D2E7F2','#EDF4E6'],4:['#CFE9EC','#F2EDD6'],5:['#A9C4DE','#F1D6A6']}[stage];
+  var hF =   {1:'#C5CDC7',2:'#AFCBB9',3:'#9BC6AA',4:'#8AC29C',5:'#7FB89A'}[stage];
+  var hN =   {1:'#B6C0B8',2:'#9DC1A8',3:'#84B795',4:'#6FB186',5:'#5FA98C'}[stage];
+  var gnd =  {1:'#B7C6B2',2:'#A8C6A2',3:'#93BE8C',4:'#7FB67A',5:'#74B070'}[stage];
+  var sx = 300 - stage*6, sy = [0,86,78,66,56,86][stage], sr = [0,28,32,38,44,50][stage];
+  var sunCore = stage>=5 ? '#FCE0A0' : '#FDEFC8', sunGlow = stage>=5 ? '#F9D08C' : '#FCEBC0';
+  var svg = '<svg viewBox="0 0 390 320" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+    + '<defs><linearGradient id="wsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+sky[0]+'"/><stop offset="1" stop-color="'+sky[1]+'"/></linearGradient>'
+    + '<radialGradient id="wsun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFF6D8"/><stop offset="45%" stop-color="'+sunGlow+'"/><stop offset="100%" stop-color="'+sunGlow+'" stop-opacity="0"/></radialGradient></defs>'
+    + '<rect width="390" height="320" fill="url(#wsky)"/>'
+    + '<circle cx="'+sx+'" cy="'+sy+'" r="'+(sr+36)+'" fill="url(#wsun)"/>'
+    + '<circle cx="'+sx+'" cy="'+sy+'" r="'+sr+'" fill="'+sunCore+'" opacity="'+(stage===1?.5:.92)+'"/>'
+    + '<path d="M0 236 Q 100 202 200 226 T 390 224 L390 320 L0 320 Z" fill="'+hF+'"/>'
+    + '<path d="M0 264 Q 130 234 250 258 T 390 256 L390 320 L0 320 Z" fill="'+hN+'"/>'
+    + '<path d="M0 288 Q 195 276 390 288 L390 320 L0 320 Z" fill="'+gnd+'"/>'
+    + '<g class="w-sway">' + worldFlora(stage,prog) + '</g>'
+    + '</svg>';
+  var el = E('div',{class:'world',html:svg});
+  var ov = E('div',{class:'w-ov'});
+  function add(cls,css){ ov.appendChild(E('div',{class:cls,style:css})); }
+  if(stage>=2) add('w-cloud','left:-50px;top:38px;width:54px;height:20px;animation-duration:42s;animation-delay:-6s;opacity:.6');
+  if(stage>=3) add('w-cloud','left:-60px;top:66px;width:38px;height:15px;animation-duration:58s;animation-delay:-24s;opacity:.5');
+  var motes = [0,0,1,2,3,3][stage];
+  for(var i=0;i<motes;i++) add('w-mote','left:'+(46+i*92)+'px;bottom:'+(34+(i%2)*22)+'px;animation-duration:'+(7+i*1.6)+'s;animation-delay:-'+(i*2)+'s');
+  if(stage>=3) ov.appendChild(E('div',{class:'w-fly',style:'left:118px;top:172px;animation-duration:9s',html:butterflySVG('#F0A98E')}));
+  if(stage>=4) ov.appendChild(E('div',{class:'w-fly',style:'left:250px;top:150px;animation-duration:11s;animation-delay:-3s',html:butterflySVG('#C8A0D0')}));
+  if(stage>=5) for(var j=0;j<4;j++) add('w-fire','left:'+(72+j*72)+'px;top:'+(150+(j%2)*30)+'px;animation-duration:'+(2.4+j*0.4)+'s;animation-delay:-'+(j*0.7)+'s');
+  el.appendChild(ov);
+  return el;
 }
 
 /* ---------------- TODAY ---------------- */
@@ -977,11 +1128,12 @@ function renderToday(){
   var heroText = helped
     ? 'Thanks to you'+helperName()+', I feel much better today. You’re a really good friend.'
     : m.says + ' Will you help me' + helperName() + '?';
-  $app.appendChild(E('div',{class:'card petstage'},[
-    E('div',{class:'petwrap',html:petSVG(S.stage, helped? 'good' : 'low')}),
-    E('div',{class:'bubble'+(helped?'':' need')},[ E('span',{class:'who',text:pet()}), E('span',{text:heroText}) ]),
-    E('div',{class:'faint',style:'margin-top:8px',text:'You & '+pet()+' · '+STAGE_NAMES[S.stage]+' — growing together'})
-  ]));
+  var world = E('div',{class:'worldstage'});
+  world.appendChild(buildWorld(S.stage, progressToNext()));
+  world.appendChild(E('div',{class:'petwrap',html:petSVG(S.stage, helped? 'good' : 'low')}));
+  world.appendChild(E('div',{class:'bubble'+(helped?'':' need')},[ E('span',{class:'who',text:pet()}), E('span',{text:heroText}) ]));
+  world.appendChild(E('div',{class:'stageline',text:'You & '+pet()+' · '+STAGE_NAMES[S.stage]+' — growing together'}));
+  $app.appendChild(world);
 
   // PRIMARY — Help Milo (the flipped core loop). The child is the capable, caring one.
   $app.appendChild(E('button',{class:'bhero help',on:{click:openHelpMilo}},[
@@ -1679,7 +1831,7 @@ function confirmReset(){
 }
 function doReset(){
   try{ localStorage.removeItem(KEY); }catch(e){}
-  S = blankState(); ob = {step:0,name:'',kid:'',age:'',like:''};
+  S = blankState(); ob = {step:0,name:'',kid:'',age:'',like:'',petType:''};
   closeOverlay(); route='today'; render();
 }
 
