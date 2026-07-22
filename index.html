@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#EF6440">
+<meta name="theme-color" content="#E2673C">
 <title>Milo — Milo grows with you</title>
 <meta name="description" content="Milo is a gentle, Tamagotchi-style emotional-support companion that grows with you while you practice real calm-and-coping skills. A 3Shamrocks Studio prototype. Private and on-device.">
 
@@ -26,17 +26,21 @@ html,body{margin:0;padding:0}
    ink, pillowy 22px. Variable NAMES are kept stable; only the brand VALUES
    change. Safety rule held: NO alarming reds anywhere — warmth/crisis = amber. */
 :root{
-  --bg1:#FBF3EC; --bg2:#F2EDE4;                                   /* warm cream */
-  --card:#FFFCF9; --card-2:#F8F1E9;
-  --green:#7BB37B; --green-deep:#5C925C; --green-soft:#E6F0E1;    /* soft sage: companion, growth, safe */
-  --blue:#83BFB0; --blue-deep:#56988A; --blue-soft:#DEEFE9;       /* soft teal-sage: calm / breathing */
-  --amber:#E6A861; --amber-deep:#C9853F; --amber-soft:#F8E7CE;    /* warm connection: nourish / crisis */
-  --coral:#EF6440; --coral-deep:#CF4324; --coral-soft:#FFE0D4;    /* brand hero: warm accents */
-  --ink:#3E2E25; --ink-soft:#6E5A4E; --ink-faint:#A28E7C;         /* warm cocoa */
-  --line:#EFE3D7;
+  /* Richer, warmer world — tuned to the creature's apricot/terracotta/honey
+     palette. Deeper, more saturated and more alive than the previous pastels,
+     while holding the safety rule: NO alarming reds anywhere (the hero is a
+     warm terracotta, and crisis/warmth stays amber). */
+  --bg1:#FBEEE0; --bg2:#F3E1CE;                                   /* warm oat cream */
+  --card:#FFF9F1; --card-2:#F9EDDF;
+  --green:#6FA96F; --green-deep:#48844B; --green-soft:#DFEBD6;    /* moss sage: companion, growth, safe */
+  --blue:#6FAF9E; --blue-deep:#417F70; --blue-soft:#D8EBE3;       /* deep sage-teal: calm / breathing */
+  --amber:#E9A23B; --amber-deep:#C07A1E; --amber-soft:#FBE5C2;    /* honey: warmth / nourish / crisis */
+  --coral:#E2673C; --coral-deep:#B94A22; --coral-soft:#FFD8C4;    /* terracotta hero (not an alarm red) */
+  --ink:#3A281F; --ink-soft:#6B5343; --ink-faint:#A08974;         /* deep warm cocoa */
+  --line:#EBD8C4;
   --radius:22px; --radius-sm:15px;
-  --shadow:0 10px 30px rgba(92,36,26,.10);
-  --shadow-sm:0 4px 14px rgba(92,36,26,.08);
+  --shadow:0 10px 30px rgba(92,46,26,.13);
+  --shadow-sm:0 4px 14px rgba(92,46,26,.10);
   --darkgrey:#2C302F;
 }
 body{
@@ -141,7 +145,12 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
   transition:opacity .4s ease,transform .4s ease}
 .arcnode.reached{opacity:1}
 .arcnode.current{transform:translateY(-4px)}
-.arcnode .mini{width:100%;max-width:54px}
+.arcnode .mini{width:100%;max-width:54px;aspect-ratio:1/1}
+/* the creature artwork */
+.petart{width:100%;height:100%;object-fit:contain;display:block;user-select:none;-webkit-user-select:none;
+  filter:drop-shadow(0 8px 14px rgba(92,46,26,.16))}
+.petart.m-low{filter:drop-shadow(0 8px 14px rgba(92,46,26,.13)) saturate(.84) brightness(.99)}
+.petart.m-up{filter:drop-shadow(0 10px 16px rgba(92,46,26,.19)) saturate(1.07)}
 .arcnode .mlabel{font-size:.62rem;font-weight:700;color:var(--ink-soft);text-align:center}
 .arcnode.current .mlabel{color:var(--green-deep)}
 .vine{height:12px;border-radius:99px;background:var(--green-soft);overflow:hidden;margin-top:6px}
@@ -348,18 +357,6 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 .growcol .gsub{font-size:.72rem;color:var(--ink-soft);line-height:1.35}
 .growplus{display:flex;align-items:center;font-size:1.2rem;color:var(--green-deep);font-weight:700}
 
-/* ---- choose-your-creature (onboarding) ---- */
-.petpick{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-.petopt{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px 8px 12px;text-align:center;
-  box-shadow:var(--shadow-sm);transition:transform .14s ease,border-color .15s,box-shadow .15s}
-.petopt:active{transform:scale(.97)}
-.petopt.sel{border-color:var(--coral);box-shadow:0 6px 18px rgba(239,100,64,.18)}
-.po-art{width:92px;height:92px;margin:0 auto}
-.po-art svg{width:100%;height:100%;overflow:visible}
-.po-name{font-family:'Quicksand',sans-serif;font-weight:700;color:var(--ink);margin-top:2px}
-.po-sub{font-size:.72rem;color:var(--ink-soft)}
-.petopt.sel .po-name{color:var(--coral-deep)}
-
 /* ---- the living WORLD (2.5D parallax, grows with the bond) ---- */
 .worldstage{position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);
   min-height:352px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:14px 16px 16px}
@@ -546,119 +543,22 @@ function progressToNext(){
    THE PET  — soft, round, gender-neutral, dog-hearted blob.
    Inline SVG, trusted static markup (no user data inside).
    ============================================================ */
-/* The child CHOOSES their creature at onboarding. Each type is the same soft,
-   round, gender-neutral, dog-hearted form — differing only in palette + ears.
-   Every creature grows through the same 5 stages (muted+shy → radiant). */
-var PETS = {
-  sprout: { name:'Sprout', sub:'sage & gentle', ear:'leaf',
-    body:['#AEB9B0','#93B9A2','#79B197','#5FA98C','#4FA98C'],
-    belly:['#CCD4CC','#C7E2D2','#BAE1CE','#B1E1CA','#CBF0DE'],
-    heart:['#C2CCC4','#E7BE92','#E4AC72','#E29A56','#EBB877'] },
-  sky: { name:'Sky', sub:'calm & dreamy', ear:'round',
-    body:['#AEB6BD','#9CB6CC','#83A8CA','#6E97C2','#5E91C4'],
-    belly:['#CDD5DC','#D4E3EF','#CADFEF','#C1DAED','#D4E9F7'],
-    heart:['#C2C9CE','#E7BE92','#E4AC72','#E29A56','#EBB877'] },
-  sunny: { name:'Sunny', sub:'warm & sunny', ear:'tiny',
-    body:['#BEB6AD','#D9B58B','#E1A877','#DA9A60','#E89A68'],
-    belly:['#DAD2CB','#F5E4CE','#F1DCBE','#ECD2B0','#FAE4CA'],
-    heart:['#CCC5BD','#E0A06C','#D98C50','#CC7C40','#E89F66'] },
-  blossom: { name:'Blossom', sub:'soft & sweet', ear:'round',
-    body:['#BCB4BB','#C8AAC7','#C295C1','#B681B5','#C892D2'],
-    belly:['#D9D2D9','#ECD8EB','#E7CEE9','#E1C3E7','#F1DDF3'],
-    heart:['#C8C2C8','#E7BE92','#E4AC72','#E29A56','#E8AEDA'] }
-};
-function curType(){ return PETS[S.petType] ? S.petType : (PETS[ob && ob.petType] ? ob.petType : 'sprout'); }
-function petPal(type, stage){ var p = PETS[type]||PETS.sprout; var i=Math.max(0,Math.min(4,(stage||1)-1)); return {body:p.body[i], belly:p.belly[i], heart:p.heart[i], ear:p.ear}; }
-
-/* structural growth (sizes/expression), shared by every creature */
-function petCfg(stage){
-  var C = {
-    1:{eyeRy:5,ear:34,cheek:.12,smile:2,mouthW:9,aura:0,feet:false,scarf:false,sparkle:false,bodyRy:50,bodyCy:144,sleepy:true},
-    2:{eyeRy:16,ear:9,cheek:.30,smile:4,mouthW:14,aura:0,feet:true,scarf:false,sparkle:false,bodyRy:60,bodyCy:136},
-    3:{eyeRy:15,ear:-2,cheek:.45,smile:6,mouthW:16,aura:0,feet:true,scarf:false,sparkle:false,bodyRy:61,bodyCy:135},
-    4:{eyeRy:16,ear:-11,cheek:.55,smile:7,mouthW:18,aura:.32,feet:true,scarf:true,sparkle:false,bodyRy:62,bodyCy:134},
-    5:{eyeRy:17,ear:-15,cheek:.62,smile:8,mouthW:20,aura:.55,feet:true,scarf:true,sparkle:true,bodyRy:63,bodyCy:133}
-  };
-  return C[stage] || C[1];
-}
-// moodKey subtly softens the face so the pet "mirrors" the child; type chooses palette
+/* ============================================================
+   THE CREATURE — art-directed illustration set, 5 growth stages.
+   Direction, generation, curation and colour-grade owned in-house; the
+   selected frames are background-keyed and exported as optimised WEBP
+   (151 KB for the whole set). One entry point, so every call site picks up
+   the right stage automatically.
+   SECURITY: the alt text is deliberately static — no user-entered value is
+   ever interpolated into markup (all user text renders via textContent).
+   ============================================================ */
 function petSVG(stage, moodKey, type){
-  var c = petCfg(stage);
-  var P = petPal(type || curType(), stage);
-  c = {body:P.body, belly:P.belly, heart:P.heart, earShape:P.ear,
-       eyeRy:c.eyeRy,ear:c.ear,cheek:c.cheek,smile:c.smile,mouthW:c.mouthW,aura:c.aura,feet:c.feet,scarf:c.scarf,sparkle:c.sparkle,bodyRy:c.bodyRy,bodyCy:c.bodyCy,sleepy:c.sleepy};
-  var cx = 110;
-  var eyeCy = c.bodyCy - 20;
-  var eyeDx = 23;
-  var mouthY = eyeCy + 24;
-  var smile = c.smile, droop = 0;
-  if(moodKey==='low'){ smile = Math.max(0, c.smile-5); droop = 1; }
-  else if(moodKey==='crisis'){ smile = -2; droop = 1.5; }
-  else if(moodKey==='great'){ smile = c.smile+3; }
-  var eyeRy = Math.max(3, c.eyeRy - (droop?2:0));
-  var irisCy = eyeCy + 2 + droop*1.2;
-
-  // ears (soft leaf droplets), rotated by c.ear (deg) outward when shy / up when brave
-  function ear(side){
-    var ex = cx + side*30, ey = c.bodyCy - c.bodyRy + 8;
-    var rot = side*(c.ear); // positive -> droops outward/down
-    var d = {leaf:{rx:13,ry:22,ix:6.5,iy:13,oy:12}, round:{rx:15,ry:16,ix:8,iy:9,oy:8}, tiny:{rx:10,ry:13,ix:5,iy:7,oy:10}}[c.earShape] || {rx:13,ry:22,ix:6.5,iy:13,oy:12};
-    return '<g transform="rotate('+rot+' '+ex+' '+ey+')">'
-      + '<ellipse cx="'+ex+'" cy="'+(ey-d.oy)+'" rx="'+d.rx+'" ry="'+d.ry+'" fill="'+c.body+'"/>'
-      + '<ellipse cx="'+ex+'" cy="'+(ey-d.oy)+'" rx="'+d.ix+'" ry="'+d.iy+'" fill="'+c.belly+'" opacity=".75"/>'
-      + '</g>';
-  }
-  // eye group
-  function eye(side){
-    var x = cx + side*eyeDx;
-    if(c.sleepy){
-      return '<path d="M'+(x-11)+' '+eyeCy+' q11 8 22 0" fill="none" stroke="#3A4A45" stroke-width="3.2" stroke-linecap="round"/>';
-    }
-    return '<ellipse cx="'+x+'" cy="'+eyeCy+'" rx="13.5" ry="'+eyeRy+'" fill="#fff"/>'
-      + '<circle cx="'+x+'" cy="'+irisCy+'" r="'+(eyeRy*0.78)+'" fill="#3A4A45"/>'
-      + '<circle cx="'+(x+3.4)+'" cy="'+(irisCy-eyeRy*0.4)+'" r="'+(eyeRy*0.26)+'" fill="#fff"/>'
-      + '<circle cx="'+(x-3)+'" cy="'+(irisCy+eyeRy*0.3)+'" r="'+(eyeRy*0.14)+'" fill="#fff" opacity=".7"/>';
-  }
-  var mouth = smile>=0
-    ? '<path d="M'+(cx-c.mouthW/2)+' '+mouthY+' q'+(c.mouthW/2)+' '+(2+smile)+' '+c.mouthW+' 0" fill="none" stroke="#3A4A45" stroke-width="2.6" stroke-linecap="round"/>'
-    : '<path d="M'+(cx-c.mouthW/2)+' '+(mouthY+2)+' q'+(c.mouthW/2)+' -3 '+c.mouthW+' 0" fill="none" stroke="#3A4A45" stroke-width="2.6" stroke-linecap="round"/>';
-
-  var cheeks = '<ellipse cx="'+(cx-30)+'" cy="'+(eyeCy+13)+'" rx="9" ry="6" fill="#E89B86" opacity="'+c.cheek+'"/>'
-             + '<ellipse cx="'+(cx+30)+'" cy="'+(eyeCy+13)+'" rx="9" ry="6" fill="#E89B86" opacity="'+c.cheek+'"/>';
-
-  var feet = c.feet
-    ? '<ellipse cx="'+(cx-22)+'" cy="'+(c.bodyCy+c.bodyRy-6)+'" rx="14" ry="9" fill="'+c.body+'"/>'
-    + '<ellipse cx="'+(cx+22)+'" cy="'+(c.bodyCy+c.bodyRy-6)+'" rx="14" ry="9" fill="'+c.body+'"/>' : '';
-
-  var heartY = c.bodyCy + 20;
-  var heart = '<path transform="translate('+(cx)+' '+heartY+') scale(.62)" d="M0 6 C-7 -6 -22 0 -14 12 C-9 19 0 24 0 24 C0 24 9 19 14 12 C22 0 7 -6 0 6 Z" fill="'+c.heart+'" opacity=".9"/>';
-
-  var scarf = c.scarf
-    ? '<path d="M'+(cx-40)+' '+(c.bodyCy+2)+' q40 22 80 0 l0 9 q-40 20 -80 0 Z" fill="#E0A45B"/>'
-    + '<path d="M'+(cx+28)+' '+(c.bodyCy+6)+' l14 22 l-12 -4 l-6 8 Z" fill="#CF965A"/>' : '';
-
-  var aura = c.aura>0
-    ? '<circle cx="'+cx+'" cy="'+(c.bodyCy-4)+'" r="92" fill="url(#aura)" opacity="'+c.aura+'"/>' : '';
-
-  var sparkle = c.sparkle
-    ? ['<g fill="#F4D58A">',
-        star(40,70,7), star(180,60,6), star(178,150,5), star(36,150,5), star(150,30,4),
-       '</g>'].join('') : '';
-  function star(x,y,r){
-    return '<path d="M'+x+' '+(y-r)+' L'+(x+r*0.3)+' '+(y-r*0.3)+' L'+(x+r)+' '+y+' L'+(x+r*0.3)+' '+(y+r*0.3)+' L'+x+' '+(y+r)+' L'+(x-r*0.3)+' '+(y+r*0.3)+' L'+(x-r)+' '+y+' L'+(x-r*0.3)+' '+(y-r*0.3)+' Z"/>';
-  }
-
-  var body = '<ellipse cx="'+cx+'" cy="'+c.bodyCy+'" rx="'+c.bodyRy*0.98+'" ry="'+c.bodyRy+'" fill="'+c.body+'"/>'
-           + '<ellipse cx="'+cx+'" cy="'+(c.bodyCy+8)+'" rx="'+(c.bodyRy*0.66)+'" ry="'+(c.bodyRy*0.7)+'" fill="'+c.belly+'" opacity=".85"/>';
-
-  return '<svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Your companion, stage '+stage+', '+STAGE_NAMES[stage]+'">'
-    + '<defs>'
-      + '<radialGradient id="aura" cx="50%" cy="45%" r="55%"><stop offset="0%" stop-color="#F6E2B0"/><stop offset="55%" stop-color="#B9E6CF" stop-opacity=".6"/><stop offset="100%" stop-color="#B9E6CF" stop-opacity="0"/></radialGradient>'
-      + '<linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7FC8A6"/><stop offset="100%" stop-color="#4FA98C"/></linearGradient>'
-      + '<linearGradient id="heartGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F4D58A"/><stop offset="100%" stop-color="#E6A156"/></linearGradient>'
-    + '</defs>'
-    + aura + sparkle + feet + ear(-1) + ear(1) + body + scarf + cheeks + eye(-1) + eye(1) + mouth + heart
-    + '</svg>';
+  var st = Math.max(1, Math.min(5, parseInt(stage, 10) || 1));
+  var mood = (moodKey === 'low' || moodKey === 'crisis') ? ' m-low'
+           : (moodKey === 'great' ? ' m-up' : '');
+  return '<img class="petart' + mood + '" src="art/milo-' + st + '.webp" '
+       + 'width="400" height="400" alt="Your companion, stage ' + st + ' of 5" '
+       + 'draggable="false">';
 }
 
 /* ============================================================
@@ -952,24 +852,13 @@ function obWelcome(){
   ]);
 }
 function obChoose(){
-  var grid = E('div',{class:'petpick'});
-  Object.keys(PETS).forEach(function(key){
-    var card = E('button',{class:'petopt'+(ob.petType===key?' sel':''),on:{click:function(){
-      ob.petType = key;
-      var all = grid.querySelectorAll('.petopt'); for(var i=0;i<all.length;i++) all[i].classList.remove('sel');
-      card.classList.add('sel');
-    }}},[
-      E('div',{class:'po-art',html:petSVG(2,'great',key)}),
-      E('div',{class:'po-name',text:PETS[key].name}),
-      E('div',{class:'po-sub',text:PETS[key].sub})
-    ]);
-    grid.appendChild(card);
-  });
+  // Neutral placeholder "meet your friend" step (pending real brand direction).
   return E('div',{class:'ob'},[
-    E('h2',{class:'section',text:'Choose your friend'}),
-    E('p',{class:'muted',text:'A little creature is waiting to meet you. Pick the one that feels like yours — there’s no wrong choice, and it’s yours to name next.'}),
-    grid,
-    E('button',{class:'btn primary block',style:'margin-top:16px',on:{click:function(){ if(!ob.petType) ob.petType='sprout'; ob.step=2; renderOnboarding(); }}},'This one’s mine →')
+    E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(1,'')}),
+      E('div',{class:'bubble'},[E('span',{class:'who',text:'…'}),E('span',{text:'(a little one, curled up and shy)'})])]),
+    E('h2',{class:'section',text:'Meet your new friend'}),
+    E('p',{class:'muted',text:'This little one is yours to care for. With warmth and time, it will start to open up and grow — and it’s yours to name next.'}),
+    E('button',{class:'btn primary block',style:'margin-top:6px',on:{click:function(){ ob.petType='placeholder'; ob.step=2; renderOnboarding(); }}},'I’d like to be its friend')
   ]);
 }
 function obName(){
@@ -1023,7 +912,7 @@ function obReady(){
 }
 function finishOnboarding(){
   S.petName = ob.name || 'Pip';
-  S.petType = ob.petType || 'sprout';
+  S.petType = 'placeholder';
   S.childName = (ob.kid||'').trim();
   S.ageBand = ob.age || '';
   S.likeThing = (ob.like||'').trim();
@@ -1075,10 +964,10 @@ function worldFlora(stage,prog){
 }
 function buildWorld(stage,prog){
   stage = Math.max(1,Math.min(5,stage||1)); prog = Math.max(0,Math.min(1,prog||0));
-  var sky =  {1:['#DDE1E4','#E8E3DB'],2:['#E7DCE8','#F6EAD9'],3:['#D2E7F2','#EDF4E6'],4:['#CFE9EC','#F2EDD6'],5:['#A9C4DE','#F1D6A6']}[stage];
-  var hF =   {1:'#C5CDC7',2:'#AFCBB9',3:'#9BC6AA',4:'#8AC29C',5:'#7FB89A'}[stage];
-  var hN =   {1:'#B6C0B8',2:'#9DC1A8',3:'#84B795',4:'#6FB186',5:'#5FA98C'}[stage];
-  var gnd =  {1:'#B7C6B2',2:'#A8C6A2',3:'#93BE8C',4:'#7FB67A',5:'#74B070'}[stage];
+  var sky =  {1:['#D9DCDD','#E9E0D3'],2:['#E8D9DF','#F7E6CE'],3:['#CFE4EF','#F2EEDC'],4:['#C9E4E8','#F6EBCC'],5:['#9DBAD8','#F6CE95']}[stage];
+  var hF =   {1:'#BFC6BE',2:'#A9C4AE',3:'#93BE9C',4:'#7FB68C',5:'#6FAD86'}[stage];
+  var hN =   {1:'#AEB8AC',2:'#93B79A',3:'#77AC86',4:'#5FA377',5:'#4F9A72'}[stage];
+  var gnd =  {1:'#AFBFA6',2:'#9CBC92',3:'#83B27A',4:'#6BA867',5:'#5FA05E'}[stage];
   var sx = 300 - stage*6, sy = [0,86,78,66,56,86][stage], sr = [0,28,32,38,44,50][stage];
   var sunCore = stage>=5 ? '#FCE0A0' : '#FDEFC8', sunGlow = stage>=5 ? '#F9D08C' : '#FCEBC0';
   var svg = '<svg viewBox="0 0 390 320" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'

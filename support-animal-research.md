@@ -21,6 +21,67 @@
 
 **For Milo:** The evidence **validates the current direction** — a warm, "dog-hearted," *non-literal* creature that co-regulates and grows through caregiving. It does *not* support making Milo a literal dog. The dog should be the **emotional template** (loyal, attuned, non-judgmental), rendered as an **abstract/fantasy "pet-like" creature** to manage expectations and avoid the uncanny valley. See [Implications for Milo](#5-implications-for-milo).
 
+**Going one level deeper — the specific answer:** if it's a dog, the single best breed is the **Golden Retriever** (Labrador Retriever essentially co-equal). But the breed itself is a *weak* predictor — temperament screening matters far more. The trait profile Milo should embody is the **Golden Retriever archetype**: calm, soft-eyed, patient, people-seeking, gentle-mouthed, quick to settle after excitement, non-reactive to noise. See [The Specific Recommendation](#0-the-specific-recommendation-breed-level).
+
+---
+
+## 0. The Specific Recommendation (breed-level)
+
+> **Single best specific answer: the Golden Retriever** — with the **Labrador Retriever** as a near-tie co-lead. For a *small-breed* option: the **Cavalier King Charles Spaniel**. For an *allergy-sensitive* setting: the **Standard Poodle / Goldendoodle**.
+>
+> **But the single most important finding is that breed is a weak predictor.** The right answer is "a Golden-Retriever-*type temperament*, selected on the individual animal," not "a Golden Retriever, sight unseen."
+
+### Why temperament beats breed (read this before the breed list)
+
+The largest study of dog behavior and genetics — **Morrill et al. (2022, *Science*)**, ~18,000 dogs — found that **breed explains only ~9% of the behavioral variation between individual dogs.** Variation *within* a breed is larger than the variation *between* breeds. Tellingly, "agonistic threshold" (how easily a dog is provoked or irritated — exactly the non-reactivity you want around an anxious child) was among the *least* breed-differentiated traits. [[Science 2022]](https://www.science.org/doi/10.1126/science.abk0639)
+
+This is why every major therapy-animal organization (Pet Partners, Alliance of Therapy Dogs) certifies on **individual temperament evaluation, not breed** — any breed or mix can qualify. So the breed recommendation below is a *probability shortcut*, not a guarantee.
+
+**The trait profile that actually predicts a good therapy/support animal** (breed-independent, and what to select for):
+
+- **Calm and low-arousal** — relaxed in noisy, unpredictable settings; **settles quickly after excitement** (low reactivity).
+- **Low startle + fast recovery** — unbothered by sudden noise/movement, and rebounds fast when startled.
+- **Affiliative / sociable with *strangers*** — seeks out and *enjoys* new people, not just the handler. (Low sociability correlates with higher child-directed aggression, so this is a safety trait too. [[PMC7070865]](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7070865/))
+- **Tolerant / forgiving of clumsy, unpredictable handling** — the exact thing a 6–14-year-old will do.
+- **Genuinely enjoys the interaction, not merely endures it** — the therapeutic effect depends on the animal's *positive* emotional state, not just absence of stress. [[Front Vet Sci 2022]](https://www.frontiersin.org/journals/veterinary-science/articles/10.3389/fvets.2022.844252/full)
+- **Trainable / biddable** and predictable.
+
+These are measurable per-animal with the **C-BARQ** for dogs and the **Feline Temperament Profile (FTP)** for cats — and screening works: FTP-screened shelter cats had high placement suitability, vs. only **~34%** for cats picked by staff intuition. [[FTP study]](https://www.uowoajournals.org/asj/article/179/galley/177/download/)
+
+### If it's a dog — the ranked breeds
+
+**1. Golden Retriever — the single best pick.** Strongest convergence of evidence: among the *lowest* stranger- and child-relevant aggression scores in C-BARQ breed comparisons (Duffy, Hsu & Serpell 2008), high trainability, a solid ~85% temperament-test pass rate (ATTS), and consistently described as emotionally stable, affectionate, patient, and people-seeking. Medium-large but **soft-mouthed and non-threatening** — well-suited to anxious 6–14-year-olds. One of the two most-used therapy breeds in practice. [[Breed aggression data]](https://nationalcanineresearchcouncil.com/research_library/breed-differences-in-canine-aggression/) · [[ATTS stats]](https://atts.org/breed-statistics/)
+
+**2. Labrador Retriever — essentially co-equal.** The single *most common* therapy breed, highest ATTS pass rate (~92%), low aggression, highly trainable, robust, easygoing. Edges the Golden on physical health/resilience; slightly more energetic and mouthy as a young dog. For practical purposes, **Golden and Lab are a single top tier** — pick on the individual dog.
+
+**3. Cavalier King Charles Spaniel — best small-breed option.** Purpose-bred as a comfort/lap companion: gentle, affectionate, warms to strangers fast, low intimidation factor for fearful children, easy to train for therapy manners. Its small size and "wants to be held" nature are a real plus for a frightened child. *Reservation:* serious breed-wide health fragility (mitral valve disease, syringomyelia).
+
+**4. Standard Poodle / Goldendoodle — best for allergy-sensitive settings.** Top-tier trainability and a people-pleasing temperament, plus a lower-dander coat (relatively allergy-friendlier, *not* truly hypoallergenic) — valuable where some children have allergies. *Reservation:* doodles are unstandardized crossbreeds, so temperament is *less* predictable — choose a breeder who temperament-tests.
+
+*Honorable mention — "gentle giants" (Newfoundland, Bernese Mountain Dog):* exceptionally patient and kid-tolerant, but large size, drooling, short lifespan, and health problems make them impractical for most child-AAI and a poor visual model for a soft companion.
+
+### If it's a cat — the ranked breeds
+
+Evidence here is **thinner** (mostly lifestyle/breeder sources; no controlled breed comparisons), so treat as best-supported convention, not proof. Cat personality is ~40–53% heritable, so — as with dogs — **screen the individual** (low Neuroticism, high Agreeableness on the validated "Feline Five"). [[Feline personality]](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5568325/)
+
+1. **Ragdoll — best single pick.** Most consistently cited for emotional support of children, specifically for its **low reactivity and tolerance of clumsy handling** — unlikely to scratch/hiss even when handled awkwardly. The single best behavioral match to a child still learning gentle contact.
+2. **Maine Coon** — large, sociable, patient "gentle giant" temperament.
+3. **Birman / British Shorthair** — calm, even-tempered, affectionate-but-not-clingy; fits the "predictable and low-arousal" need.
+
+*(The one tiny but real RCT supporting cats for kids screened cats by the FTP, **not** by breed — reinforcing that the temperament screen, not the breed label, did the work. [[J Pediatr Nurs 2020]](https://doi.org/10.1016/j.pedn.2020.11.011))*
+
+### What this means for Milo's creature design
+
+Milo's "dog-hearted" creature should embody the **Golden Retriever / Labrador temperament archetype** — that is the specific, evidence-grounded answer to "which traits." Concretely, Milo's behavior, art, and microcopy should encode:
+
+- **Soft, calm, "big gentle eyes"** and a relaxed, low posture at rest — the soft-mouthed, non-threatening Golden look (Milo's spec already has "big, calm eyes" — this is exactly right).
+- **People-seeking warmth without overwhelm** — comes close, leans in, clearly *enjoys* the child, but never frantic or demanding (the affiliative-but-calm Golden profile, *not* the vocal/demanding Siamese profile).
+- **Quick to settle after excitement; non-reactive** — when the child is dysregulated, Milo models *coming back to calm fast* (this maps directly onto the breathing/co-regulation feature).
+- **Endlessly tolerant and forgiving** — never startles, snaps, sulks, or shames, no matter how clumsily or inconsistently the child engages (the no-streaks, "welcomes you back without guilt" design *is* the Golden's forgiving temperament made into a product rule).
+- **Loyal, attuned, predictable** — the same warm response every time; predictability is itself a therapeutic trait.
+
+In short: keep Milo a **non-literal creature** (per the main report), but give it the **inner temperament of a well-selected Golden Retriever** — calm, soft-eyed, patient, people-loving, quick-to-settle, infinitely forgiving. That is the single most specific, defensible design target the evidence supports.
+
 ---
 
 ## 1. Why this is a "weak-evidence" field (read this first)

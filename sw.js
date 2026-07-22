@@ -13,7 +13,12 @@ const urlsToCache = [
   'index.html',
   'manifest.json',
   'icon.svg',
-  '3shamrocks.png'
+  '3shamrocks.png',
+  'art/milo-1.webp',
+  'art/milo-2.webp',
+  'art/milo-3.webp',
+  'art/milo-4.webp',
+  'art/milo-5.webp'
 ];
 
 self.addEventListener('install', event => {
