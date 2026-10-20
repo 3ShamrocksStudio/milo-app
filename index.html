@@ -151,6 +151,16 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
   filter:drop-shadow(0 8px 14px rgba(92,46,26,.16))}
 .petart.m-low{filter:drop-shadow(0 8px 14px rgba(92,46,26,.13)) saturate(.84) brightness(.99)}
 .petart.m-up{filter:drop-shadow(0 10px 16px rgba(92,46,26,.19)) saturate(1.07)}
+/* a gentle Tamagotchi touch-reaction: tap the creature and it wiggles happily */
+.worldstage .petwrap{cursor:pointer}
+.petwrap.reacting{animation:petwiggle .72s ease-in-out}
+@keyframes petwiggle{0%,100%{transform:rotate(0) scale(1)}14%{transform:rotate(-5deg) scale(1.05)}
+  38%{transform:rotate(4deg) scale(1.06)}62%{transform:rotate(-3deg) scale(1.04)}84%{transform:rotate(2deg) scale(1.02)}}
+.petheart{position:absolute;left:50%;top:22%;font-size:1.5rem;pointer-events:none;z-index:6;
+  animation:heartfloat 1.15s ease-out forwards}
+@keyframes heartfloat{0%{opacity:0;transform:translate(-50%,0) scale(.5)}18%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-78px) scale(1.15)}}
+@media(prefers-reduced-motion:reduce){.petwrap.reacting{animation:none}.petheart{animation:none;opacity:0}}
 .arcnode .mlabel{font-size:.62rem;font-weight:700;color:var(--ink-soft);text-align:center}
 .arcnode.current .mlabel{color:var(--green-deep)}
 .vine{height:12px;border-radius:99px;background:var(--green-soft);overflow:hidden;margin-top:6px}
@@ -995,6 +1005,22 @@ function buildWorld(stage,prog){
   return el;
 }
 
+/* A gentle Tamagotchi touch-reaction — tap the creature, it wiggles happily
+   and a little heart drifts up. Pure affection, on purpose: no points, no
+   growth, no pressure (growth only ever comes from real care actions). */
+var _petReactLock = false;
+function petReact(petw){
+  if(_petReactLock || !petw) return;
+  _petReactLock = true;
+  buzz(14);
+  petw.classList.remove('reacting'); void petw.offsetWidth;   // restart the animation
+  petw.classList.add('reacting');
+  var heart = E('div',{class:'petheart',text: rnd(['💛','✨','🫶','💛','🐾'])});
+  petw.appendChild(heart);
+  setTimeout(function(){ if(heart.parentNode) heart.parentNode.removeChild(heart); }, 1200);
+  setTimeout(function(){ petw.classList.remove('reacting'); _petReactLock = false; }, 760);
+}
+
 /* ---------------- TODAY ---------------- */
 function renderToday(){
   // returning welcome (never guilt) + count a visit day
@@ -1019,7 +1045,10 @@ function renderToday(){
     : m.says + ' Will you help me' + helperName() + '?';
   var world = E('div',{class:'worldstage'});
   world.appendChild(buildWorld(S.stage, progressToNext()));
-  world.appendChild(E('div',{class:'petwrap',html:petSVG(S.stage, helped? 'good' : 'low')}));
+  var petw = E('div',{class:'petwrap',html:petSVG(S.stage, helped? 'good' : 'low'),
+    role:'button','aria-label':'Give '+pet()+' a gentle pat',
+    on:{click:function(){ petReact(petw); }}});
+  world.appendChild(petw);
   world.appendChild(E('div',{class:'bubble'+(helped?'':' need')},[ E('span',{class:'who',text:pet()}), E('span',{text:heroText}) ]));
   world.appendChild(E('div',{class:'stageline',text:'You & '+pet()+' · '+STAGE_NAMES[S.stage]+' — growing together'}));
   $app.appendChild(world);
