@@ -149,8 +149,6 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 /* the creature artwork */
 .petart{width:100%;height:100%;object-fit:contain;display:block;user-select:none;-webkit-user-select:none;
   filter:drop-shadow(0 8px 14px rgba(92,46,26,.16))}
-.petart.m-low{filter:drop-shadow(0 8px 14px rgba(92,46,26,.13)) saturate(.84) brightness(.99)}
-.petart.m-up{filter:drop-shadow(0 10px 16px rgba(92,46,26,.19)) saturate(1.07)}
 /* a gentle Tamagotchi touch-reaction: tap the creature and it wiggles happily */
 .worldstage .petwrap{cursor:pointer}
 .petwrap.reacting{animation:petwiggle .72s ease-in-out}
@@ -554,20 +552,27 @@ function progressToNext(){
    Inline SVG, trusted static markup (no user data inside).
    ============================================================ */
 /* ============================================================
-   THE CREATURE — art-directed illustration set, 5 growth stages.
-   Direction, generation, curation and colour-grade owned in-house; the
-   selected frames are background-keyed and exported as optimised WEBP
-   (151 KB for the whole set). One entry point, so every call site picks up
-   the right stage automatically.
+   THE CREATURE — art-directed illustration set: 5 growth stages, each with
+   happy + sad EXPRESSION variants (so Milo visibly mirrors its mood — worried
+   when it needs you, beaming when comforted). Direction, generation, curation
+   and colour-grade owned in-house; frames background-keyed to optimised WEBP.
+   One entry point, so every call site picks the right stage + expression.
    SECURITY: the alt text is deliberately static — no user-entered value is
    ever interpolated into markup (all user text renders via textContent).
    ============================================================ */
-function petSVG(stage, moodKey, type){
+function petArtFile(stage, moodKey){
   var st = Math.max(1, Math.min(5, parseInt(stage, 10) || 1));
-  var mood = (moodKey === 'low' || moodKey === 'crisis') ? ' m-low'
-           : (moodKey === 'great' ? ' m-up' : '');
-  return '<img class="petart' + mood + '" src="art/milo-' + st + '.webp" '
-       + 'width="400" height="400" alt="Your companion, stage ' + st + ' of 5" '
+  var expr = '';                                  // stage 1 is always the curled sleeper
+  if(st > 1){
+    if(moodKey === 'low' || moodKey === 'crisis') expr = '-sad';
+    else if(moodKey === 'great' || moodKey === 'good') expr = '-happy';
+  }
+  return {st:st, src:'art/milo-' + st + expr + '.webp'};
+}
+function petSVG(stage, moodKey, type){
+  var a = petArtFile(stage, moodKey);
+  return '<img class="petart" src="' + a.src + '" '
+       + 'width="400" height="400" alt="Your companion, stage ' + a.st + ' of 5" '
        + 'draggable="false">';
 }
 
@@ -1015,10 +1020,20 @@ function petReact(petw){
   buzz(14);
   petw.classList.remove('reacting'); void petw.offsetWidth;   // restart the animation
   petw.classList.add('reacting');
+  // a pat makes Milo beam, then settle back to how it was feeling
+  var img = petw.querySelector('.petart');
+  if(img){
+    var was = img.getAttribute('src');
+    var happy = petArtFile(S.stage, 'great').src;
+    if(happy !== was){ img.src = happy; img.dataset.revert = was; }
+  }
   var heart = E('div',{class:'petheart',text: rnd(['💛','✨','🫶','💛','🐾'])});
   petw.appendChild(heart);
   setTimeout(function(){ if(heart.parentNode) heart.parentNode.removeChild(heart); }, 1200);
-  setTimeout(function(){ petw.classList.remove('reacting'); _petReactLock = false; }, 760);
+  setTimeout(function(){
+    petw.classList.remove('reacting'); _petReactLock = false;
+    if(img && img.dataset.revert){ img.src = img.dataset.revert; delete img.dataset.revert; }
+  }, 900);
 }
 
 /* ---------------- TODAY ---------------- */

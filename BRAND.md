@@ -20,7 +20,10 @@ never scary, uncanny, or glossy-3D.
 | 4 | Brave | tall & alert, honey scarf, **rich terracotta-apricot** |
 | 5 | Radiant | standing joyful, honey scarf, soft glow, **deepest warm terracotta** |
 
-Assets: `art/milo-{1..5}.webp` — background-keyed, trimmed, 400×400, 151 KB total.
+Assets: `art/milo-{1..5}.webp` (neutral) plus **expression variants** `art/milo-{2..5}-happy.webp` and `art/milo-{2..5}-sad.webp` — background-keyed, trimmed, 400×400, ~416 KB total. Stage 1 is always the curled sleeper (no variants).
+
+## Expressions (mood mirroring)
+Milo visibly reflects its emotional state so the care loop reads instantly: a gentle, pleading **sad** face when it needs you (soft, never distressing), a beaming **happy** face once comforted/tapped, and the calm **neutral** otherwise. `petSVG(stage, mood)` maps low/crisis→sad, great/good→happy, else neutral.
 
 ## Palette (3SDS `[data-brand="milo"]`, tuned to the creature)
 Warm oat cream world · **terracotta** hero `#E2673C` · **honey** amber `#E9A23B`

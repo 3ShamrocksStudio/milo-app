@@ -7,7 +7,7 @@
 // (a) uses network-first for navigations so a stale shell can never trap the
 // child mid-session, and (b) deletes every cache it does not own on activate.
 
-const CACHE_NAME = 'milo-v7-cache';
+const CACHE_NAME = 'milo-v8-cache';
 const urlsToCache = [
   './',
   'index.html',
@@ -15,10 +15,10 @@ const urlsToCache = [
   'icon.svg',
   '3shamrocks.png',
   'art/milo-1.webp',
-  'art/milo-2.webp',
-  'art/milo-3.webp',
-  'art/milo-4.webp',
-  'art/milo-5.webp'
+  'art/milo-2.webp', 'art/milo-2-happy.webp', 'art/milo-2-sad.webp',
+  'art/milo-3.webp', 'art/milo-3-happy.webp', 'art/milo-3-sad.webp',
+  'art/milo-4.webp', 'art/milo-4-happy.webp', 'art/milo-4-sad.webp',
+  'art/milo-5.webp', 'art/milo-5-happy.webp', 'art/milo-5-sad.webp'
 ];
 
 self.addEventListener('install', event => {
