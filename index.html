@@ -274,17 +274,7 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 .celebrate{text-align:center}
 .celebrate .spark{font-size:2.2rem}
 
-/* M.I.L.O. acrostic — the quiet Easter egg, revealed one letter per stage */
-.milo{display:flex;gap:8px;justify-content:center;margin:8px 0 2px}
-.miloltr{flex:1 1 0;max-width:74px;text-align:center;border-radius:14px;padding:10px 4px 8px;
-  border:1.5px solid var(--line);background:var(--card-2);transition:border-color .6s ease,background .6s ease}
-.miloltr .lg{font-size:1.55rem;font-weight:700;color:var(--ink-faint);line-height:1;transition:color .6s ease}
-.miloltr .wd{font-size:.6rem;font-weight:700;letter-spacing:.2px;margin-top:6px;min-height:1.4em;color:var(--ink-faint);text-transform:uppercase;transition:color .6s ease}
-.miloltr.on{border-color:var(--green);background:var(--green-soft)}
-.miloltr.on .lg{color:var(--green-deep)}
-.miloltr.on .wd{color:var(--green)}
 .milocap{text-align:center;font-size:.82rem;color:var(--ink-soft);margin-top:10px}
-.milofull{text-align:center;font-weight:700;color:var(--green-deep);font-size:1.06rem;margin-top:6px}
 
 /* ---- THE FLIP — Milo-needs-you helper UI ---- */
 .bhero.help{background:linear-gradient(150deg,#FFE9E0,#FBEFEA);border-color:#F6C9B8}
@@ -374,29 +364,12 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
    document title, header, footer, and every line of in-app copy.
    (Only manifest.json + sw.js — static files the browser reads
    directly — need a separate one-line edit.)
-
-   NOTE: the name "Milo" carries a hidden Easter egg — M.I.L.O. spells
-   "My Inner Little One" (see MILO_LETTERS below). If you change the
-   name, that acrostic no longer fits, so clear MILO_LETTERS to disable
-   the reveal (the rest of the app keeps working).
    ============================================================ */
 var BRAND = {
   name: 'Milo',                              // ← change this to rename the app
   tagline: 'Milo grows with you'
 };
 document.title = BRAND.name + ' — ' + BRAND.tagline;
-
-/* ---- M.I.L.O. = "My Inner Little One" -----------------------------
-   The name is always on screen; what's hidden is what each letter
-   secretly stands for. As the companion evolves, ONE letter's meaning
-   is quietly revealed per stage — M on reaching stage 2, I at 3, L at
-   4, O at 5 — with the full phrase blooming at the Radiant stage.
-   At stage 1 the child just knows "Milo, my friend." -------------- */
-var MILO_LETTERS = ['M', 'I', 'L', 'O'];
-var MILO_MEANING = ['My', 'Inner', 'Little', 'One'];
-var MILO_PHRASE  = 'My Inner Little One';
-// How many letters' meanings are unlocked at the current stage (0–4).
-function miloRevealed(){ return Math.max(0, Math.min(MILO_LETTERS.length, S.stage - 1)); }
 
 /* ---------- Service worker: own it, evict strays (shared github.io origin) ---------- */
 if ('serviceWorker' in navigator) {
@@ -1388,26 +1361,6 @@ function renderJourney(){
       : 'You’re growing together. Keep caring, in your own time — every kind moment helps you both.'})
   ]));
 
-  // M.I.L.O. secret — appears only once the first letter has unlocked (stage 2+),
-  // so at the very start the child simply knows "Milo, my friend."
-  if(MILO_LETTERS.length && miloRevealed() > 0){
-    var rev = miloRevealed(), full = rev >= MILO_LETTERS.length;
-    var eggCard = E('div',{class:'card soft'},[
-      E('h2',{class:'section',text:'Milo’s little secret'}),
-      E('p',{class:'faint',text: full
-        ? 'You found all of it. Milo’s name was a quiet message the whole time.'
-        : 'As Milo grows, a hidden meaning is appearing — one letter at a time.'}),
-      miloAcrostic(rev)
-    ]);
-    if(full){
-      eggCard.appendChild(E('div',{class:'milofull',text:MILO_PHRASE}));
-      eggCard.appendChild(E('p',{class:'milocap',text:'Caring for Milo has been a way of caring for the gentle little one inside you. 💚'}));
-    } else {
-      eggCard.appendChild(E('p',{class:'milocap',text:'Keep growing together to discover the rest.'}));
-    }
-    $app.appendChild(eggCard);
-  }
-
   // reflection (warm framing, never judgmental) — the helper's record of care
   $app.appendChild(E('h2',{class:'section',text:'How you’ve shown up for '+pet()}));
   var list = E('div',{class:'reflectlist'});
@@ -1532,47 +1485,19 @@ function openSheet(builder, onClose){
 function closeOverlay(){ stopBreath(); clear($overlayRoot); }
 
 /* ---------------- evolution celebration (gentle, not loud) ---------------- */
-/* The M.I.L.O. acrostic row. revealed = how many letters' meanings show. */
-function miloAcrostic(revealed){
-  var row = E('div',{class:'milo'});
-  for(var i=0;i<MILO_LETTERS.length;i++){
-    var on = i < revealed;
-    row.appendChild(E('div',{class:'miloltr'+(on?' on':'')},[
-      E('div',{class:'lg',text:MILO_LETTERS[i]}),
-      E('div',{class:'wd',text: on ? MILO_MEANING[i] : '·'})
-    ]));
-  }
-  return row;
-}
-
 function celebrateEvolution(stage){
-  // Which letter's meaning unlocks on reaching this stage (M at 2 … O at 5).
-  var letterIdx = stage - 2;                       // 0..3 for stages 2..5
-  var revealing = letterIdx >= 0 && letterIdx < MILO_LETTERS.length && MILO_LETTERS.length > 0;
-  var finalReveal = revealing && (letterIdx === MILO_LETTERS.length - 1);
   openSheet(function(close){
     var kids = [
       E('div',{class:'grab'}),
       E('div',{class:'celebrate'},[
         E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(stage,'great')})]),
-        E('div',{class:'spark',text: finalReveal ? '🌟' : '✨'}),
+        E('div',{class:'spark',text:'✨'}),
         E('h3',{text:'You’re both growing…'}),
         E('p',{class:'muted',text:pet()+' is becoming '+STAGE_NAMES[stage]+' — and so are you'+helperName()+': '+CHILD_GROWTH[stage]+'.'}),
         E('div',{class:'bubble',style:'margin:10px auto 0'},[E('span',{class:'who',text:pet()}),
           E('span',{text:'Look how far we’ve come. I grew because you were here — and you grew right alongside me. We’re stronger together.'})])
       ])
     ];
-    if(revealing){
-      var egg = E('div',{class:'celebrate',style:'margin-top:16px'});
-      egg.appendChild(miloAcrostic(stage - 1));     // stages 2..5 → 1..4 letters lit
-      if(finalReveal){
-        egg.appendChild(E('div',{class:'milofull',text:MILO_PHRASE}));
-        egg.appendChild(E('p',{class:'milocap',text:'Milo was never just a name. M·I·L·O — '+MILO_PHRASE+'. That gentle one inside you, all along. 💚'}));
-      } else {
-        egg.appendChild(E('p',{class:'milocap',text:'A little secret unlocks: “'+MILO_LETTERS[letterIdx]+'” in Milo is for “'+MILO_MEANING[letterIdx]+'.”'}));
-      }
-      kids.push(egg);
-    }
     kids.push(E('button',{class:'btn primary block',style:'margin-top:16px',on:{click:close}},'💚'));
     return kids;
   });
