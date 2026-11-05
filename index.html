@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#E2673C">
 <title>Milo — Milo grows with you</title>
-<meta name="description" content="Milo is a gentle, Tamagotchi-style emotional-support companion that grows with you while you practice real calm-and-coping skills. A 3Shamrocks Studio prototype. Private and on-device.">
+<meta name="description" content="Milo: Breathe &amp; Be Brave. A soft friend who breathes with kids aged 6–12, then dares them to one small brave move. A 3Shamrocks Studio staging prototype. Private and on-device.">
+<meta name="robots" content="noindex, nofollow">
 
 <!-- CSP: no eval, on-device only. Inline style/script are used because this is a single-file PWA;
      a production build would move to nonce-based CSP. Nothing connects off-device except Google Fonts. -->
@@ -1394,19 +1395,20 @@ function openCrisis(){
 function helpResources(){
   var box = E('div',{},[
     E('h2',{class:'section',style:'margin-top:14px',text:'Talk to someone who can help'}),
-    E('p',{class:'faint',text:'A grown-up should set up the right numbers for where you live.'})
+    E('div',{class:'note warm',style:'margin-top:6px'},[E('span',{class:'nt',text:'Preview only: numbers not verified'}),
+      E('span',{text:'These lines are unverified placeholders and not for real use. A professional must check every number for your region first. If someone is in danger, tell a grown-up right now.'})])
   ]);
   // Placeholder resources — MUST be verified & localized before real use.
   var r1 = E('div',{class:'helpcard'},[
-    E('div',{},[E('span',{class:'hn',text:'ERAN — emotional first aid (Israel)'}), E('span',{class:'needsverify',text:'needs verification'})]),
+    E('div',{},[E('span',{class:'hn',text:'ERAN — emotional first aid (Israel)'}), E('span',{class:'needsverify',text:'unverified · not for real use'})]),
     E('div',{class:'hd',text:'Reported line: 1201. Free, confidential, 24/7. A grown-up should confirm this number is current for your region.'})
   ]);
   var r2 = E('div',{class:'helpcard'},[
-    E('div',{},[E('span',{class:'hn',text:'105 — child & youth protection (Israel)'}), E('span',{class:'needsverify',text:'needs verification'})]),
+    E('div',{},[E('span',{class:'hn',text:'105 — child & youth protection (Israel)'}), E('span',{class:'needsverify',text:'unverified · not for real use'})]),
     E('div',{class:'hd',text:'Reported national line for protecting children and youth. To be verified and localized before launch.'})
   ]);
   var r3 = E('div',{class:'helpcard'},[
-    E('div',{},[E('span',{class:'hn',text:'Your local helpline'}), E('span',{class:'needsverify',text:'configure per region'})]),
+    E('div',{},[E('span',{class:'hn',text:'Your local helpline'}), E('span',{class:'needsverify',text:'unverified · not for real use'})]),
     E('div',{class:'hd',text:'In the full product, a trusted local crisis line for your country/region goes here, reviewed by professionals.'})
   ]);
   box.appendChild(r1); box.appendChild(r2); box.appendChild(r3);
@@ -1514,7 +1516,7 @@ function renderAbout(){
   $app.appendChild(E('div',{class:'card'},[
     E('h2',{class:'section',text:'A friend, not a doctor'}),
     E('div',{class:'note calm'},[
-      E('span',{text:BRAND.name+' is a supportive companion — not a doctor, therapist, or emergency service, and not a replacement for one. If you’re struggling, please talk to a trusted grown-up or a professional. In an emergency, contact your local emergency number right away.'})]),
+      E('span',{text:BRAND.name+' is a supportive companion — not a doctor, a counsellor, or an emergency service, and not a replacement for one. If you’re struggling, please talk to a trusted grown-up or a professional. In an emergency, contact your local emergency number right away.'})]),
     E('button',{class:'btn amber block',style:'margin-top:6px',on:{click:openCrisis}},'Talk to someone who can help')
   ]));
 
