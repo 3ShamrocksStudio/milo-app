@@ -159,6 +159,10 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 @keyframes heartfloat{0%{opacity:0;transform:translate(-50%,0) scale(.5)}18%{opacity:1}
   100%{opacity:0;transform:translate(-50%,-78px) scale(1.15)}}
 @media(prefers-reduced-motion:reduce){.petwrap.reacting{animation:none}.petheart{animation:none;opacity:0}}
+.arcnode .mlock{font-size:.55rem;font-weight:700;color:var(--amber-deep);text-transform:uppercase;letter-spacing:.3px;margin-top:-4px}
+.planlist{margin:6px 0 0;padding-left:18px;font-size:.86rem;color:var(--ink-soft)}
+.planlist li{margin:3px 0}
+.soonbtn{opacity:.6;cursor:not-allowed}
 .arcnode .mlabel{font-size:.62rem;font-weight:700;color:var(--ink-soft);text-align:center}
 .arcnode.current .mlabel{color:var(--green-deep)}
 .vine{height:12px;border-radius:99px;background:var(--green-soft);overflow:hidden;margin-top:6px}
@@ -480,7 +484,15 @@ function buzzStop(){ if(HAPTICS_SUPPORTED){ try{ navigator.vibrate(0); }catch(e)
 function reduceMotion(){ try{ return window.matchMedia('(prefers-reduced-motion:reduce)').matches; }catch(e){ return false; } }
 
 /* growth + evolution (no streaks, no decay, no pressure) */
-function stageForGrowth(g){ var s=1; for(var i=1;i<=5;i++){ if(g>=THRESH[i]) s=i; } return s; }
+/* FREE vs PARENT PLAN. Free forever: breathe, check-in, grown-up help,
+   stages 1–2, a starter set of brave moves. Parent plan (COMING SOON — no
+   payment integration exists): the full brave-move library, grown-up tips,
+   stages 3–5. Growth points keep counting on the free plan and are never
+   lost, so the bond never decreases. Safety is never paywalled. */
+var PLAN = { parent:false, freeMaxStage:2, freeQuests:3 };
+function stageCap(){ return PLAN.parent ? 5 : Math.max(PLAN.freeMaxStage, S.stage); }
+function atFreeCap(){ return !PLAN.parent && S.stage >= PLAN.freeMaxStage && S.stage < 5; }
+function stageForGrowth(g){ var s=1; for(var i=1;i<=5;i++){ if(g>=THRESH[i]) s=i; } return Math.min(s, stageCap()); }
 function addGrowth(pts, msg){
   var before = S.stage;
   S.growth += pts;
@@ -573,7 +585,8 @@ var QUESTS = [
   {kick:'Look up', t:'Step outside for one minute and look up at the sky.', done:'The sky is always bigger than the worry. Nicely done.'},
   {kick:'Kind words', t:'Say one kind thing to yourself, like you’d say to a friend.', done:'You deserve your own kindness too. Always.'}
 ];
-function currentQuest(){ return QUESTS[S.questIndex % QUESTS.length]; }
+function questPool(){ return PLAN.parent ? QUESTS.length : Math.min(PLAN.freeQuests, QUESTS.length); }
+function currentQuest(){ return QUESTS[S.questIndex % questPool()]; }
 
 /* ============================================================
    THE FLIP — Milo needs support; the CHILD is the helper-coach.
@@ -1089,7 +1102,9 @@ function growCard(){
     E('div',{class:'qkicker',style:'color:var(--green-deep)',text:'Grow together'}),
     E('div',{style:'font-weight:700;margin-top:4px',text:'You & '+pet()+' · '+STAGE_NAMES[S.stage]}),
     E('div',{class:'vine'},[E('i',{style:'width:'+(progressToNext()*100)+'%'})]),
-    E('p',{class:'faint',style:'margin:8px 0 0',text:'No streaks. Skipping a day costs nothing. Your bond only ever grows.'}),
+    E('p',{class:'faint',style:'margin:8px 0 0',text: atFreeCap()
+      ? 'Your care keeps counting. Stages 3–5 come with the parent plan (coming soon) — nothing you’ve grown is ever lost.'
+      : 'No streaks. Skipping a day costs nothing. Your bond only ever grows.'}),
     E('button',{class:'linkbtn',style:'margin-top:6px',on:{click:function(){ go('journey'); }}},'See your journey')
   ]);
 }
@@ -1163,6 +1178,7 @@ function questCard(){
       E('button',{class:'btn ghost',on:{click:function(){ S.questIndex++; save(); render(); }}},'Another brave move')
     ]));
   }
+  if(!PLAN.parent) card.appendChild(E('button',{class:'linkbtn',style:'margin-top:10px',on:{click:openParentPlan}},'More brave moves · parent plan, coming soon'));
   return card;
 }
 function questDone(){
@@ -1458,7 +1474,8 @@ function arcRow(){
     var cls = 'arcnode' + (i<=S.stage?' reached':'') + (i===S.stage?' current':'');
     row.appendChild(E('div',{class:cls},[
       E('div',{class:'mini',html:petSVG(i,'')}),
-      E('div',{class:'mlabel',text:STAGE_NAMES[i]})
+      E('div',{class:'mlabel',text:STAGE_NAMES[i]}),
+      (!PLAN.parent && i > PLAN.freeMaxStage && i > S.stage) ? E('div',{class:'mlock',text:'parent plan'}) : null
     ]));
   }
   return row;
@@ -1468,15 +1485,15 @@ function arcRow(){
 function renderAbout(){
   $app.appendChild(E('div',{class:'card'},[
     E('h2',{class:'section',text:'About '+BRAND.name}),
-    E('p',{class:'muted',text:'Here’s the heart of it: you and '+BRAND.name+' look after EACH OTHER. Sometimes '+BRAND.name+' has a little wobble and you help it feel better; then '+BRAND.name+' turns around and checks on you. It’s a two-way friendship — and you grow stronger together, each helping the other.'}),
-    E('div',{class:'note green'},[E('span',{class:'nt',text:'Why caring for '+BRAND.name+' helps you too'}),
-      E('span',{text:'This is the “helper principle”: when a child cares for someone else, they build their own confidence, resilience, and sense of worth. You’re never being fixed — you’re the capable, caring one. And every calm thing you do for '+BRAND.name+' (breathing, naming a feeling, kind words) is a skill you can use for yourself, in real life.'})]),
+    E('p',{class:'muted',text:BRAND.name+' asks how you are, breathes with you, offers one small care skill, and dares you to one brave move out in real life. Sometimes '+BRAND.name+' has butterflies and you help — then '+BRAND.name+' checks on you right back. You grow together, with no streaks, ever.'}),
+    E('div',{class:'note green'},[E('span',{class:'nt',text:'Why helping '+BRAND.name+' helps you too'}),
+      E('span',{text:'Every calm thing you do with '+BRAND.name+' — breathing slowly, naming a feeling, kind words — is a skill you can use for yourself, anywhere.'})]),
     E('div',{class:'note calm'},[E('span',{class:'nt',text:'You can never let '+BRAND.name+' down'}),
       E('span',{text:BRAND.name+'’s wobbles are always small, and any way you choose to help always works. There’s no failing, no pressure, and no guilt for taking a break — '+BRAND.name+' is always okay, and always happy to see you.'})]),
     E('div',{class:'note warm'},[E('span',{class:'nt',text:'Made with care'}),
       E('span',{text:BRAND.name+' teaches real calm-and-coping skills, gently. Its words haven’t yet been reviewed by a child psychologist, so think of '+BRAND.name+' as a kind companion — here to support you, never to replace a grown-up or a professional.'})]),
     E('div',{class:'note green'},[E('span',{class:'nt',text:'Gently grounded in research'}),
-      E('span',{text:BRAND.name+' leans on the few things that calm, non-judgmental companions seem to genuinely help with: breathing slowly together, putting words to feelings, and steady, unhurried presence. That’s why breathing comes first. '+BRAND.name+' is evidence-informed — not a proven treatment, and never a substitute for a real person who can help.'})])
+      E('span',{text:BRAND.name+' leans on the few things that calm, non-judgmental companions seem to genuinely help with: breathing slowly together, putting words to feelings, and steady, unhurried presence. That’s why breathing comes first. '+BRAND.name+' is a place to practise calm — not a promise, and never a substitute for a real person who can help.'})])
   ]));
 
   $app.appendChild(E('div',{class:'card'},[
@@ -1485,6 +1502,8 @@ function renderAbout(){
       E('span',{text:BRAND.name+' is a supportive companion — not a doctor, therapist, or emergency service, and not a replacement for one. If you’re struggling, please talk to a trusted grown-up or a professional. In an emergency, contact your local emergency number right away.'})]),
     E('button',{class:'btn amber block',style:'margin-top:6px',on:{click:openCrisis}},'Talk to someone who can help')
   ]));
+
+  $app.appendChild(grownUpCard());
 
   $app.appendChild(E('div',{class:'card'},[
     E('h2',{class:'section',text:'Your privacy'}),
@@ -1497,6 +1516,27 @@ function renderAbout(){
 
   $app.appendChild(studioFooter());
 }
+/* ---------------- FOR GROWN-UPS: free vs parent plan (coming soon) ---------------- */
+function planBody(){
+  return [
+    E('div',{class:'note green'},[E('span',{class:'nt',text:'Free, forever'}),
+      E('ul',{class:'planlist'},[E('li',{text:'Breathe together'}),E('li',{text:'The “How are you?” check-in'}),E('li',{text:'Grown-up help, on every screen'}),E('li',{text:'Growth stages 1–2 and a starter set of brave moves'})])]),
+    E('div',{class:'note warm'},[E('span',{class:'nt',text:'Parent plan — coming soon'}),
+      E('ul',{class:'planlist'},[E('li',{text:'The full brave-move library'}),E('li',{text:'Grown-up tips (never a view of your child’s feelings)'}),E('li',{text:'Growth stages 3–5'})])]),
+    E('p',{class:'faint',text:'Not available yet. Nothing can be bought in this preview, and safety features are never part of a paid plan.'}),
+    E('button',{class:'btn ghost block soonbtn',disabled:'disabled','aria-disabled':'true',style:'margin-top:6px'},'Coming soon')
+  ];
+}
+function grownUpCard(){
+  return E('div',{class:'card'},[E('h2',{class:'section',text:'For grown-ups'})].concat(planBody()));
+}
+function openParentPlan(){
+  openSheet(function(close){
+    return [E('div',{class:'grab'}), E('h3',{text:'For grown-ups'})].concat(planBody(),
+      [E('button',{class:'linkbtn',style:'display:block;margin:12px auto 0',on:{click:close}},'Close')]);
+  });
+}
+
 function confirmReset(){
   openSheet(function(close){
     return [
