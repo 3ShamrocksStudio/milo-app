@@ -282,7 +282,12 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 .milocap{text-align:center;font-size:.82rem;color:var(--ink-soft);margin-top:10px}
 
 /* ---- restored home loop ---- */
-.worldstage.home{min-height:300px}
+.worldstage.home{min-height:246px;padding:10px 14px 12px}
+.worldstage.home .petwrap{width:118px;height:118px}
+.card.checkin .feelrow{flex-wrap:nowrap;gap:6px}
+.card.checkin .feel{min-width:0;padding:10px 2px 8px}
+.card.checkin .feel .face{font-size:1.55rem}
+.card.checkin .feel .lbl{font-size:.64rem;line-height:1.15;text-align:center}
 .bhero.lead{padding:20px 16px;border-width:1.5px;box-shadow:var(--shadow)}
 .bhero.lead .bico{width:72px;height:72px;font-size:2.2rem}
 .bhero.lead .bt{font-size:1.18rem}
@@ -1152,9 +1157,11 @@ function pickMood(k){
   var firstToday = S.checkinDate !== today();
   S.todayMood = k; S.checkinDate = today();
   if(k!=='skip'){ S.moodLog.push({d:today(),m:k}); if(S.moodLog.length>40) S.moodLog.shift(); }
-  if(firstToday){ S.counts.checkins++; save(); addGrowth(1); } else save();
+  var evolved = false;
+  if(firstToday){ S.counts.checkins++; save(); evolved = addGrowth(1); } else save();
 
-  if(k==='crisis'){ render(); openCrisis(); return; }
+  if(k==='crisis'){ render(); openCrisis(); return; }   // crisis always wins
+  if(evolved){ render(); return; }                       // let the growth moment show
   // gentle response sheet — every answer leads gently to breathing together
   openSheet(function(close){
     var moodForPet = (k==='skip')?'':k;
@@ -1448,7 +1455,7 @@ function renderJourney(){
   ]));
 
   // reflection (warm framing, never judgmental) — the helper's record of care
-  $app.appendChild(E('h2',{class:'section',text:'How you’ve shown up for '+pet()}));
+  $app.appendChild(E('h2',{class:'section',text:'What you’ve practised together'}));
   var list = E('div',{class:'reflectlist'});
   [[S.counts.helps||0,'times you were there for '+pet()],
    [S.counts.breaths,'times you breathed together'],
