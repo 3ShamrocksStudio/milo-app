@@ -276,7 +276,20 @@ h2.section{font-size:1.06rem;font-weight:700;margin:6px 2px 2px;color:var(--ink)
 
 .milocap{text-align:center;font-size:.82rem;color:var(--ink-soft);margin-top:10px}
 
-/* ---- THE FLIP — Milo-needs-you helper UI ---- */
+/* ---- restored home loop ---- */
+.worldstage.home{min-height:300px}
+.bhero.lead{padding:20px 16px;border-width:1.5px;box-shadow:var(--shadow)}
+.bhero.lead .bico{width:72px;height:72px;font-size:2.2rem}
+.bhero.lead .bt{font-size:1.18rem}
+.card.checkin{padding:16px 14px}
+.card.skill .qkicker,.card.soft .qkicker{font-size:.68rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--amber-deep)}
+.skillrow{display:flex;align-items:center;gap:13px;width:100%;text-align:left;margin-top:8px;background:var(--card-2);
+  border:1px solid var(--line);border-radius:16px;padding:12px 13px}
+.skillrow .ico{width:44px;height:44px;flex:0 0 auto;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.35rem}
+.skillrow .t{font-weight:700;font-size:.98rem}
+.skillrow .d{font-size:.8rem;color:var(--ink-soft);line-height:1.35}
+
+/* ---- helper moments (occasional, ~1 in 4 opens) ---- */
 .bhero.help{background:linear-gradient(150deg,#FFE9E0,#FBEFEA);border-color:#F6C9B8}
 .bhero .bk.help{color:var(--coral-deep)}
 .bico.hc{background:radial-gradient(circle at 50% 40%,#FFD8C8,#F2A88D);box-shadow:0 0 0 8px rgba(239,100,64,.14)}
@@ -434,7 +447,7 @@ function blankState(){
     childName:'', ageBand:'', likeThing:'',
     growth:0, stage:1, hapticsOn:true,
     counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0, helps:0},
-    todayMood:'', checkinDate:'', questDate:'', moodLog:[],
+    todayMood:'', checkinDate:'', questDate:'', breathDate:'', moodLog:[],
     questIndex:0, lastVisit:'', createdAt:'',
     helpedDate:'', miloMomentIndex:0             // occasional helper moments (Milo needs a little help)
   };
@@ -548,7 +561,10 @@ function moodReply(k){
   }
 }
 
+/* Today's brave move — a small real-life quest. "I did it" and "maybe
+   later" are both fine; "maybe later" costs nothing. */
 var QUESTS = [
+  {kick:'Say hi', t:'Say hi to someone new — or someone you don’t talk to much.', done:'That took courage. Starting is the brave part.'},
   {kick:'Tiny adventure', t:'Do one kind thing — for someone, or for yourself.', done:'A kind thing ripples further than you think. I felt it.'},
   {kick:'Brave for 2 minutes', t:'Try the hard thing for just 2 minutes. Then you can stop.', done:'You tried. That’s the brave part — starting.'},
   {kick:'One true thing', t:'Tell a grown-up you trust one true thing about your day.', done:'Letting someone in is strong, not small. I’m proud of you.'},
@@ -820,7 +836,7 @@ function obYou(){
   input.addEventListener('input',function(){ob.kid=input.value;});
   var likeInput = E('input',{class:'input',type:'text',maxlength:'30',placeholder:'One thing that makes you feel calm (optional)',value:ob.like});
   likeInput.addEventListener('input',function(){ob.like=likeInput.value;});
-  var ages = [['6-8','6–8'],['9-11','9–11'],['12-14','12–14']];
+  var ages = [['6-8','6–8'],['9-10','9–10'],['11-12','11–12']];
   var ar = E('div',{class:'suggrow'});
   ages.forEach(function(a){
     var b = E('button',{class:'sugg'+(ob.age===a[0]?' sel':''),on:{click:function(){ob.age=a[0]; ar.querySelectorAll('.sugg').forEach(function(x){x.classList.remove('sel');}); b.classList.add('sel'); b.style.borderColor='var(--green)'; b.style.background='var(--green-soft)';}}},a[1]);
@@ -843,9 +859,10 @@ function obReady(){
     E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(2,'great')}),
       E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'Thank you. I feel a little braver already.'})])]),
     E('div',{class:'spark',text:'🌱'}),
-    E('h2',{class:'section',text:'We’re ready.'}),
+    E('h2',{class:'section',text:'Let’s start with one slow breath.'}),
     E('p',{class:'muted',text:'Come visit when you can. I’ll always be here, and I’ll never be upset if you need time away.'}),
-    E('button',{class:'btn primary block',on:{click:finishOnboarding}},'Begin')
+    E('button',{class:'btn primary block',on:{click:function(){ finishOnboarding(); openBreathing(false); }}},'🫧 Breathe with '+pet()),
+    E('button',{class:'linkbtn',style:'display:block;margin:12px auto 0',on:{click:finishOnboarding}},'Maybe later')
   ]);
 }
 function finishOnboarding(){
@@ -857,6 +874,8 @@ function finishOnboarding(){
   S.lastVisit = today();
   S.stage = 1; S.growth = 0;
   save(); go('today');
+  // the on-device crisis scan also covers anything typed during setup
+  if(crisisDetect(S.childName+' '+S.likeThing)){ closeOverlay(); openCrisis(); }
 }
 
 /* ============================================================
@@ -957,7 +976,24 @@ function petReact(petw){
   }, 900);
 }
 
-/* ---------------- TODAY ---------------- */
+/* ---------------- TODAY — the restored loop (5 Nov 2026) ----------------
+   1. How are you?  (optional; "I'd rather not say"; the heaviest choice
+      opens grown-up help in one tap)
+   2. Breathe together — the hero (in 4 · hold 2 · out 6, optional haptics)
+   3. One small care skill — or, about 1 in 4 opens, a helper moment
+      (Milo has butterflies, any help works, always hands back to the child)
+   4. Today's brave move — "I did it" / "maybe later", zero shame
+   5. Grow together — 5 stages, no streaks, no decay, bond never decreases
+   ----------------------------------------------------------------------- */
+// One roll per app open, never per re-render: helper moments stay occasional.
+var HELPER_THIS_OPEN = Math.random() < 0.25;
+var CARE_SKILLS = [
+  {ic:'ic-green', emoji:'🏷️', t:'Name the feeling', d:'Find the word for what’s here. Naming it makes it smaller.', fn:function(){ openNameFeeling(); }},
+  {ic:'ic-amber', emoji:'💧', t:'Take care', d:'Some water, a snack, fresh air or a stretch. Small things add up.', fn:function(){ openNourish(); }},
+  {ic:'ic-blue',  emoji:'🌙', t:'Rest together', d:'Curl up and slow down. Resting is allowed.', fn:function(){ openRest(); }}
+];
+var careIdx = (new Date().getDate()) % CARE_SKILLS.length;
+
 function renderToday(){
   // returning welcome (never guilt) + count a visit day
   var greetLine;
@@ -971,84 +1007,113 @@ function renderToday(){
   }
   S.lastVisit = today(); save();
 
-  var helped = helpedToday();
-  var m = currentMoment();
+  var checked = S.checkinDate === today();
+  var mood = checked ? S.todayMood : '';
+  var breathed = S.breathDate === today();
+  var heroText;
+  if(!checked) heroText = greetLine + ' How are you today?';
+  else if(mood === 'crisis') heroText = 'Thanks for telling me. This one’s for a grown-up — I’ll stay right here.';
+  else if(breathed) heroText = 'We breathed together today. That calm is yours to keep.';
+  else heroText = 'Thanks for telling me. Want to breathe with me?';
 
-  // HERO — the flip: Milo shares a feeling and needs the child; once helped
-  // today, Milo is calmer thanks to them.
-  var heroText = helped
-    ? 'Thanks to you'+helperName()+', I feel much better today. You’re a really good friend.'
-    : m.says + ' Will you help me' + helperName() + '?';
-  var world = E('div',{class:'worldstage'});
+  // the world (ambience only) + Milo, mirroring the child's mood
+  var world = E('div',{class:'worldstage home'});
   world.appendChild(buildWorld(S.stage, progressToNext()));
-  var petw = E('div',{class:'petwrap',html:petSVG(S.stage, helped? 'good' : 'low'),
+  var petw = E('div',{class:'petwrap',html:petSVG(S.stage, mood==='skip' ? '' : mood),
     role:'button','aria-label':'Give '+pet()+' a gentle pat',
     on:{click:function(){ petReact(petw); }}});
   world.appendChild(petw);
-  world.appendChild(E('div',{class:'bubble'+(helped?'':' need')},[ E('span',{class:'who',text:pet()}), E('span',{text:heroText}) ]));
-  world.appendChild(E('div',{class:'stageline',text:'You & '+pet()+' · '+STAGE_NAMES[S.stage]+' — growing together'}));
+  world.appendChild(E('div',{class:'bubble'},[ E('span',{class:'who',text:pet()}), E('span',{text:heroText}) ]));
   $app.appendChild(world);
 
-  // PRIMARY — Help Milo (the flipped core loop). The child is the capable, caring one.
-  $app.appendChild(E('button',{class:'bhero help',on:{click:openHelpMilo}},[
-    E('div',{class:'bico hc',text:'💛'}),
-    E('div',{},[
-      E('div',{class:'bk help',text: helped ? 'You were there for '+pet()+' today' : pet()+' needs you'}),
-      E('div',{class:'bt',text: helped ? 'Sit with '+pet()+' again' : 'Help '+pet()+' feel better'}),
-      E('div',{class:'bd',text: helped
-        ? 'You already helped today — but '+pet()+' always loves your company.'
-        : (simple()? 'When you help '+pet()+', you learn the calm for you too.' : 'When you comfort '+pet()+', you’re practising the very same calm for yourself.')})
-    ])
-  ]));
-
-  // Breathe WITH Milo — co-regulation
-  $app.appendChild(E('button',{class:'bhero',on:{click:function(){ openBreathing(false); }}},[
-    E('div',{class:'bico',text:'🫧'}),
-    E('div',{},[
-      E('div',{class:'bk',text:'Breathe together'}),
-      E('div',{class:'bt',text: simple()? 'Slow down with '+pet() : 'Calm-together breathing'}),
-      E('div',{class:'bd',text: simple()
-        ? 'In… and slowly out. You and '+pet()+' get calm together.'
-        : 'You and '+pet()+' breathe as one — in 4, hold, out 6. The skill that travels with you.'})
-    ])
-  ]));
-
-  // more ways to be there for Milo
-  $app.appendChild(E('h2',{class:'section',text:'More ways to be there for '+pet()}));
-  var grid = E('div',{class:'grid2'});
-  grid.appendChild(actionCard('ic-green','🏷️','Name a feeling','Help '+pet()+' (and you) find the word.',openNameFeeling));
-  grid.appendChild(actionCard('ic-amber','🍎','Take care','A small kindness for both your bodies.',openNourish));
-  grid.appendChild(actionCard('ic-green','🌙','Rest together','Curl up and slow down.',openRest));
-  $app.appendChild(grid);
-
-  // the child's OWN gentle check-in — kept, secondary, and crisis-safe
+  // 1 — How are you?
   $app.appendChild(selfCheckCard());
 
-  // quest
+  // 2 — Breathe together (the hero)
+  $app.appendChild(E('button',{class:'bhero lead',on:{click:function(){ openBreathing(false); }}},[
+    E('div',{class:'bico',text:'🫧'}),
+    E('div',{},[
+      E('div',{class:'bk',text: breathed ? 'Breathe together · again any time' : 'Breathe together'}),
+      E('div',{class:'bt',text: simple()? 'Slow down with '+pet() : 'Calm power, with '+pet()}),
+      E('div',{class:'bd',text: simple()
+        ? 'In… and slowly out. '+pet()+' breathes with you.'
+        : pet()+' grows and shrinks with you — in 4, hold 2, out 6. A skill you can take anywhere.'})
+    ])
+  ]));
+
+  // 3 — one small care skill (or, occasionally, a helper moment)
+  if(HELPER_THIS_OPEN && !helpedToday()) $app.appendChild(helperCard());
+  else $app.appendChild(careSkillCard());
+
+  // 4 — today's brave move
   $app.appendChild(questCard());
+
+  // 5 — grow together
+  $app.appendChild(growCard());
 
   $app.appendChild(studioFooter());
 }
 
+function careSkillCard(){
+  var c = CARE_SKILLS[careIdx % CARE_SKILLS.length];
+  var card = E('div',{class:'card skill'},[
+    E('div',{class:'qkicker',text:'One small care skill'}),
+    E('button',{class:'skillrow',on:{click:c.fn}},[
+      E('div',{class:'ico '+c.ic,text:c.emoji}),
+      E('div',{},[E('div',{class:'t',text:c.t}), E('div',{class:'d',text:c.d})])
+    ]),
+    E('div',{class:'skiprow'},[E('button',{class:'linkbtn',on:{click:function(){ careIdx++; render(); }}},'Another idea')])
+  ]);
+  return card;
+}
+
+/* A helper moment — occasional (about 1 in 4 opens), light, and un-failable.
+   Any help works, and Milo always hands the moment back to the child. */
+function helperCard(){
+  return E('div',{class:'card skill'},[
+    E('div',{class:'qkicker',text:'One small care skill'}),
+    E('button',{class:'bhero help',style:'margin:8px 0 0',on:{click:openHelpMilo}},[
+      E('div',{class:'bico hc',text:'💛'}),
+      E('div',{},[
+        E('div',{class:'bk help',text:pet()+'’s got butterflies'}),
+        E('div',{class:'bt',text:'Help '+pet()+' settle?'}),
+        E('div',{class:'bd',text:'Any help works. Then '+pet()+' checks on you.'})
+      ])
+    ]),
+    E('div',{class:'skiprow'},[E('button',{class:'linkbtn',on:{click:function(){ HELPER_THIS_OPEN=false; render(); }}},'Not now')])
+  ]);
+}
+
+function growCard(){
+  return E('div',{class:'card soft'},[
+    E('div',{class:'qkicker',style:'color:var(--green-deep)',text:'Grow together'}),
+    E('div',{style:'font-weight:700;margin-top:4px',text:'You & '+pet()+' · '+STAGE_NAMES[S.stage]}),
+    E('div',{class:'vine'},[E('i',{style:'width:'+(progressToNext()*100)+'%'})]),
+    E('p',{class:'faint',style:'margin:8px 0 0',text:'No streaks. Skipping a day costs nothing. Your bond only ever grows.'}),
+    E('button',{class:'linkbtn',style:'margin-top:6px',on:{click:function(){ go('journey'); }}},'See your journey')
+  ]);
+}
+
 function selfCheckCard(){
   var picked = S.checkinDate === today();
-  var card = E('div',{class:'card'},[
-    E('h2',{class:'section',text: pet()+' is checking on you'}),
-    E('div',{class:'bubble',style:'margin:6px 0 2px'},[E('span',{class:'who',text:pet()}),
-      E('span',{text: picked
-        ? 'Thanks for telling me'+helperName()+'. I look after you, just like you look after me.'
-        : 'I look after you too'+helperName()+'. How are YOU feeling today? No pressure — pick what fits, or skip.'})])
+  var card = E('div',{class:'card checkin'},[
+    E('h2',{class:'section',text:'How are you?'}),
+    E('p',{class:'faint',style:'margin:0 2px',text: picked
+      ? 'Thanks for telling me'+helperName()+'. You can change it any time.'
+      : 'Pick what fits — or skip. Every answer is okay.'})
   ]);
   var row = E('div',{class:'feelrow'});
   MOODS.forEach(function(m){
     var sel = picked && S.todayMood===m.k;
-    row.appendChild(E('button',{class:'feel'+(sel?' sel':''),on:{click:function(){pickMood(m.k);}}},[
+    row.appendChild(E('button',{class:'feel'+(sel?' sel':''),'aria-pressed':String(sel),on:{click:function(){pickMood(m.k);}}},[
       E('span',{class:'face',text:m.face}), E('span',{class:'lbl',text:m.lbl})
     ]));
   });
   card.appendChild(row);
   card.appendChild(E('div',{class:'skiprow'},[
-    E('button',{class:'linkbtn',on:{click:function(){pickMood('skip');}}},'I’d rather not say')
+    E('button',{class:'linkbtn',on:{click:function(){pickMood('skip');}}},'I’d rather not say'),
+    E('span',{class:'faint',text:'  ·  '}),
+    E('button',{class:'linkbtn',on:{click:openCrisis}},'Grown-up help')
   ]));
   return card;
 }
@@ -1059,17 +1124,17 @@ function pickMood(k){
   if(firstToday){ S.counts.checkins++; save(); addGrowth(1); } else save();
 
   if(k==='crisis'){ render(); openCrisis(); return; }
-  // gentle response sheet
+  // gentle response sheet — every answer leads gently to breathing together
   openSheet(function(close){
     var moodForPet = (k==='skip')?'':k;
     return [
       E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(S.stage, moodForPet)}),
         E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:moodReply(k)})])]),
-      (k==='low'? E('button',{class:'btn blue block',style:'margin-top:14px',on:{click:function(){close();openBreathing();}}},'Breathe together') : null),
-      E('button',{class:(k==='low'?'btn ghost block':'btn primary block'),style:'margin-top:10px',on:{click:close}},'Okay')
+      E('button',{class:'btn blue block',style:'margin-top:14px',on:{click:function(){close();openBreathing(false);}}},'🫧 Breathe together'),
+      E('button',{class:'btn ghost block',style:'margin-top:10px',on:{click:close}},'Okay')
     ];
   });
-  if(k!=='crisis') render();
+  render();
 }
 
 function actionCard(ic,emoji,title,desc,fn){
@@ -1084,9 +1149,9 @@ function questCard(){
   var q = currentQuest();
   var doneToday = S.questDate === today();
   var card = E('div',{class:'card quest'},[
-    E('div',{class:'qkicker',text:q.kick}),
+    E('div',{class:'qkicker',text:'Today’s brave move · '+q.kick}),
     E('div',{class:'qtext',text:q.t}),
-    E('div',{class:'faint',text: doneToday? 'You did today’s adventure. 🌟' : 'A small real-life adventure. Only if you’re up for it.'})
+    E('div',{class:'faint',text: doneToday? 'You did today’s brave move. 🌟' : 'Out in real life. Only if you’re up for it — “maybe later” is fine too.'})
   ]);
   if(!doneToday){
     card.appendChild(E('div',{class:'btnrow'},[
@@ -1095,7 +1160,7 @@ function questCard(){
     ]));
   } else {
     card.appendChild(E('div',{class:'btnrow'},[
-      E('button',{class:'btn ghost',on:{click:function(){ S.questIndex++; save(); render(); }}},'Show another idea')
+      E('button',{class:'btn ghost',on:{click:function(){ S.questIndex++; save(); render(); }}},'Another brave move')
     ]));
   }
   return card;
@@ -1198,7 +1263,7 @@ function openBreathing(forMilo){
       ]));
       finished = true;
       done.textContent = forMilo ? ('All done — '+pet()+'’s turn to check on you 💚') : 'All done 💚';
-      S.counts.breaths++; save(); addGrowth(2);
+      S.counts.breaths++; S.breathDate = today(); save(); addGrowth(2);
       if(forMilo) markHelped();
     }
     setTimeout(cycle, 500);
