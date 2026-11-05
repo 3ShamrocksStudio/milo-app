@@ -431,7 +431,7 @@ var THRESH = [0, 0, 3, 9, 18, 30]; // growth points needed to REACH stage index 
 function blankState(){
   return {
     v:1, onboarded:false,
-    petName:'', childName:'', ageBand:'', likeThing:'', petType:'',
+    childName:'', ageBand:'', likeThing:'',
     growth:0, stage:1, hapticsOn:true,
     counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0, helps:0},
     todayMood:'', checkinDate:'', questDate:'', moodLog:[],
@@ -447,8 +447,8 @@ function load(){
 /* Scrub fields from the removed AI Talk layer (chat log, any grown-up-entered
    AI key, voice toggle) so nothing of it stays on the device. */
 function scrubLegacy(o){
-  var had = ('ai' in o) || ('chatLog' in o) || ('speakOn' in o) || (o.counts && 'chats' in o.counts);
-  delete o.ai; delete o.chatLog; delete o.speakOn; if(o.counts) delete o.counts.chats;
+  var had = ('ai' in o) || ('chatLog' in o) || ('speakOn' in o) || ('petType' in o) || ('petName' in o) || (o.counts && 'chats' in o.counts);
+  delete o.ai; delete o.chatLog; delete o.speakOn; delete o.petType; delete o.petName; if(o.counts) delete o.counts.chats;
   if(had){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -495,6 +495,12 @@ function progressToNext(){
    SECURITY: the alt text is deliberately static — no user-entered value is
    ever interpolated into markup (all user text renders via textContent).
    ============================================================ */
+/* ONE creature identity: Milo. Brand v2 (white polar bear, no sunglasses) is
+   in production at 3shamrocksstudio.github.io/assets/brand-proposals/milo-v2/
+   and pending Dave's approval. When approved, copy the frames into art/ and
+   point ART at them — every screen picks the art up from here. Until then
+   the current creature art stays. */
+var ART = { dir:'art/', prefix:'milo-', ext:'.webp' };
 function petArtFile(stage, moodKey){
   var st = Math.max(1, Math.min(5, parseInt(stage, 10) || 1));
   var expr = '';                                  // stage 1 is always the curled sleeper
@@ -502,19 +508,19 @@ function petArtFile(stage, moodKey){
     if(moodKey === 'low' || moodKey === 'crisis') expr = '-sad';
     else if(moodKey === 'great' || moodKey === 'good') expr = '-happy';
   }
-  return {st:st, src:'art/milo-' + st + expr + '.webp'};
+  return {st:st, src:ART.dir + ART.prefix + st + expr + ART.ext};
 }
-function petSVG(stage, moodKey, type){
+function petSVG(stage, moodKey){
   var a = petArtFile(stage, moodKey);
   return '<img class="petart" src="' + a.src + '" '
-       + 'width="400" height="400" alt="Your companion, stage ' + a.st + ' of 5" '
+       + 'width="400" height="400" alt="Milo, stage ' + a.st + ' of 5" '
        + 'draggable="false">';
 }
 
 /* ============================================================
    COPY (warm, short, trauma-informed). Pet/child names via textContent.
    ============================================================ */
-function pet(){ return S.petName || 'your friend'; }
+function pet(){ return BRAND.name; }               // one identity: the creature IS Milo
 function simple(){ return S.ageBand === '6-8'; }
 
 var GREET = [
@@ -772,10 +778,10 @@ function renderTabs(){
 }
 
 /* ---------------- ONBOARDING ---------------- */
-var ob = {step:0, name:'', kid:'', age:'', like:'', petType:''};
+var ob = {step:0, kid:'', age:'', like:''};
 function renderOnboarding(){
   clear($app);
-  var steps = [obWelcome, obChoose, obName, obYou, obReady];
+  var steps = [obWelcome, obMeet, obYou, obReady];
   $app.appendChild(E('div',{class:'topbar'},[
     E('div',{class:'brand'},[
       E('div',{class:'logo',html:petSVG(2,'')}),
@@ -791,8 +797,8 @@ function renderOnboarding(){
 function obWelcome(){
   return E('div',{class:'ob'},[
     E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(1,'')})]),
-    E('h1',{text:'Hi. I’m glad you found me.'}),
-    E('p',{class:'lead',text:'I’m a little creature who’s here just for you. We’ll take care of each other, and grow — together.'}),
+    E('h1',{text:'Hi. I’m Milo.'}),
+    E('p',{class:'lead',text:'I’m really glad you found me. We’ll breathe together, try brave things, and grow — side by side.'}),
     E('div',{class:'note green'},[E('span',{class:'nt',text:'A few gentle promises'}),
       E('span',{text:'Everything stays on this device. No sign-ups, no sharing, nobody watching. You can stop any time.'})]),
     E('div',{class:'note warm'},[E('span',{class:'nt',text:'I’m a friend, not a doctor'}),
@@ -800,30 +806,13 @@ function obWelcome(){
     E('button',{class:'btn primary block',on:{click:function(){ob.step=1;renderOnboarding();}}},'Okay, let’s meet →')
   ]);
 }
-function obChoose(){
-  // Neutral placeholder "meet your friend" step (pending real brand direction).
+function obMeet(){
   return E('div',{class:'ob'},[
     E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(1,'')}),
-      E('div',{class:'bubble'},[E('span',{class:'who',text:'…'}),E('span',{text:'(a little one, curled up and shy)'})])]),
-    E('h2',{class:'section',text:'Meet your new friend'}),
-    E('p',{class:'muted',text:'This little one is yours to care for. With warmth and time, it will start to open up and grow — and it’s yours to name next.'}),
-    E('button',{class:'btn primary block',style:'margin-top:6px',on:{click:function(){ ob.petType='placeholder'; ob.step=2; renderOnboarding(); }}},'I’d like to be its friend')
-  ]);
-}
-function obName(){
-  var input = E('input',{class:'input',type:'text',maxlength:'18',placeholder:'Give your friend a name',value:ob.name});
-  input.addEventListener('input',function(){ob.name=input.value;});
-  var suggs = ['Pip','Luma','Sprout','Moss','Olive','Bean','Sky','Pebble'];
-  var sr = E('div',{class:'suggrow'});
-  suggs.forEach(function(s){ sr.appendChild(E('button',{class:'sugg',on:{click:function(){ob.name=s;input.value=s;}}},s)); });
-  return E('div',{class:'ob'},[
-    E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(2,'')})]),
-    E('h2',{class:'section',text:'What should we call your friend?'}),
-    E('p',{class:'muted',text:'Any name you like. You can change it later.'}),
-    input, sr,
-    E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:function(){
-      ob.name = (ob.name||'').trim() || 'Pip'; ob.step=3; renderOnboarding();
-    }}},'That’s the one')
+      E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'(curled up, a little shy — just like anyone meeting someone new)'})])]),
+    E('h2',{class:'section',text:'Meet '+pet()}),
+    E('p',{class:'muted',text:pet()+' is your friend. With a little time together, '+pet()+' opens up and grows — and so do you.'}),
+    E('button',{class:'btn primary block',style:'margin-top:6px',on:{click:function(){ ob.step=2; renderOnboarding(); }}},'Hi, '+pet()+'!')
   ]);
 }
 function obYou(){
@@ -839,20 +828,20 @@ function obYou(){
   });
   return E('div',{class:'ob'},[
     E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(2,'')}),
-      E('div',{class:'bubble'},[E('span',{class:'who',text:ob.name||'Your friend'}),E('span',{text:'I’d love to learn a little about you — only what you want to share.'})])]),
+      E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'I’d love to learn a little about you — only what you want to share.'})])]),
     E('p',{class:'muted',style:'margin-top:4px',text:'You can skip any of these.'}),
     input,
     E('p',{class:'faint',style:'margin:12px 2px 0',text:'How old are you? (helps me talk to you just right)'}),
     ar,
     likeInput,
-    E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:function(){ob.step=4;renderOnboarding();}}},'Continue'),
-    E('button',{class:'linkbtn',style:'display:block;margin:12px auto 0',on:{click:function(){ob.step=4;renderOnboarding();}}},'Skip for now')
+    E('button',{class:'btn primary block',style:'margin-top:14px',on:{click:function(){ob.step=3;renderOnboarding();}}},'Continue'),
+    E('button',{class:'linkbtn',style:'display:block;margin:12px auto 0',on:{click:function(){ob.step=3;renderOnboarding();}}},'Skip for now')
   ]);
 }
 function obReady(){
   return E('div',{class:'ob celebrate'},[
     E('div',{class:'petstage'},[E('div',{class:'petwrap',html:petSVG(2,'great')}),
-      E('div',{class:'bubble'},[E('span',{class:'who',text:ob.name}),E('span',{text:'Thank you. I feel a little braver already.'})])]),
+      E('div',{class:'bubble'},[E('span',{class:'who',text:pet()}),E('span',{text:'Thank you. I feel a little braver already.'})])]),
     E('div',{class:'spark',text:'🌱'}),
     E('h2',{class:'section',text:'We’re ready.'}),
     E('p',{class:'muted',text:'Come visit when you can. I’ll always be here, and I’ll never be upset if you need time away.'}),
@@ -860,8 +849,6 @@ function obReady(){
   ]);
 }
 function finishOnboarding(){
-  S.petName = ob.name || 'Pip';
-  S.petType = 'placeholder';
   S.childName = (ob.kid||'').trim();
   S.ageBand = ob.age || '';
   S.likeThing = (ob.like||'').trim();
@@ -1387,8 +1374,7 @@ function renderJourney(){
   // what the pet "learned"
   var learned = [];
   if(S.childName) learned.push('Your name is '+S.childName);
-  learned.push('Your friend is '+pet());
-  if(S.likeThing) learned.push('Calm for you: '+S.likeThing);
+    if(S.likeThing) learned.push('Calm for you: '+S.likeThing);
   if(S.ageBand) learned.push('You’re '+S.ageBand.replace('-','–'));
   learned.push('Together since '+ (S.createdAt||'today'));
   var lc = E('div',{class:'card'},[
@@ -1451,7 +1437,7 @@ function confirmReset(){
     return [
       E('div',{class:'grab'}),
       E('h3',{text:'Erase everything?'}),
-      E('p',{class:'muted',text:'This clears '+pet()+', your name, and all your progress from this device. It can’t be undone. '+pet()+' will start over, shy and new.'}),
+      E('p',{class:'muted',text:'This clears your name and all your progress with '+pet()+' from this device. It can’t be undone. '+pet()+' will start over, shy and new.'}),
       E('button',{class:'btn amber block',style:'margin-top:10px',on:{click:function(){ doReset(); }}},'Yes, erase and start over'),
       E('button',{class:'btn ghost block',style:'margin-top:10px',on:{click:close}},'Keep '+pet())
     ];
@@ -1459,7 +1445,7 @@ function confirmReset(){
 }
 function doReset(){
   try{ localStorage.removeItem(KEY); }catch(e){}
-  S = blankState(); ob = {step:0,name:'',kid:'',age:'',like:'',petType:''};
+  S = blankState(); ob = {step:0,kid:'',age:'',like:''};
   closeOverlay(); route='today'; render();
 }
 
