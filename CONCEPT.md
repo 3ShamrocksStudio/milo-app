@@ -6,6 +6,11 @@
 > the non-negotiables, and an honest account of what this proof-of-concept does versus what a
 > real, safe-to-ship product would require.
 
+> **Reset, 5 Nov 2026.** The loop is now: *How are you? → Breathe together (hero) → one small care
+> skill (helper moment about 1 in 4 opens) → today's brave move → grow together*. Open AI Talk, the
+> hidden acrostic and pet naming/types were removed. Where this note says otherwise, README.md and
+> the 5 Nov decision memo win.
+
 ---
 
 ## The name
@@ -13,15 +18,7 @@
 **Milo.** A warm, friendly, gender-neutral name a child can say easily and make their own — the
 name of a friend, not a feature. The companion is always introduced simply as *Milo, your friend.*
 
-But the name carries a quiet secret. **M.I.L.O. spells "My Inner Little One."** The child never
-learns this up front. As the companion evolves through its five stages, **one letter's meaning is
-revealed at a time** — M when Milo first wakes, then I, then L, then O — with the full phrase
-*My Inner Little One* blooming at the final **Radiant** stage. The reveal lands a gentle truth:
-caring for Milo has been a way of caring for the gentle little one inside themselves. The egg is
-optional and self-contained — clearing the letter list disables it without affecting the rest of
-the app.
-
-Canon: **Milo** · domain **milo.pet** · hidden **M.I.L.O. = My Inner Little One**.
+Canon: **Milo**. Domain to be decided.
 
 Tagline: **Milo grows with you.**
 
@@ -45,16 +42,15 @@ All pet art is hand-authored inline SVG so the app is fully self-contained and o
 ### The 5-stage evolution arc
 
 Earned by *genuine engagement* — caring actions, coping practice, and real-life quests — **never**
-by points-chasing, streaks, or pressure. The bond never decays; skipping days costs nothing. Each
-new stage also unlocks one letter of the M.I.L.O. secret.
+by points-chasing, streaks, or pressure. The bond never decays; skipping days costs nothing.
 
-| Stage | Name | Meaning | Letter |
-|------:|------|---------|:------:|
-| 1 | **Curled / shy** | Just arrived. Needs warmth and trust. Eyes half-closed, tucked, muted colour. | — |
-| 2 | **Awake / curious** | Begins to bond and "talk back." Eyes open, ears perk, colour warms. | **M** — My |
-| 3 | **Steady** | Calm-together / co-regulation. Relaxed, content, softly green. | **I** — Inner |
-| 4 | **Brave** | Tries challenges alongside the child. Stands taller, small explorer's scarf, faint aura. | **L** — Little |
-| 5 | **Radiant** | Grown and resilient — reflects the child's own growth. Glowing, brightest, sparkles. | **O** — One |
+| Stage | Name | Meaning |
+|------:|------|---------|
+| 1 | **Curled / shy** | Just arrived. Needs warmth and trust. Eyes half-closed, tucked, muted colour. |
+| 2 | **Awake / curious** | Begins to bond and "talk back." Eyes open, ears perk, colour warms. |
+| 3 | **Steady** | Calm-together / co-regulation. Relaxed, content, softly green. |
+| 4 | **Brave** | Tries challenges alongside the child. Stands taller, small explorer's scarf, faint aura. |
+| 5 | **Radiant** | Grown and resilient — reflects the child's own growth. Glowing, brightest, sparkles. |
 
 Progress is shown as a soft "growing-together" vine, **not** a countdown or a streak meter — a
 sense of momentum without anxiety.
@@ -103,9 +99,8 @@ helping Milo, the child *rehearses and internalises the very same coping skills*
 5. **Name a feeling · Take care · Rest together · a small real-life quest** — supporting ways to be
    there for Milo; logged with zero shame; the bond grows.
 
-The pet mirrors calm throughout, and the **M.I.L.O. = "My Inner Little One"** reveal lands deeper
-under the flip: by caring for Milo, the child has been caring for the gentle little one inside
-*themselves*. This builds **real strength** — it is explicitly **not escapism**.
+The pet mirrors calm throughout. Every skill used with Milo is handed back to the child for real
+life. This builds **real strength** — it is explicitly **not escapism**.
 
 ---
 
@@ -174,8 +169,7 @@ crisis resource per region before launch.
 - The full core loop: onboarding (meet + name your companion) → daily check-in → a care/coping
   action → a real-life quest → the pet visibly evolving a stage.
 - The tone: warm, patient, trauma-informed, shame-free.
-- The pet, its personality ("talks back," remembers, mirrors mood), the 5-stage evolution, and the
-  quiet M.I.L.O. = "My Inner Little One" reveal.
+- The pet, its personality ("talks back," remembers, mirrors mood), and the 5-stage evolution.
 - Co-regulation breathing as a genuine, usable exercise.
 - The privacy model (fully on-device, no accounts, reset) and the safety/crisis framing.
 - 3Shamrocks branding and a self-contained, installable PWA.

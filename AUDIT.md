@@ -171,3 +171,24 @@ See [`CONCEPT.md`](CONCEPT.md) for the full design and the complete PoC-vs-produ
 
 ---
 © 2026 3Shamrocks Studio. All rights reserved.
+
+---
+
+## Reset audit — 5 Nov 2026 (branch `grok-reset`, staging only)
+
+| Check | Result | Evidence |
+|---|---|---|
+| Home opens on "How are you?" + "I'd rather not say" | ✅ | Playwright 390×844 and 1440, `miloapp-*-08-home.png` |
+| Lowest mood opens grown-up help | ✅ | From home and from the helper door-back (`-19`, `-20`) |
+| Breathe together is the hero (4·2·6, haptics toggle) | ✅ | `-05`, `-06`, `-07`; onboarding ends in a breathe |
+| Helper moments ~1 in 4 opens, door back kept | ✅ | One random roll per open; flow `-14` → `-18` |
+| Open AI Talk removed | ✅ | No Gemini/Groq/speech code; CSP `connect-src 'self'`; legacy keys scrubbed on load |
+| Acrostic reveal removed | ✅ | grep finds no trace in the app |
+| Free vs parent plan gate (coming soon, no payment) | ✅ | Stages capped at 2 on free, points never lost; `-13` |
+| Local-only breathe-completion metric | ✅ | Counters in `milo.v1`, shown in About → For grown-ups |
+| Crisis lines marked "unverified · not for real use" | ✅ | All three cards + a preview banner |
+| Console errors | ✅ 0 | Both viewports, full flow |
+| Off-site requests | ✅ none | Only same origin + Google Fonts |
+
+Still blocked before any real child: professional verification of every crisis line per region,
+child-psychologist review of every line of copy, brand v2 art approval.
