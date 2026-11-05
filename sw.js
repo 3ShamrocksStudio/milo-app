@@ -5,9 +5,11 @@
 // (https://<org>.github.io). A service worker or CacheStorage left behind by
 // a sibling project on that origin can hijack navigations. This SW therefore
 // (a) uses network-first for navigations so a stale shell can never trap the
-// child mid-session, and (b) deletes every cache it does not own on activate.
+// child mid-session, and (b) on activate deletes only its OWN older caches
+// (same scope), never a sibling project's.
 
-const CACHE_NAME = 'milo-v8-cache';
+const CACHE_PREFIX = 'milo-cache:' + self.registration.scope + ':';
+const CACHE_NAME = CACHE_PREFIX + 'v9';
 const urlsToCache = [
   './',
   'index.html',
@@ -31,7 +33,7 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)));
+    await Promise.all(keys.filter(k => k !== CACHE_NAME && (k.indexOf(CACHE_PREFIX) === 0 || /^milo-v\d+-cache$/.test(k) && self.registration.scope.endsWith('/milo-app/'))).map(k => caches.delete(k)));
     await self.clients.claim();
   })());
 });

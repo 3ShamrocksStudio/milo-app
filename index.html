@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#E2673C">
 <title>Milo — Milo grows with you</title>
-<meta name="description" content="Milo: Breathe &amp; Be Brave. A soft friend who breathes with kids aged 6–12, then dares them to one small brave move. A 3Shamrocks Studio staging prototype. Private and on-device.">
+<meta name="description" content="Milo. A soft friend who breathes with kids aged 6–12, then dares them to one small brave move. A 3Shamrocks Studio staging prototype. Private and on-device.">
 <meta name="robots" content="noindex, nofollow">
 
 <!-- CSP: no eval, on-device only. Inline style/script are used because this is a single-file PWA;
@@ -392,11 +392,12 @@ document.title = BRAND.name + ' — ' + BRAND.tagline;
 /* ---------- Service worker: own it, evict strays (shared github.io origin) ---------- */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {
-    // Shared github.io origin: unregister any worker NOT scoped under our own base
-    // path (i.e. a sibling project's stray SW), then register ours.
+    // Shared github.io origin: unregister only a worker whose scope is a PARENT
+    // of ours (e.g. the origin root) — that one could hijack our navigations.
+    // Sibling projects' workers (other paths) are left alone.
     var BASE = location.origin + location.pathname.replace(/index\.html$/, '');
     navigator.serviceWorker.getRegistrations().then(function (regs) {
-      regs.forEach(function (r) { if (r.scope.indexOf(BASE) !== 0) r.unregister(); });
+      regs.forEach(function (r) { if (r.scope !== BASE && BASE.indexOf(r.scope) === 0) r.unregister(); });
       navigator.serviceWorker.register('sw.js').catch(function () {});
     }).catch(function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
   });
