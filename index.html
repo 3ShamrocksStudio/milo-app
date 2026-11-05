@@ -453,7 +453,11 @@ function blankState(){
     counts:{checkins:0, breaths:0, feelings:0, quests:0, nourish:0, rests:0, visitDays:0, helps:0},
     todayMood:'', checkinDate:'', questDate:'', breathDate:'', moodLog:[],
     questIndex:0, lastVisit:'', createdAt:'',
-    helpedDate:'', miloMomentIndex:0             // occasional helper moments (Milo needs a little help)
+    helpedDate:'', miloMomentIndex:0,            // occasional helper moments (Milo needs a little help)
+    // LOCAL-ONLY instrumentation of the key metric (share of opens with a
+    // finished breathe-together). Plain counters in this device's storage —
+    // never sent anywhere, no network analytics, erased by Reset.
+    metrics:{opens:0, opensBreathe:0, opensPractice:0, breatheStarts:0, breatheDone:0}
   };
 }
 var S = load();
@@ -468,6 +472,16 @@ function scrubLegacy(o){
   delete o.ai; delete o.chatLog; delete o.speakOn; delete o.petType; delete o.petName; if(o.counts) delete o.counts.chats;
   if(had){ try{ localStorage.setItem(KEY, JSON.stringify(o)); }catch(e){} }
 }
+/* ---- local-only metrics (no network, no ids, just counters) ---- */
+var _openFlags = {breathe:false, practice:false};
+function metric(k){ if(!S.metrics) S.metrics = blankState().metrics; S.metrics[k] = (S.metrics[k]||0) + 1; }
+function countOpen(){ metric('opens'); _openFlags = {breathe:false, practice:false}; save(); }
+function notePractice(kind){
+  if(kind==='breathe' && !_openFlags.breathe){ _openFlags.breathe = true; metric('opensBreathe'); }
+  if(!_openFlags.practice){ _openFlags.practice = true; metric('opensPractice'); }
+  save();
+}
+function pct(n,d){ return d ? Math.round(100*n/d)+'%' : '—'; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 function today(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
 
@@ -886,7 +900,7 @@ function finishOnboarding(){
   S.createdAt = today();
   S.lastVisit = today();
   S.stage = 1; S.growth = 0;
-  save(); go('today');
+  countOpen(); go('today');
   // the on-device crisis scan also covers anything typed during setup
   if(crisisDetect(S.childName+' '+S.likeThing)){ closeOverlay(); openCrisis(); }
 }
@@ -1279,9 +1293,10 @@ function openBreathing(forMilo){
       ]));
       finished = true;
       done.textContent = forMilo ? ('All done — '+pet()+'’s turn to check on you 💚') : 'All done 💚';
-      S.counts.breaths++; S.breathDate = today(); save(); addGrowth(2);
+      S.counts.breaths++; S.breathDate = today(); metric('breatheDone'); notePractice('breathe'); addGrowth(2);
       if(forMilo) markHelped();
     }
+    metric('breatheStarts'); save();
     setTimeout(cycle, 500);
     return [ E('div',{class:'grab'}), scene, done ];
   }, function(){ stopBreath(); });
@@ -1302,7 +1317,7 @@ function openNameFeeling(){
   });
 }
 function confirmFeeling(f, closePrev){
-  S.counts.feelings++; save(); addGrowth(2);
+  S.counts.feelings++; notePractice('feeling'); addGrowth(2);
   closePrev();
   openSheet(function(close){
     return [
@@ -1528,7 +1543,15 @@ function planBody(){
   ];
 }
 function grownUpCard(){
-  return E('div',{class:'card'},[E('h2',{class:'section',text:'For grown-ups'})].concat(planBody()));
+  var m = S.metrics || blankState().metrics;
+  var stats = E('div',{class:'note calm'},[E('span',{class:'nt',text:'Calm practice on this device'}),
+    E('ul',{class:'planlist'},[
+      E('li',{text:'Opens with a finished breathe-together: '+pct(m.opensBreathe, m.opens)+' ('+m.opensBreathe+' of '+m.opens+')'}),
+      E('li',{text:'Opens with a breathe or a named feeling: '+pct(m.opensPractice, m.opens)}),
+      E('li',{text:'Breathe-togethers finished once started: '+pct(m.breatheDone, m.breatheStarts)+' ('+m.breatheDone+' of '+m.breatheStarts+')'})
+    ]),
+    E('span',{class:'faint',style:'display:block;margin-top:6px',text:'Counted only on this device. Never sent anywhere. Reset erases it.'})]);
+  return E('div',{class:'card'},[E('h2',{class:'section',text:'For grown-ups'}), stats].concat(planBody()));
 }
 function openParentPlan(){
   openSheet(function(close){
@@ -1595,6 +1618,7 @@ function celebrateEvolution(stage){
 }
 
 /* ---------------- boot ---------------- */
+if(S.onboarded) countOpen();
 render();
 </script>
 </body>
